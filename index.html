@@ -1,11 +1,376 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Carnaval de Badajoz — La plataforma digital oficial para vivir el Carnaval de Badajoz. Programa de eventos, mapa interactivo, galería de fotos y mucho más." />
+  <title>Carnaval de Badajoz 🎭 — Tu guía digital del Carnaval</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    
+
+  <!-- ========== NAVBAR ========== -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="#" class="nav-logo">
+        <span class="logo-icon">🎭</span>
+        <span class="logo-text">Carnaval <span class="logo-accent">Badajoz</span></span>
+      </a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#features">Funciones</a></li>
+        <li><a href="#tecnologias">Tecnologías</a></li>
+        <li><a href="#como-funciona">Cómo Funciona</a></li>
+        <li><a href="#roles">Roles</a></li>
+        <li><a href="#contacto" class="nav-cta">Empezar</a></li>
+      </ul>
+      <button class="hamburger" id="hamburger" aria-label="Menú">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ========== HERO ========== -->
+  <section class="hero" id="hero">
+    <div class="hero-bg">
+      <div class="confetti-container" id="confetti-container"></div>
+      <div class="hero-orb hero-orb-1"></div>
+      <div class="hero-orb hero-orb-2"></div>
+      <div class="hero-orb hero-orb-3"></div>
+    </div>
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        TFG · IES Albarregas · 2025/2026
+      </div>
+      <h1 class="hero-title">
+        Vive el <em>Carnaval de Badajoz</em><br />
+        con toda la información<br />
+        <span class="gradient-text">en tu bolsillo</span>
+      </h1>
+      <p class="hero-subtitle">
+        Tu plataforma web para consultar el programa de murgas y comparsas,
+        explorar el mapa interactivo, compartir fotos y guardar tus eventos favoritos.
+      </p>
+      <div class="hero-actions">
+        <a href="#features" class="btn btn-primary" id="hero-cta-primary">
+          <span>Descubrir la App</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <a href="#como-funciona" class="btn btn-ghost" id="hero-cta-ghost">Ver cómo funciona</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <span class="stat-number">🎶</span>
+          <span class="stat-label">Murgas y Comparsas</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-number">📍</span>
+          <span class="stat-label">Mapa Interactivo</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-number">📸</span>
+          <span class="stat-label">Galería Social</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-scroll-indicator">
+      <span>Descubre más</span>
+      <div class="scroll-arrow"></div>
+    </div>
+  </section>
+
+  <!-- ========== FEATURES ========== -->
+  <section class="features section" id="features">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Funcionalidades</span>
+        <h2>Todo lo que necesitas<br />para disfrutar el Carnaval</h2>
+        <p>Una plataforma completa que reúne programación, ubicaciones,<br />comunidad y gestión en un solo lugar.</p>
+      </div>
+      <div class="features-grid">
+
+        <div class="feature-card feature-card--large" data-aos="fade-up">
+          <div class="feature-icon-wrap feature-icon--purple">
+            <span>🗓️</span>
+          </div>
+          <h3>Programa de Eventos</h3>
+          <p>Consulta todos los horarios de murgas y comparsas, incluyendo la Chirigota, el Coro y el Gran Desfile. Siempre actualizado en tiempo real.</p>
+          <ul class="feature-list">
+            <li>✓ Horarios detallados por agrupación</li>
+            <li>✓ Filtros por categoría y día</li>
+            <li>✓ Información de cada grupo</li>
+          </ul>
+        </div>
+
+        <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+          <div class="feature-icon-wrap feature-icon--gold">
+            <span>🗺️</span>
+          </div>
+          <h3>Mapa Interactivo</h3>
+          <p>Localiza los escenarios del Carnaval en el mapa de Badajoz con integración de Google Maps API.</p>
+        </div>
+
+        <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+          <div class="feature-icon-wrap feature-icon--red">
+            <span>❤️</span>
+          </div>
+          <h3>Mis Favoritos</h3>
+          <p>Guarda los eventos que no quieres perderte con un solo toque. Tu agenda personalizada del Carnaval.</p>
+        </div>
+
+        <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+          <div class="feature-icon-wrap feature-icon--blue">
+            <span>📸</span>
+          </div>
+          <h3>Galería Social</h3>
+          <p>Sube y comparte tus mejores fotos del Carnaval. La comunidad crea juntos el álbum oficial.</p>
+        </div>
+
+        <div class="feature-card feature-card--large" data-aos="fade-up" data-aos-delay="200">
+          <div class="feature-icon-wrap feature-icon--green">
+            <span>🛡️</span>
+          </div>
+          <h3>Panel de Administración</h3>
+          <p>Los organizadores disponen de un panel privado para gestionar eventos, actualizar horarios de última hora y moderar el contenido de la galería con facilidad.</p>
+          <ul class="feature-list">
+            <li>✓ Edición de eventos en tiempo real</li>
+            <li>✓ Moderación de fotos y comentarios</li>
+            <li>✓ Gestión de agrupaciones</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== CÓMO FUNCIONA ========== -->
+  <section class="how-it-works section" id="como-funciona">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Proceso</span>
+        <h2>Tan fácil como tres pasos</h2>
+        <p>Sin instalaciones. Accede desde cualquier dispositivo.</p>
+      </div>
+      <div class="steps-container">
+        <div class="step-card" data-aos="fade-right">
+          <div class="step-number">01</div>
+          <div class="step-content">
+            <h3>Accede a la web</h3>
+            <p>Entra desde tu móvil, tablet o ordenador. La web es 100% responsive. No necesitas instalar nada.</p>
+          </div>
+          <div class="step-icon">🌐</div>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step-card" data-aos="fade-right" data-aos-delay="150">
+          <div class="step-number">02</div>
+          <div class="step-content">
+            <h3>Explora el programa</h3>
+            <p>Navega por el calendario, usa el mapa interactivo y descubre las agrupaciones que actúan cada día.</p>
+          </div>
+          <div class="step-icon">🔍</div>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step-card" data-aos="fade-right" data-aos-delay="300">
+          <div class="step-number">03</div>
+          <div class="step-content">
+            <h3>Regístrate y participa</h3>
+            <p>Crea tu cuenta para guardar favoritos, subir fotos a la galería y ser parte de la comunidad del Carnaval.</p>
+          </div>
+          <div class="step-icon">🎉</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== TECNOLOGÍAS ========== -->
+  <section class="tech-section section" id="tecnologias">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Stack Tecnológico</span>
+        <h2>Construido con tecnología<br />moderna y escalable</h2>
+        <p>Arquitectura Serverless para máxima velocidad y fiabilidad.</p>
+      </div>
+      <div class="tech-grid">
+        <div class="tech-card" data-aos="zoom-in">
+          <div class="tech-logo tech-logo--react">⚛️</div>
+          <h4>React + Vite</h4>
+          <p>Frontend moderno con componentes reutilizables y bundling ultrarrápido.</p>
+          <span class="tech-tag">Frontend</span>
+        </div>
+        <div class="tech-card" data-aos="zoom-in" data-aos-delay="100">
+          <div class="tech-logo tech-logo--supabase">🟢</div>
+          <h4>Supabase</h4>
+          <p>Backend-as-a-Service con autenticación, base de datos PostgreSQL y almacenamiento.</p>
+          <span class="tech-tag">Backend & DB</span>
+        </div>
+        <div class="tech-card" data-aos="zoom-in" data-aos-delay="200">
+          <div class="tech-logo tech-logo--maps">🗺️</div>
+          <h4>Google Maps API</h4>
+          <p>Mapas interactivos para localizar los escenarios y puntos de interés del Carnaval.</p>
+          <span class="tech-tag">Mapas</span>
+        </div>
+        <div class="tech-card" data-aos="zoom-in" data-aos-delay="300">
+          <div class="tech-logo tech-logo--postgres">🐘</div>
+          <h4>PostgreSQL</h4>
+          <p>Base de datos relacional robusta con Row Level Security (RLS) para máxima seguridad.</p>
+          <span class="tech-tag">Base de Datos</span>
+        </div>
+      </div>
+
+      <div class="arch-banner">
+        <div class="arch-banner-content">
+          <span class="arch-badge">Arquitectura Serverless</span>
+          <p>El frontend se comunica <strong>directamente con Supabase</strong>, eliminando la necesidad de servidores intermedios. Escalabilidad y velocidad de desarrollo sin compromiso.</p>
+        </div>
+        <div class="arch-diagram">
+          <div class="arch-node arch-node--react">React</div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-node arch-node--supabase">Supabase</div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-node arch-node--postgres">PostgreSQL</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== ROLES ========== -->
+  <section class="roles-section section" id="roles">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Usuarios</span>
+        <h2>Una experiencia adaptada<br />a cada tipo de usuario</h2>
+      </div>
+      <div class="roles-grid">
+        <div class="role-card role-card--anonymous" data-aos="fade-up">
+          <div class="role-header">
+            <div class="role-avatar">👁️</div>
+            <div>
+              <h3>Usuario Anónimo</h3>
+              <span class="role-badge">Sin registro</span>
+            </div>
+          </div>
+          <ul class="role-features">
+            <li><span class="check">✓</span> Ver programa de fiestas completo</li>
+            <li><span class="check">✓</span> Consultar el mapa interactivo</li>
+            <li><span class="check">✓</span> Información de murgas y comparsas</li>
+            <li><span class="check">✓</span> Explorar la galería de fotos</li>
+          </ul>
+        </div>
+        <div class="role-card role-card--registered role-card--featured" data-aos="fade-up" data-aos-delay="150">
+          <div class="role-featured-badge">⭐ Más popular</div>
+          <div class="role-header">
+            <div class="role-avatar">👤</div>
+            <div>
+              <h3>Usuario Registrado</h3>
+              <span class="role-badge role-badge--gold">Gratis</span>
+            </div>
+          </div>
+          <ul class="role-features">
+            <li><span class="check">✓</span> Todo lo del usuario anónimo</li>
+            <li><span class="check">✓</span> Guardar eventos en Favoritos ❤️</li>
+            <li><span class="check">✓</span> Subir fotos a la galería 📸</li>
+            <li><span class="check">✓</span> Comentar publicaciones</li>
+            <li><span class="check">✓</span> Perfil personalizado</li>
+          </ul>
+        </div>
+        <div class="role-card role-card--admin" data-aos="fade-up" data-aos-delay="300">
+          <div class="role-header">
+            <div class="role-avatar">🛡️</div>
+            <div>
+              <h3>Administrador</h3>
+              <span class="role-badge role-badge--purple">Privado</span>
+            </div>
+          </div>
+          <ul class="role-features">
+            <li><span class="check">✓</span> Todo lo del usuario registrado</li>
+            <li><span class="check">✓</span> Panel de administración privado</li>
+            <li><span class="check">✓</span> Actualizar horarios en tiempo real</li>
+            <li><span class="check">✓</span> Gestionar agrupaciones</li>
+            <li><span class="check">✓</span> Moderar contenido de usuarios</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== CTA FINAL ========== -->
+  <section class="cta-section" id="contacto">
+    <div class="cta-bg">
+      <div class="cta-orb cta-orb-1"></div>
+      <div class="cta-orb cta-orb-2"></div>
+    </div>
+    <div class="container cta-content">
+      <h2>¿Listo para vivir el<br /><em>Carnaval de Badajoz</em><br />como nunca antes?</h2>
+      <p>La plataforma digital que une a toda la comunidad carnavalera de Badajoz.<br />Programa, mapa, fotos y mucho más — todo en un lugar.</p>
+      <div class="cta-actions">
+        <a href="https://github.com/AngeloteXD888/TFG" target="_blank" class="btn btn-primary" id="cta-github">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+          Ver en GitHub
+        </a>
+        <a href="#features" class="btn btn-ghost-light" id="cta-features">Explorar funciones</a>
+      </div>
+      <div class="cta-meta">
+        <span>Desarrollado por <strong>Ángel Galea Anisa</strong></span>
+        <span class="meta-divider">·</span>
+        <span>2º DAW · IES Albarregas</span>
+        <span class="meta-divider">·</span>
+        <span>2025/2026</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="footer">
+    <div class="container footer-container">
+      <div class="footer-brand">
+        <a href="#" class="nav-logo">
+          <span class="logo-icon">🎭</span>
+          <span class="logo-text">Carnaval <span class="logo-accent">Badajoz</span></span>
+        </a>
+        <p>Plataforma web para centralizar la información del Carnaval de Badajoz. TFG — Desarrollo de Aplicaciones Web.</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <h5>Proyecto</h5>
+          <ul>
+            <li><a href="#features">Funcionalidades</a></li>
+            <li><a href="#tecnologias">Tecnologías</a></li>
+            <li><a href="#como-funciona">Cómo Funciona</a></li>
+            <li><a href="#roles">Roles de Usuario</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Documentación</h5>
+          <ul>
+            <li><a href="#">Manual de Usuario</a></li>
+            <li><a href="#">Manual Técnico</a></li>
+            <li><a href="#">Manual de Despliegue</a></li>
+            <li><a href="https://github.com/AngeloteXD888/TFG" target="_blank">GitHub</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Tecnologías</h5>
+          <ul>
+            <li><a href="https://react.dev" target="_blank">React + Vite</a></li>
+            <li><a href="https://supabase.com" target="_blank">Supabase</a></li>
+            <li><a href="https://developers.google.com/maps" target="_blank">Google Maps</a></li>
+            <li><a href="https://www.postgresql.org" target="_blank">PostgreSQL</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container">
+        <p>© 2026 · Ángel Galea Anisa · IES Albarregas · Hecho con ❤️ para el Carnaval de Badajoz</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>
