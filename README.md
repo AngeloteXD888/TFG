@@ -1,79 +1,27 @@
-📱 App Carnaval de Badajoz
-📌 Descripción del proyecto
+# Aplicación Web para el Carnaval de Badajoz 🎭
+**Autor:** Ángel Galea Anisa  
+**Curso:** 2º DAW - IES Albarregas (2025/2026)  
+**Tutor:** fjmera
 
-Este proyecto consiste en el desarrollo de una aplicación web informativa sobre el Carnaval de Badajoz.
-La aplicación reúne en un solo lugar toda la información relevante del evento: programación, comparsas, actividades, historia y puntos de interés de la ciudad.
+## 📝 Descripción del Proyecto
+Aplicación web responsive diseñada para centralizar la información del **Carnaval de Badajoz**. La plataforma permite unificar la programación, mapas interactivos, noticias y galerías, fomentando la participación ciudadana mediante un sistema social.
 
-El objetivo es facilitar el acceso a la información tanto a visitantes como a ciudadanos, ofreciendo una experiencia moderna, visual y fácil de usar.
+## 🚀 Funcionalidades Principales
+- **Programa de eventos:** Consulta de horarios, murgas y comparsas.
+- **Mapa interactivo:** Localización de eventos mediante Google Maps API.
+- **Interacción Social:** Registro de usuarios, publicación de fotos y comentarios.
+- **Favoritos:** Sistema de guardado de eventos personalizados.
+- **Panel de Administración:** Gestión de contenidos a través del dashboard de Supabase.
 
-🎯 Objetivos
+## 🛠️ Tecnologías Utilizadas (Arquitectura Serverless)
+- **Frontend:** HTML5, CSS3, JavaScript (React / Vite).
+- **Backend-as-a-Service:** **Supabase** (Auth, Database, Storage).
+- **Base de Datos:** PostgreSQL (alojada en Supabase).
+- **APIs:** Google Maps API.
 
-Centralizar la información del Carnaval de Badajoz.
-
-Mostrar horarios, eventos y comparsas de forma clara.
-
-Incluir contenido cultural e histórico del carnaval.
-
-Ofrecer un mapa interactivo con puntos de interés.
-
-Permitir la interacción de los usuarios (comentarios, fotos, experiencias).
-
-Aplicar los conocimientos del ciclo Desarrollo de Aplicaciones Web (DAW).
-
-🛠️ Tecnologías utilizadas
-
-Frontend: HTML5, CSS3 y JavaScript (React o Vue.js)
-
-Backend: Node.js o PHP (Laravel)
-
-Base de datos: MySQL o MongoDB
-
-APIs externas: Google Maps, notificaciones push
-
-Control de versiones: Git y GitHub
-
-⚙️ Funcionalidades principales
-
-Consulta del programa del carnaval.
-
-Mapa interactivo con eventos y desfiles.
-
-Galería de fotos y vídeos.
-
-Sistema de usuarios y perfiles.
-
-Notificaciones de novedades y recordatorios.
-
-Panel de administración para gestionar contenidos.
-
-🚫 Funcionalidades no incluidas (por ahora)
-
-Venta de entradas online.
-
-Reservas de actividades de pago.
-
-Aplicación móvil nativa.
-
-🧩 Metodología de trabajo
-
-El proyecto se desarrolla siguiendo una metodología ágil (Scrum), con trabajo por sprints, control de versiones y organización de tareas mediante herramientas como Trello y GitHub.
-
-📦 Entregables
-
-Código fuente del proyecto.
-
-Base de datos con datos de ejemplo.
-
-Manual de usuario y manual técnico.
-
-Informe final del proyecto.
-
-Presentación para la defensa.
-
-👨‍🎓 Autor
-
-Ángel Galea Anisa
-Ciclo Formativo de Grado Superior
-Desarrollo de Aplicaciones Web (DAW)
-IES Albarregas – Mérida
-Curso 2025/2026
+## 📂 Documentación del Proyecto
+Toda la documentación detallada se encuentra en la carpeta `/docs`:
+1. [Manual de Usuario](./docs/manual_usuario.md)
+2. [Manual Técnico](./docs/manual_tecnico.md)
+3. [Manual de Despliegue](./docs/manual_despliegue.md)
+4. [Manual del Proyecto](./docs/manual_proyecto.md)
