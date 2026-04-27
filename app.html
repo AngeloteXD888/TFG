@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="Carnaval de Badajoz — Programa, mapa interactivo y favoritos de la plataforma digital del Carnaval." />
+  <title>App · Carnaval de Badajoz 🎭</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="css/app.css" />
+</head>
+
+<body>
+
+  <!-- ========== SIDEBAR ========== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-icon">🎭</span>
+      <span class="logo-text">Carnaval <span class="logo-accent">Badajoz</span></span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <ul>
+        <li>
+          <button class="nav-item nav-item--active" id="nav-inicio" onclick="showSection('inicio')">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Inicio</span>
+          </button>
+        </li>
+        <li>
+          <button class="nav-item" id="nav-programa" onclick="showSection('programa')">
+            <span class="nav-icon">🗓️</span>
+            <span class="nav-label">Programa</span>
+          </button>
+        </li>
+        <li>
+          <button class="nav-item" id="nav-mapa" onclick="showSection('mapa')">
+            <span class="nav-icon">🗺️</span>
+            <span class="nav-label">Mapa</span>
+          </button>
+        </li>
+        <li>
+          <button class="nav-item" id="nav-favoritos" onclick="showSection('favoritos')">
+            <span class="nav-icon">❤️</span>
+            <span class="nav-label">Favoritos</span>
+            <span class="nav-badge" id="fav-badge">0</span>
+          </button>
+        </li>
+      </ul>
+
+      <div class="sidebar-divider"></div>
+
+      <ul>
+        <li>
+          <button class="nav-item nav-item--admin" id="nav-admin" onclick="showSection('admin')">
+            <span class="nav-icon">🛡️</span>
+            <span class="nav-label">Admin</span>
+          </button>
+        </li>
+        <li>
+          <a href="index.html" class="nav-item nav-item--exit">
+            <span class="nav-icon">↩️</span>
+            <span class="nav-label">Volver al inicio</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="user-avatar">A</div>
+      <div class="user-info">
+        <span class="user-name">Ángel Galea</span>
+        <span class="user-role">Usuario</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ========== TOPBAR (mobile) ========== -->
+  <header class="topbar" id="topbar">
+    <button class="burger" id="burger-btn" onclick="toggleSidebar()" aria-label="Menú">
+      <span></span><span></span><span></span>
+    </button>
+    <span class="topbar-title" id="topbar-title">🏠 Inicio</span>
+    <div class="topbar-avatar">A</div>
+  </header>
+
+  <!-- ========== MAIN ========== -->
+  <main class="app-main" id="app-main">
+
+    <!-- ========== SECCIÓN: INICIO ========== -->
+    <section class="app-section" id="section-inicio">
+      <div class="page-header">
+        <h1>¡Bienvenido al Carnaval! 🎭</h1>
+        <p>Tu plataforma digital para disfrutar el Carnaval de Badajoz.</p>
+      </div>
+
+      <!-- Stats rápidas -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <span class="stat-num">48</span>
+          <span class="stat-lbl">Agrupaciones</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-num">12</span>
+          <span class="stat-lbl">Días de Carnaval</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-num">3</span>
+          <span class="stat-lbl">Escenarios</span>
+        </div>
+        <div class="stat-card stat-card--fav" id="stat-fav">
+          <span class="stat-num" id="stat-fav-num">0</span>
+          <span class="stat-lbl">Mis Favoritos</span>
+        </div>
+      </div>
+
+      <!-- Próximos eventos -->
+      <div class="home-grid">
+        <div class="home-card home-card--wide">
+          <div class="home-card-header">
+            <h2>📅 Próximos Eventos</h2>
+            <button class="view-all-btn" onclick="showSection('programa')">Ver todos →</button>
+          </div>
+          <div class="upcoming-list" id="upcoming-list">
+            <!-- JS inserta aquí -->
+          </div>
+        </div>
+
+        <div class="home-card">
+          <div class="home-card-header">
+            <h2>🏆 Ganadores COMBA 2026</h2>
+          </div>
+          <div class="comba-winners" id="comba-winners">
+            <div class="winner-item"><span class="winner-pos">🥇</span> Los Camballotas</div>
+            <div class="winner-item"><span class="winner-pos">🥈</span> Gitano y de Badajó</div>
+            <div class="winner-item"><span class="winner-pos">🥉</span> Los Water Closet</div>
+            <div class="winner-item"><span class="winner-pos">4º</span> Marwan Chilliqui</div>
+            <div class="winner-item"><span class="winner-pos">5º</span> Valentín, entrenador infantil</div>
+            <div class="winner-item"><span class="winner-pos">6º</span> Al Maridi</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Categorías rápidas -->
+      <div class="categories-row">
+        <button class="cat-chip cat-chip--murga" onclick="showSection('programa'); filterByCategory('Murga')">
+          🎶 Murgas
+        </button>
+        <button class="cat-chip cat-chip--comparsa" onclick="showSection('programa'); filterByCategory('Comparsa')">
+          🥁 Comparsas
+        </button>
+        <button class="cat-chip cat-chip--artefacto" onclick="showSection('programa'); filterByCategory('Artefacto')">
+          🛺 Artefactos
+        </button>
+        <button class="cat-chip cat-chip--animacion"
+          onclick="showSection('programa'); filterByCategory('Grupo Animación')">
+          🎪 Grupos Animación
+        </button>
+        <button class="cat-chip cat-chip--desfile" onclick="showSection('programa'); filterByCategory('Desfile')">
+          🎊 Desfiles
+        </button>
+      </div>
+    </section>
+
+    <!-- ========== SECCIÓN: PROGRAMA ========== -->
+    <section class="app-section app-section--hidden" id="section-programa">
+      <div class="page-header">
+        <h1>🗓️ Programa de Eventos</h1>
+        <p>Todos los horarios de murgas, comparsas, artefactos y grupos de animación del Carnaval de Badajoz 2026.</p>
+      </div>
+
+      <!-- Filtros -->
+      <div class="filters-bar">
+        <div class="filter-group">
+          <label for="filter-categoria">Categoría</label>
+          <select id="filter-categoria" onchange="applyFilters()">
+            <option value="">Todas</option>
+            <option value="Murga">Murga</option>
+            <option value="Comparsa">Comparsa</option>
+            <option value="Artefacto">Artefacto</option>
+            <option value="Grupo Animación">Grupo Animación</option>
+            <option value="Desfile">Desfile</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="filter-dia">Día</label>
+          <select id="filter-dia" onchange="applyFilters()">
+            <option value="">Todos</option>
+            <option value="Sáb 08 Feb">Sáb 08 Feb</option>
+            <option value="Lun 10 Feb">Lun 10 Feb</option>
+            <option value="Mar 11 Feb">Mar 11 Feb</option>
+            <option value="Mié 12 Feb">Mié 12 Feb</option>
+            <option value="Jue 13 Feb">Jue 13 Feb</option>
+            <option value="Vie 14 Feb">Vie 14 Feb</option>
+            <option value="Sáb 15 Feb">Sáb 15 Feb</option>
+            <option value="Dom 16 Feb">Dom 16 Feb</option>
+            <option value="Lun 17 Feb">Lun 17 Feb</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="filter-escenario">Escenario</label>
+          <select id="filter-escenario" onchange="applyFilters()">
+            <option value="">Todos</option>
+            <option value="Recinto Ferial">Recinto Ferial</option>
+            <option value="Teatro López de Ayala">Teatro López de Ayala</option>
+            <option value="Casco Antiguo">Casco Antiguo</option>
+          </select>
+        </div>
+        <div class="filter-group search-group">
+          <label for="filter-search">Buscar</label>
+          <input type="text" id="filter-search" placeholder="Nombre del grupo..." oninput="applyFilters()" />
+        </div>
+        <button class="btn-clear-filters" onclick="clearFilters()">✕ Limpiar</button>
+      </div>
+
+      <div class="results-info" id="results-info">Mostrando <strong id="results-count">0</strong> eventos</div>
+
+      <!-- Lista de eventos -->
+      <div class="eventos-grid" id="eventos-grid">
+        <!-- JS inserta aquí -->
+      </div>
+    </section>
+
+    <!-- ========== SECCIÓN: MAPA ========== -->
+    <section class="app-section app-section--hidden" id="section-mapa">
+      <div class="page-header">
+        <h1>🗺️ Mapa Interactivo</h1>
+        <p>Localiza todos los escenarios del Carnaval en Badajoz.</p>
+      </div>
+
+      <div class="mapa-layout">
+        <div class="mapa-sidebar">
+          <h3>Escenarios</h3>
+          <ul class="escenarios-list">
+            <li class="escenario-item escenario-item--active" onclick="selectEscenario(this, 'recinto')">
+              <span class="esc-icon">🎪</span>
+              <div>
+                <strong>Recinto Ferial</strong>
+                <span>Gran Desfile · Desfile Infantil</span>
+              </div>
+            </li>
+            <li class="escenario-item" onclick="selectEscenario(this, 'teatro')">
+              <span class="esc-icon">🎭</span>
+              <div>
+                <strong>Teatro López de Ayala</strong>
+                <span>COMBA · Concurso de Murgas</span>
+              </div>
+            </li>
+            <li class="escenario-item" onclick="selectEscenario(this, 'casco')">
+              <span class="esc-icon">🏘️</span>
+              <div>
+                <strong>Casco Antiguo</strong>
+                <span>Pasacalles · Entierro de la Sardina</span>
+              </div>
+            </li>
+          </ul>
+
+          <div class="escenario-info" id="escenario-info">
+            <h4 id="esc-title">🎪 Recinto Ferial</h4>
+            <p id="esc-desc">El mayor escenario del Carnaval. Sede del Gran Desfile del Carnaval y del Desfile Infantil.
+              Capacidad para más de 30.000 espectadores.</p>
+            <span class="esc-tag" id="esc-tag">Principal</span>
+          </div>
+        </div>
+
+        <div class="mapa-container">
+          <div id="google-map" class="google-map"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== SECCIÓN: FAVORITOS ========== -->
+    <section class="app-section app-section--hidden" id="section-favoritos">
+      <div class="page-header">
+        <h1>❤️ Mis Favoritos</h1>
+        <p>Los eventos que has guardado para no perdértelos.</p>
+      </div>
+
+      <div class="favoritos-empty" id="fav-empty">
+        <span class="empty-icon">💔</span>
+        <h2>No tienes favoritos aún</h2>
+        <p>Explora el programa y guarda los eventos que más te interesen.</p>
+        <button class="btn-primary" onclick="showSection('programa')">Ver Programa →</button>
+      </div>
+
+      <div class="eventos-grid" id="favoritos-grid">
+        <!-- JS inserta aquí -->
+      </div>
+    </section>
+
+    <!-- ========== SECCIÓN: ADMIN ========== -->
+    <section class="app-section app-section--hidden" id="section-admin">
+      <div class="page-header">
+        <h1>🛡️ Panel de Administración</h1>
+        <p>Gestión de eventos y agrupaciones de la plataforma.</p>
+      </div>
+
+      <div class="admin-stats">
+        <div class="admin-stat-card">
+          <span class="admin-stat-icon">🗓️</span>
+          <div>
+            <strong id="admin-total-eventos">0</strong>
+            <span>Eventos totales</span>
+          </div>
+        </div>
+        <div class="admin-stat-card">
+          <span class="admin-stat-icon">👤</span>
+          <div>
+            <strong>128</strong>
+            <span>Usuarios registrados</span>
+          </div>
+        </div>
+        <div class="admin-stat-card">
+          <span class="admin-stat-icon">🏆</span>
+          <div>
+            <strong>48</strong>
+            <span>Agrupaciones</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="admin-grid">
+        <!-- Tabla de eventos -->
+        <div class="admin-panel">
+          <div class="admin-panel-header">
+            <h2>🗓️ Gestión de Eventos</h2>
+            <button class="btn-admin-add" onclick="openAddEventModal()">+ Añadir evento</button>
+          </div>
+          <div class="admin-table-wrap">
+            <table class="admin-table" id="admin-table">
+              <thead>
+                <tr>
+                  <th>Agrupación</th>
+                  <th>Categoría</th>
+                  <th>Día</th>
+                  <th>Hora</th>
+                  <th>Escenario</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="admin-table-body">
+                <!-- JS inserta aquí -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========== MODAL: DETALLE EVENTO ========== -->
+  <div class="modal-overlay" id="modal-evento" onclick="closeModal('modal-evento')">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeModal('modal-evento')">✕</button>
+      <div class="modal-body" id="modal-evento-body"><!-- JS inserta aquí --></div>
+    </div>
+  </div>
+
+  <!-- ========== MODAL: ADD EVENTO (Admin) ========== -->
+  <div class="modal-overlay" id="modal-add-evento" onclick="closeModal('modal-add-evento')">
+    <div class="modal-card modal-card--small" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeModal('modal-add-evento')">✕</button>
+      <div class="modal-body">
+        <h2>🗓️ Añadir Evento</h2>
+        <div class="form-group">
+          <label for="new-grupo">Nombre del grupo</label>
+          <input type="text" id="new-grupo" placeholder="Nombre de la agrupación" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="new-categoria">Categoría</label>
+            <select id="new-categoria">
+              <option>Murga</option>
+              <option>Comparsa</option>
+              <option>Artefacto</option>
+              <option>Grupo Animación</option>
+              <option>Desfile</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="new-dia">Día</label>
+            <input type="text" id="new-dia" placeholder="Ej: Sáb 15 Feb" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="new-hora">Hora</label>
+            <input type="time" id="new-hora" />
+          </div>
+          <div class="form-group">
+            <label for="new-escenario">Escenario</label>
+            <select id="new-escenario">
+              <option>Recinto Ferial</option>
+              <option>Teatro López de Ayala</option>
+              <option>Casco Antiguo</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="new-desc">Descripción</label>
+          <textarea id="new-desc" placeholder="Descripción del grupo o evento..."></textarea>
+        </div>
+        <button class="btn-primary" style="width:100%;margin-top:1rem" onclick="addEventFromAdmin()">Guardar evento
+          ✓</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== TOAST ========== -->
+  <div class="toast-app" id="toast-app">
+    <span class="toast-app-icon" id="toast-app-icon">✅</span>
+    <span class="toast-app-msg" id="toast-app-msg"></span>
+  </div>
+
+  <!-- Overlay sidebar mobile -->
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <!-- Google Maps API -->
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC10qy-WNqjCRyn5633_vbnrnBL5dQiKUc&callback=initMap"></script>
+  <script src="js/app.js"></script>
+</body>
+
+</html>

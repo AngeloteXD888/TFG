@@ -1,7 +1,3 @@
-/* =============================================
-   CARNAVAL DE BADAJOZ — Auth Page Script
-   ============================================= */
-
 // ---- CONFETTI ----
 (function spawnConfetti() {
   const container = document.getElementById('confetti-container');
@@ -90,7 +86,7 @@ document.getElementById('reg-password')?.addEventListener('input', function() {
   label.style.color     = lvl.color;
 });
 
-// ---- VALIDACIÓN ----
+// ---- VALIDACIÓN ---- 
 function setError(inputId, errId, msg) {
   const input = document.getElementById(inputId);
   const err   = document.getElementById(errId);
@@ -152,7 +148,7 @@ function handleLogin(e) {
   setTimeout(() => {
     setLoading('btn-login', 'spinner-login', false);
     showToast('¡Bienvenido de vuelta al Carnaval! 🎉');
-    // window.location.href = 'app.html'; // Redirigir tras login real
+    setTimeout(() => { window.location.href = 'app.html'; }, 1000);
   }, 1800);
 }
 
@@ -226,7 +222,7 @@ function handleRegister(e) {
   setTimeout(() => {
     setLoading('btn-register', 'spinner-register', false);
     showToast('¡Cuenta creada! Bienvenido al Carnaval 🎊');
-    // window.location.href = 'app.html'; // Redirigir tras registro real
+    setTimeout(() => { window.location.href = 'app.html'; }, 1000);
   }, 2000);
 }
 
