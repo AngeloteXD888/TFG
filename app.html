@@ -77,6 +77,7 @@
         <span class="user-name">Ángel Galea</span>
         <span class="user-role">Usuario</span>
       </div>
+      <button class="logout-btn" onclick="logout()" title="Cerrar sesión">🚪</button>
     </div>
   </aside>
 
@@ -349,6 +350,16 @@
             </table>
           </div>
         </div>
+
+        <!-- Panel de Moderación de Comentarios -->
+        <div class="admin-panel">
+          <div class="admin-panel-header">
+            <h2>💬 Moderación de Comentarios <span class="moderation-badge" id="moderation-count">0</span></h2>
+          </div>
+          <div class="moderation-list" id="moderation-list">
+            <!-- JS inserta aquí -->
+          </div>
+        </div>
       </div>
     </section>
 
@@ -356,7 +367,7 @@
 
   <!-- ========== MODAL: DETALLE EVENTO ========== -->
   <div class="modal-overlay" id="modal-evento" onclick="closeModal('modal-evento')">
-    <div class="modal-card" onclick="event.stopPropagation()">
+    <div class="modal-card modal-card--wide" onclick="event.stopPropagation()">
       <button class="modal-close" onclick="closeModal('modal-evento')">✕</button>
       <div class="modal-body" id="modal-evento-body"><!-- JS inserta aquí --></div>
     </div>

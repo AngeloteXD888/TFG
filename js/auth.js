@@ -2,7 +2,7 @@
 (function spawnConfetti() {
   const container = document.getElementById('confetti-container');
   if (!container) return;
-  const colors = ['#7c3aed','#a855f7','#f59e0b','#fcd34d','#ef4444','#10b981','#3b82f6'];
+  const colors = ['#7c3aed', '#a855f7', '#f59e0b', '#fcd34d', '#ef4444', '#10b981', '#3b82f6'];
   for (let i = 0; i < 40; i++) {
     const piece = document.createElement('div');
     piece.className = 'confetti-piece';
@@ -21,11 +21,11 @@
 
 // ---- TABS ----
 function switchTab(tab) {
-  const loginForm    = document.getElementById('form-login');
+  const loginForm = document.getElementById('form-login');
   const registerForm = document.getElementById('form-register');
-  const tabLogin     = document.getElementById('tab-login');
-  const tabRegister  = document.getElementById('tab-register');
-  const indicator    = document.getElementById('tab-indicator');
+  const tabLogin = document.getElementById('tab-login');
+  const tabRegister = document.getElementById('tab-register');
+  const indicator = document.getElementById('tab-indicator');
 
   if (tab === 'login') {
     loginForm.classList.remove('auth-form--hidden');
@@ -41,10 +41,10 @@ function switchTab(tab) {
     indicator.classList.add('right');
   }
   // Forzar re-animación
-  loginForm.style.animation  = 'none';
+  loginForm.style.animation = 'none';
   registerForm.style.animation = 'none';
   requestAnimationFrame(() => {
-    loginForm.style.animation    = '';
+    loginForm.style.animation = '';
     registerForm.style.animation = '';
   });
 }
@@ -59,57 +59,61 @@ function togglePass(inputId, btn) {
 }
 
 // ---- FUERZA CONTRASEÑA ----
-document.getElementById('reg-password')?.addEventListener('input', function() {
+document.getElementById('reg-password')?.addEventListener('input', function () {
   const val = this.value;
-  const fill  = document.getElementById('strength-fill');
+  const fill = document.getElementById('strength-fill');
   const label = document.getElementById('strength-label');
   if (!fill || !label) return;
 
   let score = 0;
-  if (val.length >= 8)  score++;
+  if (val.length >= 8) score++;
   if (/[A-Z]/.test(val)) score++;
   if (/[0-9]/.test(val)) score++;
   if (/[^A-Za-z0-9]/.test(val)) score++;
 
   const levels = [
-    { pct: '0%',   color: 'transparent',  text: '' },
-    { pct: '25%',  color: '#ef4444',      text: 'Débil' },
-    { pct: '50%',  color: '#f59e0b',      text: 'Regular' },
-    { pct: '75%',  color: '#3b82f6',      text: 'Buena' },
-    { pct: '100%', color: '#10b981',      text: 'Fuerte' },
+    { pct: '0%', color: 'transparent', text: '' },
+    { pct: '25%', color: '#ef4444', text: 'Débil' },
+    { pct: '50%', color: '#f59e0b', text: 'Regular' },
+    { pct: '75%', color: '#3b82f6', text: 'Buena' },
+    { pct: '100%', color: '#10b981', text: 'Fuerte' },
   ];
 
   const lvl = val.length === 0 ? levels[0] : levels[score] || levels[1];
-  fill.style.width      = lvl.pct;
+  fill.style.width = lvl.pct;
   fill.style.background = lvl.color;
-  label.textContent     = lvl.text;
-  label.style.color     = lvl.color;
+  label.textContent = lvl.text;
+  label.style.color = lvl.color;
 });
 
 // ---- VALIDACIÓN ---- 
 function setError(inputId, errId, msg) {
   const input = document.getElementById(inputId);
-  const err   = document.getElementById(errId);
+  const err = document.getElementById(errId);
   if (input) input.classList.add('input-error');
-  if (err)   err.textContent = msg;
+  if (err) err.textContent = msg;
   return false;
 }
 
 function clearError(inputId, errId) {
   const input = document.getElementById(inputId);
-  const err   = document.getElementById(errId);
+  const err = document.getElementById(errId);
   if (input) { input.classList.remove('input-error'); input.classList.add('input-ok'); }
-  if (err)   err.textContent = '';
+  if (err) err.textContent = '';
 }
 
 function clearAllErrors(ids) {
   ids.forEach(([inputId, errId]) => {
     const input = document.getElementById(inputId);
-    const err   = document.getElementById(errId);
+    const err = document.getElementById(errId);
     if (input) { input.classList.remove('input-error', 'input-ok'); }
-    if (err)   err.textContent = '';
+    if (err) err.textContent = '';
   });
 }
+
+// ---- CREDENCIALES ADMIN ----
+const ADMIN_EMAIL = 'admin@carnaval.com';
+const ADMIN_PASS = 'Admin1234';
 
 // ---- LOGIN ----
 function handleLogin(e) {
@@ -119,7 +123,7 @@ function handleLogin(e) {
     ['login-password', 'login-password-err'],
   ]);
 
-  const email    = document.getElementById('login-email').value.trim();
+  const email = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-password').value;
 
   let valid = true;
@@ -146,8 +150,31 @@ function handleLogin(e) {
 
   // Simulación de petición (aquí conectarías con Supabase)
   setTimeout(() => {
+    // Determinar rol: admin si coincide con credenciales predefinidas
+    const isAdmin = (email.toLowerCase() === ADMIN_EMAIL && password === ADMIN_PASS);
+
+    // Buscar usuario registrado en localStorage
+    const registeredUsers = JSON.parse(localStorage.getItem('cbdj-users') || '[]');
+    const found = registeredUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
+
+    let userData;
+    if (isAdmin) {
+      userData = { name: 'Administrador', email: ADMIN_EMAIL, role: 'admin' };
+    } else if (found) {
+      userData = { name: found.name, email: found.email, role: 'user' };
+    } else {
+      // Usuario no registrado, se crea uno genérico con el email
+      userData = { name: email.split('@')[0], email: email, role: 'user' };
+    }
+
+    localStorage.setItem('cbdj-user', JSON.stringify(userData));
     setLoading('btn-login', 'spinner-login', false);
-    showToast('¡Bienvenido de vuelta al Carnaval! 🎉');
+
+    if (isAdmin) {
+      showToast('¡Bienvenido, Administrador! 🛡️');
+    } else {
+      showToast('¡Bienvenido de vuelta al Carnaval! 🎉');
+    }
     setTimeout(() => { window.location.href = 'app.html'; }, 1000);
   }, 1800);
 }
@@ -156,18 +183,18 @@ function handleLogin(e) {
 function handleRegister(e) {
   e.preventDefault();
   clearAllErrors([
-    ['reg-name',     'reg-name-err'],
-    ['reg-email',    'reg-email-err'],
+    ['reg-name', 'reg-name-err'],
+    ['reg-email', 'reg-email-err'],
     ['reg-password', 'reg-password-err'],
-    ['reg-confirm',  'reg-confirm-err'],
-    ['reg-terms',    'reg-terms-err'],
+    ['reg-confirm', 'reg-confirm-err'],
+    ['reg-terms', 'reg-terms-err'],
   ]);
 
-  const name     = document.getElementById('reg-name').value.trim();
-  const email    = document.getElementById('reg-email').value.trim();
+  const name = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
   const password = document.getElementById('reg-password').value;
-  const confirm  = document.getElementById('reg-confirm').value;
-  const terms    = document.getElementById('reg-terms').checked;
+  const confirm = document.getElementById('reg-confirm').value;
+  const terms = document.getElementById('reg-terms').checked;
 
   let valid = true;
 
@@ -220,6 +247,18 @@ function handleRegister(e) {
 
   // Simulación de petición (aquí conectarías con Supabase)
   setTimeout(() => {
+    // Guardar usuario registrado en la lista local
+    const registeredUsers = JSON.parse(localStorage.getItem('cbdj-users') || '[]');
+    // Evitar duplicados
+    if (!registeredUsers.find(u => u.email.toLowerCase() === email.toLowerCase())) {
+      registeredUsers.push({ name, email, role: 'user' });
+      localStorage.setItem('cbdj-users', JSON.stringify(registeredUsers));
+    }
+
+    // Guardar sesión activa
+    const userData = { name, email, role: 'user' };
+    localStorage.setItem('cbdj-user', JSON.stringify(userData));
+
     setLoading('btn-register', 'spinner-register', false);
     showToast('¡Cuenta creada! Bienvenido al Carnaval 🎊');
     setTimeout(() => { window.location.href = 'app.html'; }, 1000);
@@ -233,17 +272,17 @@ function handleGoogle() {
 
 // ---- HELPERS ----
 function setLoading(btnId, spinnerId, loading) {
-  const btn     = document.getElementById(btnId);
+  const btn = document.getElementById(btnId);
   const spinner = document.getElementById(spinnerId);
-  const icon    = btn?.querySelector('.btn-icon');
+  const icon = btn?.querySelector('.btn-icon');
   if (!btn) return;
   if (loading) {
     btn.disabled = true;
-    if (icon)    icon.style.display = 'none';
+    if (icon) icon.style.display = 'none';
     if (spinner) spinner.classList.add('visible');
   } else {
     btn.disabled = false;
-    if (icon)    icon.style.display = '';
+    if (icon) icon.style.display = '';
     if (spinner) spinner.classList.remove('visible');
   }
 }

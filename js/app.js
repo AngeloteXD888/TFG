@@ -92,7 +92,6 @@ const ESCENARIO_DATA = {
 
 // =====================================================================
 // GOOGLE MAPS API KEY
-// Sustituye 'TU_API_KEY_AQUI' por tu clave de Google Maps
 // =====================================================================
 const GOOGLE_MAPS_API_KEY = 'AIzaSyC10qy-WNqjCRyn5633_vbnrnBL5dQiKUc';
 
@@ -105,11 +104,25 @@ let filteredEventos = [...EVENTOS];
 let map = null;
 let markers = {};
 let infoWindows = {};
+let currentUser = null;
+let comments = JSON.parse(localStorage.getItem('cbdj-comments') || '{}');
 
 // =====================================================================
 // INICIALIZACIÓN
 // =====================================================================
 document.addEventListener('DOMContentLoaded', () => {
+  // ---- Leer sesión de usuario ----
+  const storedUser = localStorage.getItem('cbdj-user');
+  if (!storedUser) {
+    // No hay sesión, redirigir al login
+    window.location.href = 'auth.html';
+    return;
+  }
+  currentUser = JSON.parse(storedUser);
+
+  // ---- Configurar UI según rol ----
+  setupUserUI();
+
   renderUpcomingList();
   renderEventos(EVENTOS);
   renderFavoritos();
@@ -119,7 +132,52 @@ document.addEventListener('DOMContentLoaded', () => {
   // Actualizar conteo admin
   const adminTotal = document.getElementById('admin-total-eventos');
   if (adminTotal) adminTotal.textContent = EVENTOS.length;
+
+  // Renderizar panel de moderación si es admin
+  if (currentUser.role === 'admin') {
+    renderModerationPanel();
+  }
 });
+
+// =====================================================================
+// SETUP UI SEGÚN USUARIO
+// =====================================================================
+function setupUserUI() {
+  const navAdmin = document.getElementById('nav-admin');
+  const userAvatar = document.querySelector('.sidebar-user .user-avatar');
+  const userName = document.querySelector('.sidebar-user .user-name');
+  const userRole = document.querySelector('.sidebar-user .user-role');
+  const topbarAvatar = document.querySelector('.topbar-avatar');
+
+  // Mostrar/ocultar admin
+  if (navAdmin) {
+    if (currentUser.role === 'admin') {
+      navAdmin.style.display = '';
+    } else {
+      navAdmin.style.display = 'none';
+    }
+  }
+
+  // Actualizar info del sidebar
+  const initial = currentUser.name.charAt(0).toUpperCase();
+  if (userAvatar) userAvatar.textContent = initial;
+  if (userName) userName.textContent = currentUser.name;
+  if (userRole) {
+    userRole.textContent = currentUser.role === 'admin' ? 'Administrador' : 'Usuario';
+    if (currentUser.role === 'admin') {
+      userRole.style.color = '#f59e0b';
+    }
+  }
+  if (topbarAvatar) topbarAvatar.textContent = initial;
+}
+
+// =====================================================================
+// CERRAR SESIÓN
+// =====================================================================
+function logout() {
+  localStorage.removeItem('cbdj-user');
+  window.location.href = 'auth.html';
+}
 
 // =====================================================================
 // GOOGLE MAPS — INICIALIZACIÓN
@@ -213,6 +271,12 @@ const SECTION_TITLES = {
 };
 
 function showSection(name) {
+  // Proteger sección admin
+  if (name === 'admin' && (!currentUser || currentUser.role !== 'admin')) {
+    showToast('⛔ No tienes permisos de administrador', true);
+    return;
+  }
+
   document.querySelectorAll('.app-section').forEach(s => s.classList.add('app-section--hidden'));
   document.getElementById(`section-${name}`).classList.remove('app-section--hidden');
 
@@ -228,6 +292,7 @@ function showSection(name) {
   document.getElementById('sidebar-overlay').classList.remove('open');
 
   if (name === 'favoritos') renderFavoritos();
+  if (name === 'admin' && currentUser && currentUser.role === 'admin') renderModerationPanel();
 
   // Recentrar mapa cuando se abre la sección de mapa
   if (name === 'mapa' && map) {
@@ -429,7 +494,29 @@ function openEventoModal(id) {
       <button class="btn-primary" style="background:rgba(59,130,246,0.2);border:1px solid rgba(59,130,246,0.4);color:#60a5fa" onclick="showSection('mapa');closeModal('modal-evento')">
         📍 Ver en el mapa
       </button>
+    </div>
+
+    <!-- SECCIÓN DE COMENTARIOS -->
+    <div class="comments-section">
+      <div class="comments-header">
+        <h3>💬 Comentarios</h3>
+        <span class="comments-count" id="comments-count-${e.id}">0</span>
+      </div>
+
+      <div class="comment-form">
+        <div class="comment-form-avatar">${currentUser ? currentUser.name.charAt(0).toUpperCase() : 'U'}</div>
+        <div class="comment-form-input-wrap">
+          <textarea id="comment-input-${e.id}" class="comment-textarea" placeholder="Escribe un comentario..." rows="2"></textarea>
+          <button class="comment-submit-btn" onclick="addComment(${e.id})">Publicar</button>
+        </div>
+      </div>
+
+      <div class="comments-list" id="comments-list-${e.id}">
+        <!-- JS inserta aquí -->
+      </div>
     </div>`;
+
+  renderComments(e.id);
   document.getElementById('modal-evento').classList.add('open');
 }
 
@@ -438,6 +525,153 @@ function updateModalFav(id) {
   const isFav = favoritos.includes(id);
   btn.textContent = isFav ? '❤️ En favoritos' : '🤍 Añadir a favoritos';
   btn.style.background = isFav ? 'linear-gradient(135deg,#991b1b,#ef4444)' : '';
+}
+
+// =====================================================================
+// SISTEMA DE COMENTARIOS
+// =====================================================================
+function saveComments() {
+  localStorage.setItem('cbdj-comments', JSON.stringify(comments));
+}
+
+function addComment(eventoId) {
+  const input = document.getElementById(`comment-input-${eventoId}`);
+  if (!input) return;
+  const text = input.value.trim();
+  if (!text) {
+    showToast('⚠️ Escribe un comentario antes de publicar', true);
+    return;
+  }
+
+  if (!comments[eventoId]) comments[eventoId] = [];
+
+  const newComment = {
+    id: 'c' + Date.now() + Math.random().toString(36).substr(2, 5),
+    user: currentUser ? currentUser.name : 'Anónimo',
+    email: currentUser ? currentUser.email : '',
+    text: text,
+    date: new Date().toISOString()
+  };
+
+  comments[eventoId].push(newComment);
+  saveComments();
+  input.value = '';
+  renderComments(eventoId);
+  showToast('💬 Comentario publicado');
+}
+
+function deleteComment(eventoId, commentId) {
+  if (!currentUser || currentUser.role !== 'admin') {
+    showToast('⛔ Solo el administrador puede eliminar comentarios', true);
+    return;
+  }
+
+  if (!comments[eventoId]) return;
+  comments[eventoId] = comments[eventoId].filter(c => c.id !== commentId);
+  if (comments[eventoId].length === 0) delete comments[eventoId];
+  saveComments();
+  renderComments(eventoId);
+  renderModerationPanel();
+  showToast('🗑️ Comentario eliminado');
+}
+
+function renderComments(eventoId) {
+  const container = document.getElementById(`comments-list-${eventoId}`);
+  const countEl = document.getElementById(`comments-count-${eventoId}`);
+  if (!container) return;
+
+  const eventComments = comments[eventoId] || [];
+  if (countEl) countEl.textContent = eventComments.length;
+
+  if (eventComments.length === 0) {
+    container.innerHTML = `
+      <div class="comments-empty">
+        <span>💭</span>
+        <p>No hay comentarios aún. ¡Sé el primero en opinar!</p>
+      </div>`;
+    return;
+  }
+
+  const isAdmin = currentUser && currentUser.role === 'admin';
+
+  container.innerHTML = eventComments.slice().reverse().map(c => {
+    const date = new Date(c.date);
+    const timeStr = date.toLocaleDateString('es-ES', {
+      day: 'numeric', month: 'short', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    });
+    const initial = c.user.charAt(0).toUpperCase();
+    return `
+      <div class="comment-item" id="comment-${c.id}">
+        <div class="comment-avatar">${initial}</div>
+        <div class="comment-body">
+          <div class="comment-header">
+            <strong class="comment-user">${c.user}</strong>
+            <span class="comment-date">${timeStr}</span>
+          </div>
+          <p class="comment-text">${escapeHtml(c.text)}</p>
+        </div>
+        ${isAdmin ? `<button class="comment-delete-btn" onclick="event.stopPropagation(); deleteComment(${eventoId}, '${c.id}')" title="Eliminar comentario">🗑️</button>` : ''}
+      </div>`;
+  }).join('');
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// =====================================================================
+// PANEL DE MODERACIÓN (Admin)
+// =====================================================================
+function renderModerationPanel() {
+  const container = document.getElementById('moderation-list');
+  const countEl = document.getElementById('moderation-count');
+  if (!container) return;
+
+  // Recoger todos los comentarios de todos los eventos
+  const allComments = [];
+  Object.keys(comments).forEach(eventoId => {
+    const evento = EVENTOS.find(e => e.id === parseInt(eventoId));
+    (comments[eventoId] || []).forEach(c => {
+      allComments.push({ ...c, eventoId: parseInt(eventoId), eventoName: evento ? evento.nombre : 'Evento #' + eventoId });
+    });
+  });
+
+  // Ordenar por fecha descendente
+  allComments.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  if (countEl) countEl.textContent = allComments.length;
+
+  if (allComments.length === 0) {
+    container.innerHTML = `
+      <div class="moderation-empty">
+        <span>💬</span>
+        <p>No hay comentarios para moderar.</p>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = allComments.slice(0, 30).map(c => {
+    const date = new Date(c.date);
+    const timeStr = date.toLocaleDateString('es-ES', {
+      day: 'numeric', month: 'short',
+      hour: '2-digit', minute: '2-digit'
+    });
+    return `
+      <div class="moderation-item">
+        <div class="moderation-item-info">
+          <div class="moderation-item-top">
+            <strong>${c.user}</strong>
+            <span class="moderation-event-tag">📌 ${c.eventoName}</span>
+          </div>
+          <p class="moderation-item-text">${escapeHtml(c.text)}</p>
+          <span class="moderation-item-date">${timeStr}</span>
+        </div>
+        <button class="admin-action-btn admin-action-btn--del" onclick="deleteComment(${c.eventoId}, '${c.id}')">Eliminar</button>
+      </div>`;
+  }).join('');
 }
 
 // =====================================================================
