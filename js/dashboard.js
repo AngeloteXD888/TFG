@@ -98,20 +98,19 @@ const GOOGLE_MAPS_API_KEY = 'AIzaSyC10qy-WNqjCRyn5633_vbnrnBL5dQiKUc';
 // =====================================================================
 // ESTADO GLOBAL
 // =====================================================================
-let favoritos = JSON.parse(localStorage.getItem('cbdj-favoritos') || '[]');
+let favoritos = [];
 let currentSection = 'inicio';
 let filteredEventos = [...EVENTOS];
 let map = null;
 let markers = {};
 let infoWindows = {};
 let currentUser = null;
-let comments = JSON.parse(localStorage.getItem('cbdj-comments') || '{}');
 
 // =====================================================================
 // INICIALIZACIÓN
 // =====================================================================
-document.addEventListener('DOMContentLoaded', () => {
-  // ---- Leer sesión de usuario ----
+document.addEventListener('DOMContentLoaded', async () => {
+  // ---- Leer sesión de usuario desde localStorage (cache rápido) ----
   const storedUser = localStorage.getItem('cbdj-user');
   if (!storedUser) {
     // No hay sesión, redirigir al login
@@ -120,15 +119,52 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   currentUser = JSON.parse(storedUser);
 
+  // ---- Verificar sesión con Supabase ----
+  try {
+    const { user, perfil } = await supabaseGetUser();
+    if (!user) {
+      // Sesión expirada, redirigir
+      localStorage.removeItem('cbdj-user');
+      window.location.href = 'auth.html';
+      return;
+    }
+    // Actualizar datos del usuario con los de Supabase
+    if (perfil) {
+      currentUser = {
+        id: user.id,
+        name: perfil.nombre || currentUser.name,
+        email: user.email,
+        role: perfil.rol === 'admin' ? 'admin' : 'user'
+      };
+      localStorage.setItem('cbdj-user', JSON.stringify(currentUser));
+    }
+  } catch (err) {
+    console.warn('No se pudo verificar la sesión con Supabase, usando datos locales:', err);
+  }
+
   // ---- Configurar UI según rol ----
   setupUserUI();
 
   renderUpcomingList();
   renderEventos(EVENTOS);
-  renderFavoritos();
   renderAdminTable(EVENTOS);
   updateFavBadge();
   updateStatFav();
+
+  // ---- Cargar favoritos desde Supabase ----
+  if (currentUser.id) {
+    try {
+      favoritos = await supabaseGetFavoritos(currentUser.id);
+    } catch (err) {
+      console.warn('Error cargando favoritos de Supabase:', err);
+      favoritos = [];
+    }
+  }
+  renderEventos(filteredEventos.length !== EVENTOS.length ? filteredEventos : EVENTOS);
+  renderFavoritos();
+  updateFavBadge();
+  updateStatFav();
+
   // Actualizar conteo admin
   const adminTotal = document.getElementById('admin-total-eventos');
   if (adminTotal) adminTotal.textContent = EVENTOS.length;
@@ -174,7 +210,8 @@ function setupUserUI() {
 // =====================================================================
 // CERRAR SESIÓN
 // =====================================================================
-function logout() {
+async function logout() {
+  await supabaseSignOut();
   localStorage.removeItem('cbdj-user');
   window.location.href = 'auth.html';
 }
@@ -416,22 +453,30 @@ function filterByCategory(cat) {
 }
 
 // =====================================================================
-// FAVORITOS
+// FAVORITOS (Supabase)
 // =====================================================================
-function toggleFav(id, btn) {
+async function toggleFav(id, btn) {
+  if (!currentUser || !currentUser.id) {
+    showToast('⚠️ Inicia sesión para guardar favoritos', true);
+    return;
+  }
+
   const idx = favoritos.indexOf(id);
   if (idx === -1) {
-    favoritos.push(id);
+    // Añadir a favoritos
     btn.textContent = '❤️';
     btn.classList.add('active');
+    favoritos.push(id);
     showToast('❤️ Añadido a favoritos');
+    await supabaseAddFavorito(currentUser.id, id);
   } else {
-    favoritos.splice(idx, 1);
+    // Quitar de favoritos
     btn.textContent = '🤍';
     btn.classList.remove('active');
+    favoritos.splice(idx, 1);
     showToast('💔 Eliminado de favoritos');
+    await supabaseRemoveFavorito(currentUser.id, id);
   }
-  localStorage.setItem('cbdj-favoritos', JSON.stringify(favoritos));
   updateFavBadge();
   updateStatFav();
   if (currentSection === 'favoritos') renderFavoritos();
@@ -528,13 +573,10 @@ function updateModalFav(id) {
 }
 
 // =====================================================================
-// SISTEMA DE COMENTARIOS
+// SISTEMA DE COMENTARIOS (Supabase)
 // =====================================================================
-function saveComments() {
-  localStorage.setItem('cbdj-comments', JSON.stringify(comments));
-}
 
-function addComment(eventoId) {
+async function addComment(eventoId) {
   const input = document.getElementById(`comment-input-${eventoId}`);
   if (!input) return;
   const text = input.value.trim();
@@ -543,44 +585,47 @@ function addComment(eventoId) {
     return;
   }
 
-  if (!comments[eventoId]) comments[eventoId] = [];
+  if (!currentUser || !currentUser.id) {
+    showToast('⚠️ Inicia sesión para comentar', true);
+    return;
+  }
 
-  const newComment = {
-    id: 'c' + Date.now() + Math.random().toString(36).substr(2, 5),
-    user: currentUser ? currentUser.name : 'Anónimo',
-    email: currentUser ? currentUser.email : '',
-    text: text,
-    date: new Date().toISOString()
-  };
+  // Publicar comentario en Supabase
+  const { comment, error } = await supabaseAddComentario(currentUser.id, eventoId, text);
 
-  comments[eventoId].push(newComment);
-  saveComments();
+  if (error) {
+    showToast('❌ ' + error, true);
+    return;
+  }
+
   input.value = '';
   renderComments(eventoId);
   showToast('💬 Comentario publicado');
 }
 
-function deleteComment(eventoId, commentId) {
+async function deleteComment(eventoId, commentId) {
   if (!currentUser || currentUser.role !== 'admin') {
     showToast('⛔ Solo el administrador puede eliminar comentarios', true);
     return;
   }
 
-  if (!comments[eventoId]) return;
-  comments[eventoId] = comments[eventoId].filter(c => c.id !== commentId);
-  if (comments[eventoId].length === 0) delete comments[eventoId];
-  saveComments();
-  renderComments(eventoId);
-  renderModerationPanel();
-  showToast('🗑️ Comentario eliminado');
+  const success = await supabaseDeleteComentario(commentId);
+  if (success) {
+    renderComments(eventoId);
+    renderModerationPanel();
+    showToast('🗑️ Comentario eliminado');
+  } else {
+    showToast('❌ Error al eliminar comentario', true);
+  }
 }
 
-function renderComments(eventoId) {
+async function renderComments(eventoId) {
   const container = document.getElementById(`comments-list-${eventoId}`);
   const countEl = document.getElementById(`comments-count-${eventoId}`);
   if (!container) return;
 
-  const eventComments = comments[eventoId] || [];
+  // Cargar comentarios desde Supabase
+  const eventComments = await supabaseGetComentarios(eventoId);
   if (countEl) countEl.textContent = eventComments.length;
 
   if (eventComments.length === 0) {
@@ -595,23 +640,24 @@ function renderComments(eventoId) {
   const isAdmin = currentUser && currentUser.role === 'admin';
 
   container.innerHTML = eventComments.slice().reverse().map(c => {
-    const date = new Date(c.date);
+    const date = new Date(c.fecha);
     const timeStr = date.toLocaleDateString('es-ES', {
       day: 'numeric', month: 'short', year: 'numeric',
       hour: '2-digit', minute: '2-digit'
     });
-    const initial = c.user.charAt(0).toUpperCase();
+    const userName = (c.persona && c.persona.nombre) ? c.persona.nombre : 'Anónimo';
+    const initial = userName.charAt(0).toUpperCase();
     return `
-      <div class="comment-item" id="comment-${c.id}">
+      <div class="comment-item" id="comment-${c.id_publicacion}">
         <div class="comment-avatar">${initial}</div>
         <div class="comment-body">
           <div class="comment-header">
-            <strong class="comment-user">${c.user}</strong>
+            <strong class="comment-user">${userName}</strong>
             <span class="comment-date">${timeStr}</span>
           </div>
-          <p class="comment-text">${escapeHtml(c.text)}</p>
+          <p class="comment-text">${escapeHtml(c.contenido)}</p>
         </div>
-        ${isAdmin ? `<button class="comment-delete-btn" onclick="event.stopPropagation(); deleteComment(${eventoId}, '${c.id}')" title="Eliminar comentario">🗑️</button>` : ''}
+        ${isAdmin ? `<button class="comment-delete-btn" onclick="event.stopPropagation(); deleteComment(${eventoId}, ${c.id_publicacion})" title="Eliminar comentario">🗑️</button>` : ''}
       </div>`;
   }).join('');
 }
@@ -623,24 +669,15 @@ function escapeHtml(str) {
 }
 
 // =====================================================================
-// PANEL DE MODERACIÓN (Admin)
+// PANEL DE MODERACIÓN (Admin) — Supabase
 // =====================================================================
-function renderModerationPanel() {
+async function renderModerationPanel() {
   const container = document.getElementById('moderation-list');
   const countEl = document.getElementById('moderation-count');
   if (!container) return;
 
-  // Recoger todos los comentarios de todos los eventos
-  const allComments = [];
-  Object.keys(comments).forEach(eventoId => {
-    const evento = EVENTOS.find(e => e.id === parseInt(eventoId));
-    (comments[eventoId] || []).forEach(c => {
-      allComments.push({ ...c, eventoId: parseInt(eventoId), eventoName: evento ? evento.nombre : 'Evento #' + eventoId });
-    });
-  });
-
-  // Ordenar por fecha descendente
-  allComments.sort((a, b) => new Date(b.date) - new Date(a.date));
+  // Cargar todos los comentarios desde Supabase
+  const allComments = await supabaseGetAllComentarios();
 
   if (countEl) countEl.textContent = allComments.length;
 
@@ -654,22 +691,25 @@ function renderModerationPanel() {
   }
 
   container.innerHTML = allComments.slice(0, 30).map(c => {
-    const date = new Date(c.date);
+    const date = new Date(c.fecha);
     const timeStr = date.toLocaleDateString('es-ES', {
       day: 'numeric', month: 'short',
       hour: '2-digit', minute: '2-digit'
     });
+    const userName = (c.persona && c.persona.nombre) ? c.persona.nombre : 'Anónimo';
+    const evento = EVENTOS.find(e => e.id === c.id_evento);
+    const eventoName = evento ? evento.nombre : 'Evento #' + c.id_evento;
     return `
       <div class="moderation-item">
         <div class="moderation-item-info">
           <div class="moderation-item-top">
-            <strong>${c.user}</strong>
-            <span class="moderation-event-tag">📌 ${c.eventoName}</span>
+            <strong>${userName}</strong>
+            <span class="moderation-event-tag">📌 ${eventoName}</span>
           </div>
-          <p class="moderation-item-text">${escapeHtml(c.text)}</p>
+          <p class="moderation-item-text">${escapeHtml(c.contenido)}</p>
           <span class="moderation-item-date">${timeStr}</span>
         </div>
-        <button class="admin-action-btn admin-action-btn--del" onclick="deleteComment(${c.eventoId}, '${c.id}')">Eliminar</button>
+        <button class="admin-action-btn admin-action-btn--del" onclick="deleteComment(${c.id_evento}, ${c.id_publicacion})">Eliminar</button>
       </div>`;
   }).join('');
 }

@@ -111,12 +111,10 @@ function clearAllErrors(ids) {
   });
 }
 
-// ---- CREDENCIALES ADMIN ----
-const ADMIN_EMAIL = 'admin@carnaval.com';
-const ADMIN_PASS = 'Admin1234';
+// ---- El rol de admin se determina desde la tabla 'persona' en Supabase ----
 
 // ---- LOGIN ----
-function handleLogin(e) {
+async function handleLogin(e) {
   e.preventDefault();
   clearAllErrors([
     ['login-email', 'login-email-err'],
@@ -148,39 +146,36 @@ function handleLogin(e) {
 
   setLoading('btn-login', 'spinner-login', true);
 
-  // Simulación de petición (aquí conectarías con Supabase)
-  setTimeout(() => {
-    // Determinar rol: admin si coincide con credenciales predefinidas
-    const isAdmin = (email.toLowerCase() === ADMIN_EMAIL && password === ADMIN_PASS);
+  // Autenticación real con Supabase
+  const { user, perfil, error } = await supabaseSignIn(email, password);
 
-    // Buscar usuario registrado en localStorage
-    const registeredUsers = JSON.parse(localStorage.getItem('cbdj-users') || '[]');
-    const found = registeredUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
+  setLoading('btn-login', 'spinner-login', false);
 
-    let userData;
-    if (isAdmin) {
-      userData = { name: 'Administrador', email: ADMIN_EMAIL, role: 'admin' };
-    } else if (found) {
-      userData = { name: found.name, email: found.email, role: 'user' };
-    } else {
-      // Usuario no registrado, se crea uno genérico con el email
-      userData = { name: email.split('@')[0], email: email, role: 'user' };
-    }
+  if (error) {
+    setError('login-password', 'login-password-err', error);
+    return;
+  }
 
-    localStorage.setItem('cbdj-user', JSON.stringify(userData));
-    setLoading('btn-login', 'spinner-login', false);
+  // Guardar datos de sesión en localStorage para acceso rápido en la app
+  const isAdmin = perfil && perfil.rol === 'admin';
+  const userData = {
+    id: user.id,
+    name: perfil ? perfil.nombre : email.split('@')[0],
+    email: user.email,
+    role: isAdmin ? 'admin' : 'user'
+  };
+  localStorage.setItem('cbdj-user', JSON.stringify(userData));
 
-    if (isAdmin) {
-      showToast('¡Bienvenido, Administrador! 🛡️');
-    } else {
-      showToast('¡Bienvenido de vuelta al Carnaval! 🎉');
-    }
-    setTimeout(() => { window.location.href = 'app.html'; }, 1000);
-  }, 1800);
+  if (isAdmin) {
+    showToast('¡Bienvenido, Administrador! 🛡️');
+  } else {
+    showToast('¡Bienvenido de vuelta al Carnaval! 🎉');
+  }
+  setTimeout(() => { window.location.href = 'app.html'; }, 1000);
 }
 
 // ---- REGISTRO ----
-function handleRegister(e) {
+async function handleRegister(e) {
   e.preventDefault();
   clearAllErrors([
     ['reg-name', 'reg-name-err'],
@@ -245,29 +240,35 @@ function handleRegister(e) {
 
   setLoading('btn-register', 'spinner-register', true);
 
-  // Simulación de petición (aquí conectarías con Supabase)
-  setTimeout(() => {
-    // Guardar usuario registrado en la lista local
-    const registeredUsers = JSON.parse(localStorage.getItem('cbdj-users') || '[]');
-    // Evitar duplicados
-    if (!registeredUsers.find(u => u.email.toLowerCase() === email.toLowerCase())) {
-      registeredUsers.push({ name, email, role: 'user' });
-      localStorage.setItem('cbdj-users', JSON.stringify(registeredUsers));
-    }
+  // Registro real con Supabase
+  const { user, error } = await supabaseSignUp(name, email, password);
 
-    // Guardar sesión activa
-    const userData = { name, email, role: 'user' };
-    localStorage.setItem('cbdj-user', JSON.stringify(userData));
+  setLoading('btn-register', 'spinner-register', false);
 
-    setLoading('btn-register', 'spinner-register', false);
-    showToast('¡Cuenta creada! Bienvenido al Carnaval 🎊');
-    setTimeout(() => { window.location.href = 'app.html'; }, 1000);
-  }, 2000);
+  if (error) {
+    setError('reg-email', 'reg-email-err', error);
+    return;
+  }
+
+  // Guardar sesión activa en localStorage
+  const userData = {
+    id: user.id,
+    name: name,
+    email: email,
+    role: 'user'
+  };
+  localStorage.setItem('cbdj-user', JSON.stringify(userData));
+
+  showToast('¡Cuenta creada! Bienvenido al Carnaval 🎊');
+  setTimeout(() => { window.location.href = 'app.html'; }, 1000);
 }
 
-// ---- GOOGLE (placeholder) ----
-function handleGoogle() {
-  showToast('Google OAuth se integrará con Supabase 🔗');
+// ---- GOOGLE OAuth ----
+async function handleGoogle() {
+  const { error } = await supabaseSignInWithGoogle();
+  if (error) {
+    showToast('Error al conectar con Google: ' + error);
+  }
 }
 
 // ---- HELPERS ----
