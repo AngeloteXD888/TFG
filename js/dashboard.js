@@ -13,79 +13,137 @@ let EVENTOS = [];
 // =====================================================================
 // ESCENARIOS CON COORDENADAS REALES DE BADAJOZ
 // =====================================================================
+// =====================================================================
+// ESCENARIOS CON COORDENADAS REALES DE BADAJOZ
+// =====================================================================
 const ESCENARIO_DATA = {
+
   'Teatro López de Ayala': {
     title: '🎭 Teatro López de Ayala',
-    desc: 'Sede del COMBA, el Concurso Oficial de Murgas del Carnaval de Badajoz.',
+    desc: 'Sede del COMBA, el Concurso Oficial de Murgas.',
     tag: 'Murgas',
-    lat: 38.8796,
-    lng: -6.9708,
+    lat: 38.876273,
+    lng: -6.972268,
     icon: '🎭'
   },
+
   'Plaza de Conquistadores': {
     title: '🥁 Plaza de Conquistadores',
-    desc: 'Punto de encuentro de comparsas. Aquí se vive el ritmo y color.',
+    desc: 'Punto de encuentro de comparsas.',
     tag: 'Comparsas',
-    lat: 38.8745,
-    lng: -6.9790,
+    lat: 38.872339,
+    lng: -6.974782,
     icon: '🥁'
   },
+
   'Avda. Entrepuentes': {
     title: '⚙️ Avda. Entrepuentes',
-    desc: 'Exposición y concentración de Artefactos carnavaleros.',
+    desc: 'Zona de artefactos carnavaleros.',
     tag: 'Artefactos',
-    lat: 38.8820,
-    lng: -6.9750,
+    lat: 38.880383,
+    lng: -6.976842,
     icon: '⚙️'
   },
+
   'Plaza de San Atón': {
     title: '🎉 Plaza de San Atón',
-    desc: 'Actuaciones y concentración de Grupos de Animación.',
+    desc: 'Actuaciones y grupos de animación.',
     tag: 'Animación',
-    lat: 38.8790,
-    lng: -6.9725,
+    lat: 38.876557,
+    lng: -6.971081,
     icon: '🎉'
   },
+
   'Avda. Santa Marina': {
     title: '👑 Avda. Santa Marina',
-    desc: 'Punto de partida del majestuoso Gran Desfile del Carnaval.',
+    desc: 'Inicio del Gran Desfile.',
     tag: 'Desfiles',
-    lat: 38.8741,
-    lng: -6.9782,
+    lat: 38.877506,
+    lng: -6.980230,
     icon: '👑'
   },
+
   'Plaza de España': {
     title: '👧 Plaza de España',
-    desc: 'Epicentro del Desfile Infantil y Carnaval de Mascotas.',
+    desc: 'Carnaval Infantil y Mascotas.',
     tag: 'Infantil',
-    lat: 38.8789,
-    lng: -6.9700,
+    lat: 38.878141,
+    lng: -6.970191,
     icon: '👧'
   },
+
   'Avda. Ricardo Carapeto': {
     title: '🐟 Avda. Ricardo Carapeto',
-    desc: 'Escenario del emotivo Tradicional Entierro de la Sardina.',
+    desc: 'Entierro de la Sardina.',
     tag: 'Entierro Sardina',
-    lat: 38.8718,
-    lng: -6.9610,
+    lat: 38.878946,
+    lng: -6.955701,
     icon: '🐟'
   },
+
   'Plaza Alta': {
     title: '🏰 Plaza Alta',
-    desc: 'El corazón del Casco Antiguo y punto fuerte del Pasacalles Majara.',
+    desc: 'Pasacalles Majara.',
     tag: 'Pasacalles',
-    lat: 38.8814,
-    lng: -6.9691,
+    lat: 38.881073,
+    lng: -6.968276,
     icon: '🏰'
   },
+
   'Plaza de San Francisco': {
     title: '👋 Plaza de San Francisco',
-    desc: 'Lugar del Desfile de Despedida y Fallo del Jurado.',
+    desc: 'Desfile de Despedida.',
     tag: 'Despedida',
-    lat: 38.8785,
-    lng: -6.9715,
+    lat: 38.876394,
+    lng:  -6.973452,
     icon: '👋'
+  },
+
+  'Plaza de la Soledad': {
+    title: '✨ Plaza de la Soledad',
+    desc: 'Zona emblemática del Carnaval.',
+    tag: 'Carnaval',
+    lat: 38.880502,
+    lng: -6.970952,
+    icon: '✨'
+  },
+
+  'Calle Francisco Pizarro': {
+    title: '🎺 Calle Francisco Pizarro',
+    desc: 'Zona de agrupaciones.',
+    tag: 'Pasacalles',
+    lat: 38.879386,
+    lng: -6.971912,
+    icon: '🎺'
+  },
+
+  'Plaza López de Ayala': {
+    title: '🌴 Plaza López de Ayala',
+    desc: 'Plaza situada junto a San Francisco.',
+    tag: 'Centro',
+    lat: 38.878690,
+    lng: -6.972526,
+    icon: '🌴'
+  },
+
+  'Recinto Ferial': {
+    title: '🎪 Recinto Ferial',
+    desc: 'Gran Desfile y Desfile Infantil del Carnaval.',
+    tag: 'Desfiles',
+    lat: 38.873229,
+    lng: -6.992398,
+    icon: '🎪'
+  },
+
+  'C/ Lady Smith (Cerro Gordo)': {
+    title: '🏘️ Cerro Gordo - Lady Smith',
+    desc: 'Escenario carnavalesco en Cerro Gordo.',
+    tag: 'Barriadas',
+    lat: 38.903164,
+    lng: -6.905857,
+    icon: '🏘️'
   }
+
 };
 
 // =====================================================================
@@ -221,8 +279,15 @@ async function logout() {
 // =====================================================================
 // GOOGLE MAPS — INICIALIZACIÓN
 // =====================================================================
+// =====================================================================
+// GOOGLE MAPS — INICIALIZACIÓN
+// =====================================================================
 function initMap() {
-  const badajozCenter = { lat: 38.8780, lng: -6.9760 };
+
+  const badajozCenter = {
+    lat: 38.8794,
+    lng: -6.9705
+  };
 
   map = new google.maps.Map(document.getElementById('google-map'), {
     zoom: 14,
@@ -246,55 +311,154 @@ function initMap() {
     ]
   });
 
-  // Crear marcadores para cada escenario
-  const icons = {
-    recinto: '🎪',
-    teatro: '🎭',
-    casco: '🏘️',
-  };
+  // Limpiar objetos por si se vuelve a ejecutar
+  markers = {};
+  infoWindows = {};
 
-  Object.keys(ESCENARIO_DATA).forEach(key => {
+  // =================================================================
+  // CREAR LOS 13 MARCADORES
+  // =================================================================
+  Object.keys(ESCENARIO_DATA).forEach((key) => {
+
     const esc = ESCENARIO_DATA[key];
-    const position = { lat: esc.lat, lng: esc.lng };
 
-    // Marcador
+    // Emoji individual
+    const markerEmoji = esc.icon || '📍';
+
+    const position = {
+      lat: esc.lat,
+      lng: esc.lng
+    };
+
+    // ---------------------------------------------------------------
+    // MARCADOR
+    // ---------------------------------------------------------------
     const marker = new google.maps.Marker({
-      position,
-      map,
-      title: esc.title.replace(/^[^\s]+\s/, ''), // quitar el emoji
+      position: position,
+      map: map,
+      title: esc.title.replace(/^[^\s]+\s/, ''),
+      animation: google.maps.Animation.DROP,
+
       icon: {
         url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
-          <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
-            <circle cx="20" cy="20" r="18" fill="#6c3bd1" stroke="#a855f7" stroke-width="3" opacity="0.9"/>
-            <text x="20" y="26" text-anchor="middle" font-size="16">${icons[key]}</text>
+          <svg xmlns="http://www.w3.org/2000/svg"
+               width="46"
+               height="46"
+               viewBox="0 0 46 46">
+
+            <circle
+              cx="23"
+              cy="23"
+              r="20"
+              fill="#6c3bd1"
+              stroke="#a855f7"
+              stroke-width="3"
+              opacity="0.95"/>
+
+            <text
+              x="23"
+              y="29"
+              text-anchor="middle"
+              font-size="18">
+              ${markerEmoji}
+            </text>
+
           </svg>
         `)}`,
-        scaledSize: new google.maps.Size(40, 40),
-        anchor: new google.maps.Point(20, 20),
-      },
-      animation: google.maps.Animation.DROP,
+
+        scaledSize: new google.maps.Size(46, 46),
+        anchor: new google.maps.Point(23, 23)
+      }
     });
 
-    // InfoWindow
+    // ---------------------------------------------------------------
+    // INFOWINDOW
+    // ---------------------------------------------------------------
     const infoWindow = new google.maps.InfoWindow({
       content: `
-        <div style="padding:8px;max-width:250px;font-family:'Outfit',sans-serif;color:#1d1d2e">
-          <h3 style="margin:0 0 6px;font-size:15px">${esc.title}</h3>
-          <p style="margin:0 0 6px;font-size:13px;color:#555">${esc.desc}</p>
-          <span style="display:inline-block;padding:3px 8px;background:#6c3bd1;color:white;border-radius:10px;font-size:11px">${esc.tag}</span>
+        <div style="
+          padding:10px;
+          max-width:240px;
+          font-family:'Outfit',sans-serif;
+          color:#111;
+        ">
+          <h3 style="
+            margin:0 0 8px;
+            font-size:16px;
+            font-weight:700;
+          ">
+            ${esc.title}
+          </h3>
+
+          <p style="
+            margin:0 0 8px;
+            font-size:13px;
+            color:#555;
+            line-height:1.4;
+          ">
+            ${esc.desc}
+          </p>
+
+          <span style="
+            display:inline-block;
+            padding:4px 10px;
+            background:#6c3bd1;
+            color:white;
+            border-radius:999px;
+            font-size:11px;
+            font-weight:600;
+          ">
+            ${esc.tag}
+          </span>
         </div>
       `
     });
 
+    // ---------------------------------------------------------------
+    // CLICK DEL MARCADOR
+    // ---------------------------------------------------------------
     marker.addListener('click', () => {
-      // Cerrar todas las ventanas
+
+      // cerrar todos
       Object.values(infoWindows).forEach(iw => iw.close());
+
+      // abrir actual
       infoWindow.open(map, marker);
+
+      // animación rebote
+      marker.setAnimation(google.maps.Animation.BOUNCE);
+
+      setTimeout(() => {
+        marker.setAnimation(null);
+      }, 1400);
+
+      // sincronizar lista lateral
       selectEscenariByKey(key);
     });
 
+    // ---------------------------------------------------------------
+    // GUARDAR REFERENCIAS
+    // ---------------------------------------------------------------
     markers[key] = marker;
     infoWindows[key] = infoWindow;
+  });
+
+  // =================================================================
+  // AJUSTAR MAPA PARA QUE SE VEAN LOS 13 PUNTOS
+  // =================================================================
+  const bounds = new google.maps.LatLngBounds();
+
+  Object.values(markers).forEach(marker => {
+    bounds.extend(marker.getPosition());
+  });
+
+  map.fitBounds(bounds);
+
+  // evitar zoom exagerado
+  google.maps.event.addListenerOnce(map, 'bounds_changed', () => {
+    if (map.getZoom() > 15) {
+      map.setZoom(15);
+    }
   });
 }
 
@@ -337,7 +501,7 @@ function showSection(name) {
   if (name === 'mapa' && map) {
     setTimeout(() => {
       google.maps.event.trigger(map, 'resize');
-      map.setCenter({ lat: 38.8780, lng: -6.9760 });
+      map.setCenter({ lat: 38.8782, lng: -6.9710 });
     }, 100);
   }
 }
@@ -792,18 +956,18 @@ async function deleteEventAdmin(id, btn) {
     showToast('⚠️ Error al eliminar evento', true);
     return;
   }
-  
+
   const row = btn.closest('tr');
   row.style.opacity = '0';
   row.style.transition = 'opacity .3s';
   setTimeout(() => row.remove(), 350);
   showToast('🗑️ Evento eliminado');
-  
+
   const adminTotal = document.getElementById('admin-total-eventos');
   if (adminTotal) {
     adminTotal.textContent = parseInt(adminTotal.textContent) - 1;
   }
-  
+
   EVENTOS = EVENTOS.filter(e => e.id !== id);
   filteredEventos = filteredEventos.filter(e => e.id !== id);
   renderEventos(filteredEventos);
@@ -841,7 +1005,7 @@ async function addEventFromAdmin() {
   filteredEventos = [...EVENTOS];
   renderAdminTable(EVENTOS);
   renderEventos(filteredEventos);
-  
+
   const num = document.getElementById('admin-total-eventos');
   if (num) num.textContent = parseInt(num.textContent) + 1;
 
