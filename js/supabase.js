@@ -11,7 +11,8 @@ const SUPABASE_URL = 'https://eyqfabyctclrugfiwsei.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV5cWZhYnljdGNscnVnZml3c2VpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2OTQzNjksImV4cCI6MjA5MjI3MDM2OX0.YpZaUEA5ls56f88_MFUZhhl2BxIsXUDXX_yI7zDR02g';
 
 // Crear cliente Supabase
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const { createClient } = window.supabase;
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // =====================================================================
 // AUTENTICACIÓN
@@ -20,15 +21,10 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 /**
  * Registrar un nuevo usuario con email y contraseña.
  * También inserta su perfil en la tabla 'persona'.
- * @param {string} nombre
- * @param {string} email
- * @param {string} password
- * @returns {Promise<{user: object|null, error: string|null}>}
  */
 async function supabaseSignUp(nombre, email, password) {
   try {
-    // 1. Crear cuenta en Supabase Auth
-    const { data, error } = await supabase.auth.signUp({
+    const { data, error } = await supabaseClient.auth.signUp({
       email: email,
       password: password,
       options: {
@@ -40,15 +36,14 @@ async function supabaseSignUp(nombre, email, password) {
       return { user: null, error: traducirError(error.message) };
     }
 
-    // 2. Insertar perfil en la tabla 'persona'
     if (data.user) {
-      const { error: profileError } = await supabase
+      const { error: profileError } = await supabaseClient
         .from('persona')
         .insert({
           id_persona: data.user.id,
           nombre: nombre,
           email: email,
-          contrasena: '***', // No guardamos la contraseña real, Supabase Auth la gestiona
+          contrasena: '***',
           fecha_registro: new Date().toISOString(),
           rol: 'usuario'
         });
@@ -67,13 +62,10 @@ async function supabaseSignUp(nombre, email, password) {
 
 /**
  * Iniciar sesión con email y contraseña.
- * @param {string} email
- * @param {string} password
- * @returns {Promise<{user: object|null, perfil: object|null, error: string|null}>}
  */
 async function supabaseSignIn(email, password) {
   try {
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
       email: email,
       password: password,
     });
@@ -82,10 +74,9 @@ async function supabaseSignIn(email, password) {
       return { user: null, perfil: null, error: traducirError(error.message) };
     }
 
-    // Obtener perfil de la tabla 'persona'
     let perfil = null;
     if (data.user) {
-      const { data: perfilData } = await supabase
+      const { data: perfilData } = await supabaseClient
         .from('persona')
         .select('*')
         .eq('id_persona', data.user.id)
@@ -106,7 +97,7 @@ async function supabaseSignIn(email, password) {
  */
 async function supabaseSignInWithGoogle() {
   try {
-    const { data, error } = await supabase.auth.signInWithOAuth({
+    const { data, error } = await supabaseClient.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: window.location.origin + '/app.html'
@@ -128,7 +119,7 @@ async function supabaseSignInWithGoogle() {
  */
 async function supabaseSignOut() {
   try {
-    const { error } = await supabase.auth.signOut();
+    const { error } = await supabaseClient.auth.signOut();
     if (error) console.warn('Error al cerrar sesión:', error.message);
   } catch (err) {
     console.error('supabaseSignOut error:', err);
@@ -137,16 +128,14 @@ async function supabaseSignOut() {
 
 /**
  * Obtener el usuario actualmente autenticado.
- * @returns {Promise<{user: object|null, perfil: object|null}>}
  */
 async function supabaseGetUser() {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user } } = await supabaseClient.auth.getUser();
 
     if (!user) return { user: null, perfil: null };
 
-    // Obtener perfil
-    const { data: perfil } = await supabase
+    const { data: perfil } = await supabaseClient
       .from('persona')
       .select('*')
       .eq('id_persona', user.id)
@@ -163,14 +152,9 @@ async function supabaseGetUser() {
 // FAVORITOS — CRUD
 // =====================================================================
 
-/**
- * Obtener los IDs de eventos favoritos del usuario actual.
- * @param {string} userId
- * @returns {Promise<number[]>}
- */
 async function supabaseGetFavoritos(userId) {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from('favorito')
       .select('id_evento')
       .eq('id_persona', userId);
@@ -187,15 +171,9 @@ async function supabaseGetFavoritos(userId) {
   }
 }
 
-/**
- * Añadir un evento a favoritos.
- * @param {string} userId
- * @param {number} eventoId
- * @returns {Promise<boolean>}
- */
 async function supabaseAddFavorito(userId, eventoId) {
   try {
-    const { error } = await supabase
+    const { error } = await supabaseClient
       .from('favorito')
       .insert({
         id_persona: userId,
@@ -213,15 +191,9 @@ async function supabaseAddFavorito(userId, eventoId) {
   }
 }
 
-/**
- * Eliminar un evento de favoritos.
- * @param {string} userId
- * @param {number} eventoId
- * @returns {Promise<boolean>}
- */
 async function supabaseRemoveFavorito(userId, eventoId) {
   try {
-    const { error } = await supabase
+    const { error } = await supabaseClient
       .from('favorito')
       .delete()
       .eq('id_persona', userId)
@@ -242,14 +214,9 @@ async function supabaseRemoveFavorito(userId, eventoId) {
 // PUBLICACIONES (COMENTARIOS) — CRUD
 // =====================================================================
 
-/**
- * Obtener publicaciones/comentarios de un evento.
- * @param {number} eventoId
- * @returns {Promise<object[]>}
- */
 async function supabaseGetComentarios(eventoId) {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from('publicacion')
       .select('*, persona(nombre)')
       .eq('id_evento', eventoId)
@@ -268,16 +235,9 @@ async function supabaseGetComentarios(eventoId) {
   }
 }
 
-/**
- * Publicar un nuevo comentario en un evento.
- * @param {string} userId
- * @param {number} eventoId
- * @param {string} texto
- * @returns {Promise<{comment: object|null, error: string|null}>}
- */
 async function supabaseAddComentario(userId, eventoId, texto) {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from('publicacion')
       .insert({
         id_persona: userId,
@@ -301,14 +261,9 @@ async function supabaseAddComentario(userId, eventoId, texto) {
   }
 }
 
-/**
- * Eliminar un comentario (solo admin).
- * @param {number} commentId
- * @returns {Promise<boolean>}
- */
 async function supabaseDeleteComentario(commentId) {
   try {
-    const { error } = await supabase
+    const { error } = await supabaseClient
       .from('publicacion')
       .delete()
       .eq('id_publicacion', commentId);
@@ -324,13 +279,9 @@ async function supabaseDeleteComentario(commentId) {
   }
 }
 
-/**
- * Obtener todos los comentarios (para moderación admin).
- * @returns {Promise<object[]>}
- */
 async function supabaseGetAllComentarios() {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from('publicacion')
       .select('*, persona(nombre)')
       .eq('tipo', 'comentario')
@@ -353,9 +304,6 @@ async function supabaseGetAllComentarios() {
 // HELPERS
 // =====================================================================
 
-/**
- * Traducir mensajes de error de Supabase al español.
- */
 function traducirError(msg) {
   const traducciones = {
     'Invalid login credentials': 'Correo o contraseña incorrectos.',
@@ -372,7 +320,7 @@ function traducirError(msg) {
     if (msg.includes(eng)) return esp;
   }
 
-  return msg; // Devolver el mensaje original si no hay traducción
+  return msg;
 }
 
 console.log('✅ Supabase conectado —', SUPABASE_URL);
