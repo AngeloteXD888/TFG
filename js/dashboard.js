@@ -8,86 +8,84 @@
 // DATOS REALES — Carnaval de Badajoz 2026
 // Fuente: https://carnavaldebadajoz.org/
 // =====================================================================
-const EVENTOS = [
-  // MURGAS — COMBA 2026 (Concurso Oficial de Murgas de Badajoz)
-  // Gran Final celebrada el viernes 13 de febrero en el Teatro López de Ayala
-  { id: 1, nombre: 'Los Camballotas', categoria: 'Murga', dia: 'Vie 14 Feb', hora: '21:00', escenario: 'Teatro López de Ayala', descripcion: '1º Premio del COMBA 2026 con 3317.5 puntos. Murga ganadora del Concurso Oficial de Murgas del Carnaval de Badajoz. Su repertorio satírico y su puesta en escena les hizo merecedores del primer puesto.' },
-  { id: 2, nombre: 'Gitano y de Badajó', categoria: 'Murga', dia: 'Jue 13 Feb', hora: '21:00', escenario: 'Teatro López de Ayala', descripcion: '2º Premio del COMBA 2026 con 3168.25 puntos. Una de las murgas más destacadas de la edición, con letras cargadas de humor y crítica social que conectaron con el público badajocense.' },
-  { id: 3, nombre: 'Los Water Closet', categoria: 'Murga', dia: 'Mié 12 Feb', hora: '21:00', escenario: 'Teatro López de Ayala', descripcion: '3º Premio del COMBA 2026 con 3130.5 puntos. Murga con una temática original y hilarante que les llevó al podio del concurso oficial.' },
-  { id: 4, nombre: 'Marwan Chilliqui', categoria: 'Murga', dia: 'Mar 11 Feb', hora: '21:00', escenario: 'Teatro López de Ayala', descripcion: '4º Premio del COMBA 2026 con 3129.75 puntos. Su nombre ya adelanta el tono irreverente de su actuación. Humor, sátira y una crítica afilada.' },
-  { id: 5, nombre: 'Valentín, entrenador infantil', categoria: 'Murga', dia: 'Lun 10 Feb', hora: '21:00', escenario: 'Teatro López de Ayala', descripcion: '5º Premio del COMBA 2026 con 3079.75 puntos. Murga con una temática futbolística muy bien desarrollada que atrajo a un público muy amplio.' },
-  { id: 6, nombre: 'Al Maridi', categoria: 'Murga', dia: 'Sáb 08 Feb', hora: '21:00', escenario: 'Teatro López de Ayala', descripcion: '6º Premio del COMBA 2026 con 3033 puntos. Murga que demostró su calidad en el concurso oficial con una actuación muy completa.' },
-
-  // COMPARSAS — Gran Desfile 2026 (Premios oficiales)
-  { id: 7, nombre: 'Los Lingotes', categoria: 'Comparsa', dia: 'Dom 16 Feb', hora: '17:00', escenario: 'Recinto Ferial', descripcion: '1º Premio del Gran Desfile del Carnaval de Badajoz 2026. Comparsa ganadora con una espectacular puesta en escena que dejó sin palabras al jurado y al público.' },
-  { id: 8, nombre: 'Las Monjas «La Tribu de Nunca Jamás»', categoria: 'Comparsa', dia: 'Dom 16 Feb', hora: '17:00', escenario: 'Recinto Ferial', descripcion: '2º Premio del Gran Desfile 2026. Una comparsa que arrasó con su originalidad y trabajo en conjunto, recreando un mundo de fantasía.' },
-  { id: 9, nombre: 'Moracantana', categoria: 'Comparsa', dia: 'Dom 16 Feb', hora: '17:00', escenario: 'Recinto Ferial', descripcion: '3º Premio del Gran Desfile 2026. Comparsa con una temática exótica y un vestuario artesanal de altísima calidad que deslumbró en el Carnaval.' },
-  { id: 10, nombre: 'Caribe «Los Engendros del Delirio»', categoria: 'Comparsa', dia: 'Dom 16 Feb', hora: '17:00', escenario: 'Recinto Ferial', descripcion: '4º Premio del Gran Desfile 2026. Pura alegría caribeña con ritmos tropicales, colorido vestuario y una coreografía vibrante.' },
-  { id: 11, nombre: 'La Bullanguera «Taurus Elogium»', categoria: 'Comparsa', dia: 'Dom 16 Feb', hora: '17:00', escenario: 'Recinto Ferial', descripcion: '5º Premio del Gran Desfile 2026. La Bullanguera llenó de bullicio y fiesta el recorrido del Gran Desfile con una actuación apasionante.' },
-  // Accésits comparsas
-  { id: 12, nombre: 'Cambalada «O Conxuro Cambalada»', categoria: 'Comparsa', dia: 'Dom 16 Feb', hora: '17:00', escenario: 'Recinto Ferial', descripcion: 'Accésit 1º del Gran Desfile 2026. Comparsa con temática gallega que destacó también en Estandarte Fijo y Estandarte Móvil.' },
-  { id: 13, nombre: 'El Vaivén', categoria: 'Comparsa', dia: 'Dom 16 Feb', hora: '17:00', escenario: 'Recinto Ferial', descripcion: 'Accésit 2º del Gran Desfile 2026. Comparsa con puesta en escena llena de energía y un vestuario muy cuidado.' },
-  { id: 14, nombre: 'Los Tukanes «La Mascletá»', categoria: 'Comparsa', dia: 'Dom 16 Feb', hora: '17:00', escenario: 'Recinto Ferial', descripcion: 'Accésit 3º del Gran Desfile 2026. Temática fallera con colores brillantes y coreografía explosiva.' },
-  { id: 15, nombre: 'La Pava and Company', categoria: 'Comparsa', dia: 'Dom 16 Feb', hora: '17:00', escenario: 'Recinto Ferial', descripcion: 'Accésit 4º del Gran Desfile 2026. Una comparsa con estilo propio que siempre sorprende en el Carnaval de Badajoz.' },
-  { id: 16, nombre: 'Dekebais', categoria: 'Comparsa', dia: 'Dom 16 Feb', hora: '17:00', escenario: 'Recinto Ferial', descripcion: 'Accésit 5º del Gran Desfile 2026. Comparsa participante en el Gran Desfile del Carnaval de Badajoz.' },
-  { id: 17, nombre: 'Caretos Salvavidas «Oceanía»', categoria: 'Comparsa', dia: 'Dom 16 Feb', hora: '17:00', escenario: 'Recinto Ferial', descripcion: 'Accésit 6º del Gran Desfile 2026. Diploma en Estandarte Fijo y Estandarte Móvil. Temática oceánica espectacular.' },
-  { id: 18, nombre: 'Umsuka Imbali', categoria: 'Comparsa', dia: 'Dom 16 Feb', hora: '17:00', escenario: 'Recinto Ferial', descripcion: 'Accésit 7º del Gran Desfile 2026. 1er Premio en Estandarte Móvil. Comparsa de raíz africana con una puesta en escena impresionante.' },
-  { id: 19, nombre: 'Los Pirulfos', categoria: 'Comparsa', dia: 'Dom 16 Feb', hora: '17:00', escenario: 'Recinto Ferial', descripcion: 'Accésit 8º del Gran Desfile 2026. Comparsa veterana del Carnaval de Badajoz con fieles seguidores.' },
-  { id: 20, nombre: 'Meraki', categoria: 'Comparsa', dia: 'Dom 16 Feb', hora: '17:00', escenario: 'Recinto Ferial', descripcion: 'Accésit del Gran Desfile 2026. 2º puesto compartido en Estandarte Móvil. Comparsa con alma y pasión carnavalera.' },
-  { id: 21, nombre: 'Vendaval «Heraldos del Sol»', categoria: 'Comparsa', dia: 'Dom 16 Feb', hora: '17:00', escenario: 'Recinto Ferial', descripcion: 'Accésit del Gran Desfile 2026. Diploma en Estandarte Fijo. Temática solar con vestuario artesanal brillante.' },
-  { id: 22, nombre: 'Wailuku «Cyberpunk 35 Aniversario»', categoria: 'Comparsa', dia: 'Dom 16 Feb', hora: '17:00', escenario: 'Recinto Ferial', descripcion: 'Accésit del Gran Desfile 2026. Comparsa veterana que celebra su 35 aniversario con una temática futurista.' },
-  { id: 23, nombre: 'Achiweyba «Los Bridgerton»', categoria: 'Comparsa', dia: 'Dom 16 Feb', hora: '17:00', escenario: 'Recinto Ferial', descripcion: 'Accésit 20º del Gran Desfile 2026. Temática inspirada en la famosa serie de televisión.' },
-
-  // ARTEFACTOS — Gran Desfile 2026
-  { id: 24, nombre: 'El Arte-Facto «Los Hijos del Fuego»', categoria: 'Artefacto', dia: 'Dom 16 Feb', hora: '17:00', escenario: 'Recinto Ferial', descripcion: '1º Premio en Artefactos del Gran Desfile 2026. Un espectáculo de fuego, luz y movimiento que impresionó a todo el público badajocense.' },
-  { id: 25, nombre: 'Pues anda que tú, se endiosa', categoria: 'Artefacto', dia: 'Dom 16 Feb', hora: '17:00', escenario: 'Recinto Ferial', descripcion: '2º Premio en Artefactos del Gran Desfile 2026. Un nombre tan memorable como su actuación, que arrancó carcajadas y aplausos.' },
-  { id: 26, nombre: 'Trimoto «No me toques los elfos»', categoria: 'Artefacto', dia: 'Dom 16 Feb', hora: '17:00', escenario: 'Recinto Ferial', descripcion: '3º Premio en Artefactos 2026. Un artefacto motorizado con temática fantástica que sorprendió por su originalidad.' },
-  { id: 27, nombre: 'Los Curabachas del Nilo', categoria: 'Artefacto', dia: 'Dom 16 Feb', hora: '17:00', escenario: 'Recinto Ferial', descripcion: 'Diploma en Artefactos del Gran Desfile 2026. Temática egipcia muy llamativa y creativa.' },
-  { id: 28, nombre: 'El Gallinero «Birmingham»', categoria: 'Artefacto', dia: 'Dom 16 Feb', hora: '17:00', escenario: 'Recinto Ferial', descripcion: 'Diploma en Artefactos del Gran Desfile 2026. Propuesta animada e ingeniosa que mezcló lo cotidiano con la fantasía.' },
-  { id: 29, nombre: 'Los Ociosos vienen furiosos', categoria: 'Artefacto', dia: 'Dom 16 Feb', hora: '17:00', escenario: 'Recinto Ferial', descripcion: 'Diploma en Artefactos del Gran Desfile 2026. Artefacto con mucha energía y humor carnavalero.' },
-
-  // GRUPOS DE ANIMACIÓN — Gran Desfile 2026
-  { id: 30, nombre: 'Chalchimpapas «El Musical»', categoria: 'Grupo Animación', dia: 'Dom 16 Feb', hora: '17:00', escenario: 'Recinto Ferial', descripcion: '1º Premio en Grupos de Animación del Gran Desfile 2026. Un espectáculo musical que animó a todo el público del recorrido.' },
-  { id: 31, nombre: 'Los Pegabotes', categoria: 'Grupo Animación', dia: 'Dom 16 Feb', hora: '17:00', escenario: 'Recinto Ferial', descripcion: '2º Premio en Grupos de Animación del Gran Desfile 2026. Grupo con mucha energía y diversión contagiosa.' },
-  { id: 32, nombre: 'La Peña de los 3 Cubatas', categoria: 'Grupo Animación', dia: 'Dom 16 Feb', hora: '17:00', escenario: 'Recinto Ferial', descripcion: '3º Premio en Grupos de Animación del Gran Desfile 2026. Un grupo que derrochó fiesta, humor y compañerismo.' },
-  { id: 33, nombre: 'Churrería Los Desastres Extraordinarios', categoria: 'Grupo Animación', dia: 'Dom 16 Feb', hora: '17:00', escenario: 'Recinto Ferial', descripcion: 'Diploma en Grupos de Animación 2026. Un nombre que lo dice todo: extraordinarios a su manera.' },
-  { id: 34, nombre: 'Si se quiere se puede', categoria: 'Grupo Animación', dia: 'Dom 16 Feb', hora: '17:00', escenario: 'Recinto Ferial', descripcion: 'Diploma en Grupos de Animación del Gran Desfile 2026. Grupo con un mensaje positivo y mucho ánimo carnavalero.' },
-  { id: 35, nombre: 'Dekefuistis', categoria: 'Grupo Animación', dia: 'Dom 16 Feb', hora: '17:00', escenario: 'Recinto Ferial', descripcion: 'Diploma en Grupos de Animación del Gran Desfile 2026. Grupo participante en el Carnaval de Badajoz.' },
-  { id: 36, nombre: 'Baluarte Carnavalero', categoria: 'Grupo Animación', dia: 'Dom 16 Feb', hora: '17:00', escenario: 'Recinto Ferial', descripcion: 'Diploma en Grupos de Animación del Gran Desfile 2026. Grupo con espíritu carnavalero auténtico.' },
-
-  // DESFILES — Carnaval de Badajoz 2026
-  { id: 37, nombre: 'Gran Desfile del Carnaval', categoria: 'Desfile', dia: 'Dom 16 Feb', hora: '17:00', escenario: 'Recinto Ferial', descripcion: 'El evento más multitudinario del Carnaval de Badajoz, declarado Fiesta de Interés Turístico Internacional. Más de 30.000 espectadores y decenas de agrupaciones desfilan por el Recinto Ferial.' },
-  { id: 38, nombre: 'Desfile Infantil', categoria: 'Desfile', dia: 'Sáb 15 Feb', hora: '11:00', escenario: 'Recinto Ferial', descripcion: 'El desfile de los más pequeños. Los niños de la ciudad lucen sus disfraces en el Gran Desfile Infantil, el más entrañable del Carnaval de Badajoz.' },
-  { id: 39, nombre: 'Desfile del Entierro de la Sardina', categoria: 'Desfile', dia: 'Lun 17 Feb', hora: '18:00', escenario: 'Casco Antiguo', descripcion: 'El emotivo y festivo cierre del Carnaval de Badajoz. El Entierro de la Sardina recorre las calles del centro histórico dando el último adiós al Carnaval.' },
-  { id: 40, nombre: 'Pasacalles Majara', categoria: 'Desfile', dia: 'Vie 14 Feb', hora: '00:30', escenario: 'Casco Antiguo', descripcion: 'El famoso pasacalles nocturno del Carnaval. Miles de personas recorren disfrazadas las calles del centro histórico en la noche más loca del Carnaval.' },
-  { id: 41, nombre: 'Desfile de Despedida', categoria: 'Desfile', dia: 'Lun 17 Feb', hora: '20:00', escenario: 'Casco Antiguo', descripcion: 'El Desfile de Despedida del Carnaval de Badajoz 2026. Las agrupaciones recorren el centro para dar el último adiós a esta edición histórica.' },
-];
+let EVENTOS = [];
 
 // =====================================================================
 // ESCENARIOS CON COORDENADAS REALES DE BADAJOZ
 // =====================================================================
 const ESCENARIO_DATA = {
-  recinto: {
-    title: '🎪 Recinto Ferial',
-    desc: 'El mayor escenario del Carnaval. Sede del Gran Desfile del Carnaval y del Desfile Infantil. Capacidad para más de 30.000 espectadores.',
-    tag: 'Principal — Gran Desfile',
-    lat: 38.8655,
-    lng: -6.9825
-  },
-  teatro: {
+  'Teatro López de Ayala': {
     title: '🎭 Teatro López de Ayala',
-    desc: 'Sede del COMBA, el Concurso Oficial de Murgas del Carnaval de Badajoz. Aquí se celebran las preliminares, semifinales y la Gran Final del concurso.',
-    tag: 'COMBA — Concurso de Murgas',
+    desc: 'Sede del COMBA, el Concurso Oficial de Murgas del Carnaval de Badajoz.',
+    tag: 'Murgas',
     lat: 38.8796,
-    lng: -6.9708
+    lng: -6.9708,
+    icon: '🎭'
   },
-  casco: {
-    title: '🏘️ Casco Antiguo',
-    desc: 'Las calles del casco histórico se transforman en escenarios improvisados. Aquí se celebran los pasacalles más populares y el Entierro de la Sardina.',
-    tag: 'Pasacalles — Entierro de la Sardina',
-    lat: 38.8810,
-    lng: -6.9730
+  'Plaza de Conquistadores': {
+    title: '🥁 Plaza de Conquistadores',
+    desc: 'Punto de encuentro de comparsas. Aquí se vive el ritmo y color.',
+    tag: 'Comparsas',
+    lat: 38.8745,
+    lng: -6.9790,
+    icon: '🥁'
   },
+  'Avda. Entrepuentes': {
+    title: '⚙️ Avda. Entrepuentes',
+    desc: 'Exposición y concentración de Artefactos carnavaleros.',
+    tag: 'Artefactos',
+    lat: 38.8820,
+    lng: -6.9750,
+    icon: '⚙️'
+  },
+  'Plaza de San Atón': {
+    title: '🎉 Plaza de San Atón',
+    desc: 'Actuaciones y concentración de Grupos de Animación.',
+    tag: 'Animación',
+    lat: 38.8790,
+    lng: -6.9725,
+    icon: '🎉'
+  },
+  'Avda. Santa Marina': {
+    title: '👑 Avda. Santa Marina',
+    desc: 'Punto de partida del majestuoso Gran Desfile del Carnaval.',
+    tag: 'Desfiles',
+    lat: 38.8741,
+    lng: -6.9782,
+    icon: '👑'
+  },
+  'Plaza de España': {
+    title: '👧 Plaza de España',
+    desc: 'Epicentro del Desfile Infantil y Carnaval de Mascotas.',
+    tag: 'Infantil',
+    lat: 38.8789,
+    lng: -6.9700,
+    icon: '👧'
+  },
+  'Avda. Ricardo Carapeto': {
+    title: '🐟 Avda. Ricardo Carapeto',
+    desc: 'Escenario del emotivo Tradicional Entierro de la Sardina.',
+    tag: 'Entierro Sardina',
+    lat: 38.8718,
+    lng: -6.9610,
+    icon: '🐟'
+  },
+  'Plaza Alta': {
+    title: '🏰 Plaza Alta',
+    desc: 'El corazón del Casco Antiguo y punto fuerte del Pasacalles Majara.',
+    tag: 'Pasacalles',
+    lat: 38.8814,
+    lng: -6.9691,
+    icon: '🏰'
+  },
+  'Plaza de San Francisco': {
+    title: '👋 Plaza de San Francisco',
+    desc: 'Lugar del Desfile de Despedida y Fallo del Jurado.',
+    tag: 'Despedida',
+    lat: 38.8785,
+    lng: -6.9715,
+    icon: '👋'
+  }
 };
 
 // =====================================================================
@@ -100,7 +98,7 @@ const GOOGLE_MAPS_API_KEY = 'AIzaSyC10qy-WNqjCRyn5633_vbnrnBL5dQiKUc';
 // =====================================================================
 let favoritos = [];
 let currentSection = 'inicio';
-let filteredEventos = [...EVENTOS];
+let filteredEventos = [];
 let map = null;
 let markers = {};
 let infoWindows = {};
@@ -144,6 +142,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // ---- Configurar UI según rol ----
   setupUserUI();
+
+  // ---- Cargar eventos desde Supabase ----
+  EVENTOS = await supabaseGetEventos();
+  filteredEventos = [...EVENTOS];
 
   renderUpcomingList();
   renderEventos(EVENTOS);
@@ -784,21 +786,34 @@ function renderAdminTable(eventos) {
   `).join('');
 }
 
-function deleteEventAdmin(id, btn) {
+async function deleteEventAdmin(id, btn) {
+  const exito = await supabaseDeleteEvento(id);
+  if (!exito) {
+    showToast('⚠️ Error al eliminar evento', true);
+    return;
+  }
+  
   const row = btn.closest('tr');
   row.style.opacity = '0';
   row.style.transition = 'opacity .3s';
   setTimeout(() => row.remove(), 350);
   showToast('🗑️ Evento eliminado');
-  document.getElementById('admin-total-eventos').textContent =
-    parseInt(document.getElementById('admin-total-eventos').textContent) - 1;
+  
+  const adminTotal = document.getElementById('admin-total-eventos');
+  if (adminTotal) {
+    adminTotal.textContent = parseInt(adminTotal.textContent) - 1;
+  }
+  
+  EVENTOS = EVENTOS.filter(e => e.id !== id);
+  filteredEventos = filteredEventos.filter(e => e.id !== id);
+  renderEventos(filteredEventos);
 }
 
 function openAddEventModal() {
   document.getElementById('modal-add-evento').classList.add('open');
 }
 
-function addEventFromAdmin() {
+async function addEventFromAdmin() {
   const grupo = document.getElementById('new-grupo').value.trim();
   const categoria = document.getElementById('new-categoria').value;
   const dia = document.getElementById('new-dia').value.trim();
@@ -811,15 +826,22 @@ function addEventFromAdmin() {
     return;
   }
 
-  const newEvento = {
-    id: EVENTOS.length + 1,
+  const { data: newEvento, error } = await supabaseAddEvento({
     nombre: grupo,
     categoria, dia, hora, escenario,
     descripcion: desc || 'Sin descripción.'
-  };
+  });
+
+  if (error || !newEvento) {
+    showToast('⚠️ Error al crear evento: ' + error, true);
+    return;
+  }
 
   EVENTOS.unshift(newEvento);
+  filteredEventos = [...EVENTOS];
   renderAdminTable(EVENTOS);
+  renderEventos(filteredEventos);
+  
   const num = document.getElementById('admin-total-eventos');
   if (num) num.textContent = parseInt(num.textContent) + 1;
 

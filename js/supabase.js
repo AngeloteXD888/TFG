@@ -301,6 +301,74 @@ async function supabaseGetAllComentarios() {
 }
 
 // =====================================================================
+// EVENTOS — CRUD
+// =====================================================================
+
+async function supabaseGetEventos() {
+  try {
+    const { data, error } = await supabaseClient
+      .from('evento')
+      .select('*')
+      .order('id', { ascending: true });
+
+    if (error) {
+      console.warn('Error al obtener eventos:', error.message);
+      return [];
+    }
+
+    return data || [];
+  } catch (err) {
+    console.error('supabaseGetEventos error:', err);
+    return [];
+  }
+}
+
+async function supabaseAddEvento(evento) {
+  try {
+    const { data, error } = await supabaseClient
+      .from('evento')
+      .insert({
+        nombre: evento.nombre,
+        categoria: evento.categoria,
+        dia: evento.dia,
+        hora: evento.hora,
+        escenario: evento.escenario,
+        descripcion: evento.descripcion
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.warn('Error al añadir evento:', error.message);
+      return { data: null, error: error.message };
+    }
+
+    return { data, error: null };
+  } catch (err) {
+    console.error('supabaseAddEvento error:', err);
+    return { data: null, error: 'Error inesperado.' };
+  }
+}
+
+async function supabaseDeleteEvento(id) {
+  try {
+    const { error } = await supabaseClient
+      .from('evento')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.warn('Error al eliminar evento:', error.message);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error('supabaseDeleteEvento error:', err);
+    return false;
+  }
+}
+
+// =====================================================================
 // HELPERS
 // =====================================================================
 
