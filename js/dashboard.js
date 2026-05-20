@@ -238,8 +238,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   EVENTOS = await supabaseGetEventos();
   ubicacionesList = await supabaseGetUbicaciones();
   populateEscenarioSelect('new-escenario');
-populateEscenarioSelect('edit-escenario');
+  populateEscenarioSelect('edit-escenario');
+  const totalUsuarios = await supabaseGetTotalUsuarios();
+  const usuariosEl = document.getElementById('admin-total-usuarios');
+  if (usuariosEl) usuariosEl.textContent = totalUsuarios;
   filteredEventos = [...EVENTOS];
+  const totalAgrupaciones = await supabaseGetTotalAgrupaciones();
+  const totalDias = 10;
+  const totalEscenarios = await supabaseGetTotalEscenarios();
+  document.getElementById('stat-agrupaciones').textContent = totalAgrupaciones;
+  document.getElementById('stat-dias').textContent = totalDias;
+  document.getElementById('stat-escenarios').textContent = totalEscenarios;
 
   renderUpcomingList();
   renderEventos(EVENTOS);

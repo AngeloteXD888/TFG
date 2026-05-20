@@ -411,6 +411,54 @@ async function supabaseGetUbicaciones() {
   }
 }
 
+async function supabaseGetTotalUsuarios() {
+  try {
+    const { count, error } = await supabaseClient
+      .from('persona')
+      .select('*', { count: 'exact', head: true });
+    if (error) {
+      console.warn('Error al contar usuarios:', error.message);
+      return 0;
+    }
+    return count || 0;
+  } catch (err) {
+    console.error('supabaseGetTotalUsuarios error:', err);
+    return 0;
+  }
+}
+
+async function supabaseGetTotalAgrupaciones() {
+  try {
+    const { count, error } = await supabaseClient
+      .from('agrupacion')
+      .select('*', { count: 'exact', head: true });
+    if (error) {
+      console.warn('Error al contar agrupaciones:', error.message);
+      return 0;
+    }
+    return count || 0;
+  } catch (err) {
+    console.error('supabaseGetTotalAgrupaciones error:', err);
+    return 0;
+  }
+}
+
+async function supabaseGetTotalEscenarios() {
+  try {
+    const { count, error } = await supabaseClient
+      .from('ubicacion')
+      .select('*', { count: 'exact', head: true });
+    if (error) {
+      console.warn('Error al contar escenarios:', error.message);
+      return 0;
+    }
+    return count || 0;
+  } catch (err) {
+    console.error('supabaseGetTotalEscenarios error:', err);
+    return 0;
+  }
+}
+
 // =====================================================================
 // HELPERS
 // =====================================================================
