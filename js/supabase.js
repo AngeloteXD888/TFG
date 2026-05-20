@@ -308,7 +308,7 @@ async function supabaseGetEventos() {
   try {
     const { data, error } = await supabaseClient
       .from('evento')
-      .select('*')
+      .select('*, ubicacion(nombre, direccion, latitud, longitud)')
       .order('id', { ascending: true });
 
     if (error) {
@@ -332,10 +332,10 @@ async function supabaseAddEvento(evento) {
         categoria: evento.categoria,
         dia: evento.dia,
         hora: evento.hora,
-        escenario: evento.escenario,
+        id_ubicacion: evento.id_ubicacion,
         descripcion: evento.descripcion
       })
-      .select()
+      .select('*, ubicacion(nombre, direccion, latitud, longitud)')
       .single();
 
     if (error) {
@@ -346,6 +346,33 @@ async function supabaseAddEvento(evento) {
     return { data, error: null };
   } catch (err) {
     console.error('supabaseAddEvento error:', err);
+    return { data: null, error: 'Error inesperado.' };
+  }
+}
+
+async function supabaseUpdateEvento(id, datos) {
+  try {
+    const { data, error } = await supabaseClient
+      .from('evento')
+      .update({
+        nombre: datos.nombre,
+        categoria: datos.categoria,
+        dia: datos.dia,
+        hora: datos.hora,
+        id_ubicacion: datos.id_ubicacion,
+        descripcion: datos.descripcion
+      })
+      .eq('id', id)
+      .select('*, ubicacion(nombre, direccion, latitud, longitud)')
+      .single();
+
+    if (error) {
+      console.warn('Error al actualizar evento:', error.message);
+      return { data: null, error: error.message };
+    }
+    return { data, error: null };
+  } catch (err) {
+    console.error('supabaseUpdateEvento error:', err);
     return { data: null, error: 'Error inesperado.' };
   }
 }
@@ -365,6 +392,22 @@ async function supabaseDeleteEvento(id) {
   } catch (err) {
     console.error('supabaseDeleteEvento error:', err);
     return false;
+  }
+}
+
+async function supabaseGetUbicaciones() {
+  try {
+    const { data, error } = await supabaseClient
+      .from('ubicacion')
+      .select('*');
+    if (error) {
+      console.warn('Error al obtener ubicaciones:', error.message);
+      return [];
+    }
+    return data || [];
+  } catch (err) {
+    console.error('supabaseGetUbicaciones error:', err);
+    return [];
   }
 }
 

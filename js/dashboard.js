@@ -13,9 +13,6 @@ let EVENTOS = [];
 // =====================================================================
 // ESCENARIOS CON COORDENADAS REALES DE BADAJOZ
 // =====================================================================
-// =====================================================================
-// ESCENARIOS CON COORDENADAS REALES DE BADAJOZ
-// =====================================================================
 const ESCENARIO_DATA = {
 
   'Teatro López de Ayala': {
@@ -95,7 +92,7 @@ const ESCENARIO_DATA = {
     desc: 'Desfile de Despedida.',
     tag: 'Despedida',
     lat: 38.876394,
-    lng:  -6.973452,
+    lng: -6.973452,
     icon: '👋'
   },
 
@@ -139,8 +136,8 @@ const ESCENARIO_DATA = {
     title: '🏘️ Cerro Gordo - Lady Smith',
     desc: 'Escenario carnavalesco en Cerro Gordo.',
     tag: 'Barriadas',
-    lat: 38.903164,
-    lng: -6.905857,
+    lat: 38.889367,
+    lng: -6.902655,
     icon: '🏘️'
   }
 
@@ -161,6 +158,42 @@ let map = null;
 let markers = {};
 let infoWindows = {};
 let currentUser = null;
+let ubicacionesList = [];
+
+// Convierte "2026-02-13" a "Jue 13 Feb"
+function dateToFechaTexto(fechaISO) {
+  if (!fechaISO) return '';
+  const fecha = new Date(fechaISO);
+  const opciones = { weekday: 'short', day: 'numeric', month: 'short' };
+  let fechaTexto = fecha.toLocaleDateString('es-ES', opciones);
+  // Eliminar punto después del día y capitalizar primera letra del día
+  fechaTexto = fechaTexto.replace('.', '').replace(/^\w/, c => c.toUpperCase());
+  return fechaTexto;
+}
+
+function populateEscenarioSelect(selectId) {
+  const select = document.getElementById(selectId);
+  if (!select) return;
+  select.innerHTML = '';
+  ubicacionesList.forEach(ubi => {
+    const option = document.createElement('option');
+    option.value = ubi.id_ubicacion;
+    option.textContent = ubi.nombre;
+    select.appendChild(option);
+  });
+}
+
+// Convierte "Jue 13 Feb" a "2026-02-13" (asume año 2026)
+function fechaTextoToDateInput(fechaTexto) {
+  if (!fechaTexto) return '';
+  const meses = { 'Ene':'01','Feb':'02','Mar':'03','Abr':'04','May':'05','Jun':'06','Jul':'07','Ago':'08','Sep':'09','Oct':'10','Nov':'11','Dic':'12' };
+  const partes = fechaTexto.split(' ');
+  if (partes.length < 3) return '';
+  const dia = partes[1].padStart(2, '0');
+  const mes = meses[partes[2]];
+  if (!mes) return '';
+  return `2026-${mes}-${dia}`;
+}
 
 // =====================================================================
 // INICIALIZACIÓN
@@ -203,13 +236,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // ---- Cargar eventos desde Supabase ----
   EVENTOS = await supabaseGetEventos();
+  ubicacionesList = await supabaseGetUbicaciones();
+  populateEscenarioSelect('new-escenario');
+populateEscenarioSelect('edit-escenario');
   filteredEventos = [...EVENTOS];
 
   renderUpcomingList();
   renderEventos(EVENTOS);
   renderAdminTable(EVENTOS);
+  renderEscenariosList();
   updateFavBadge();
   updateStatFav();
+  loadUbicacionesSelect()
 
   // ---- Cargar favoritos desde Supabase ----
   if (currentUser.id) {
@@ -224,6 +262,24 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderFavoritos();
   updateFavBadge();
   updateStatFav();
+
+  // ---- Cargar ubicaciones desde Supabase y actualizar datos de escenarios ----
+  try {
+    const ubicaciones = await supabaseGetUbicaciones();
+    if (Array.isArray(ubicaciones) && ubicaciones.length > 0) {
+      ubicaciones.forEach(ubi => {
+        if (ESCENARIO_DATA[ubi.nombre]) {
+          ESCENARIO_DATA[ubi.nombre].lat = ubi.latitud;
+          ESCENARIO_DATA[ubi.nombre].lng = ubi.longitud;
+        }
+      });
+    }
+  } catch (err) {
+    console.warn('Error cargando ubicaciones de Supabase:', err);
+  }
+
+  // Renderizar lista dinámica de escenarios en la barra lateral
+  renderEscenariosList();
 
   // Actualizar conteo admin
   const adminTotal = document.getElementById('admin-total-eventos');
@@ -531,7 +587,7 @@ function renderUpcomingList() {
       <div class="upcoming-divider"></div>
       <div class="upcoming-info">
         <strong>${e.nombre}</strong>
-        <span>📍 ${e.escenario}</span>
+        <span>📍 ${e.ubicacion?.nombre || 'Sin ubicación'}</span>
       </div>
       <div class="upcoming-cat">
         <span class="evento-tag tag--${e.categoria.replace(/\s/g, '')}">${e.categoria}</span>
@@ -577,7 +633,7 @@ function buildEventoCard(e) {
       <div class="evento-meta">
         <div class="evento-meta-row"><span>📅</span> ${e.dia}</div>
         <div class="evento-meta-row"><span>🕐</span> ${e.hora}</div>
-        <div class="evento-meta-row"><span>📍</span> ${e.escenario}</div>
+        <div class="evento-meta-row"><span>📍</span> ${e.ubicacion?.nombre || 'Sin ubicación'}</div>
       </div>
       <div class="evento-tags">
         <span class="evento-tag tag--${catClass}">${e.categoria}</span>
@@ -597,7 +653,7 @@ function applyFilters() {
   filteredEventos = EVENTOS.filter(e => {
     return (!cat || e.categoria === cat)
       && (!dia || e.dia === dia)
-      && (!esc || e.escenario === esc)
+      && (!esc || e.ubicacion?.nombre === esc)
       && (!search || e.nombre.toLowerCase().includes(search) || e.descripcion.toLowerCase().includes(search));
   });
 
@@ -693,7 +749,7 @@ function openEventoModal(id) {
       <div class="modal-evento-meta">
         <div class="modal-evento-meta-row"><span>📅</span> ${e.dia}</div>
         <div class="modal-evento-meta-row"><span>🕐</span> ${e.hora}</div>
-        <div class="modal-evento-meta-row"><span>📍</span> ${e.escenario}</div>
+        <div class="modal-evento-meta-row"><span>📍</span> ${e.ubicacion?.nombre || 'Sin ubicación'}</div>
       </div>
     </div>
     <p class="modal-evento-desc">${e.descripcion}</p>
@@ -702,8 +758,8 @@ function openEventoModal(id) {
               id="modal-fav-btn" style="${isFav ? 'background:linear-gradient(135deg,#991b1b,#ef4444)' : ''}">
         ${isFav ? '❤️ En favoritos' : '🤍 Añadir a favoritos'}
       </button>
-      <button class="btn-primary" style="background:rgba(59,130,246,0.2);border:1px solid rgba(59,130,246,0.4);color:#60a5fa" onclick="showSection('mapa');closeModal('modal-evento')">
-        📍 Ver en el mapa
+      <button class="btn-primary" style="background:rgba(59,130,246,0.2);border:1px solid rgba(59,130,246,0.4);color:#60a5fa" onclick="verEnMapa('${e.ubicacion?.nombre || ''}', ${e.id_ubicacion || 0})">
+        📍Ver en el mapa
       </button>
     </div>
 
@@ -729,6 +785,45 @@ function openEventoModal(id) {
 
   renderComments(e.id);
   document.getElementById('modal-evento').classList.add('open');
+}
+
+async function verEnMapa(nombreUbicacion, idUbicacion) {
+  closeModal('modal-evento');
+  let ubicacion = null;
+  if (idUbicacion) {
+    ubicacion = ubicacionesList.find(u => u.id_ubicacion === idUbicacion);
+  }
+  if (!ubicacion && nombreUbicacion) {
+    ubicacion = ubicacionesList.find(u => u.nombre === nombreUbicacion);
+  }
+  if (!ubicacion) {
+    showToast('❌ No se encontró la ubicación en el mapa', true);
+    return;
+  }
+  showSection('mapa');
+  setTimeout(() => {
+    centrarMapaEnUbicacion(
+      ubicacion.id_ubicacion,
+      ubicacion.nombre,
+      parseFloat(ubicacion.latitud),
+      parseFloat(ubicacion.longitud),
+      ubicacion.direccion || 'Ubicación carnavalera'
+    );
+    // Resaltar en la lista lateral
+    const items = document.querySelectorAll('.escenario-item');
+    items.forEach(item => {
+      if (item.getAttribute('data-id') == ubicacion.id_ubicacion) {
+        item.classList.add('escenario-item--active');
+        const iconSpan = item.querySelector('.esc-icon');
+        const icono = iconSpan ? iconSpan.textContent : '📍';
+        document.getElementById('esc-title').innerHTML = `${icono} ${ubicacion.nombre}`;
+        document.getElementById('esc-desc').innerHTML = ubicacion.direccion || 'Escenario del Carnaval de Badajoz';
+        document.getElementById('esc-tag').innerHTML = 'Ubicación';
+      } else {
+        item.classList.remove('escenario-item--active');
+      }
+    });
+  }, 300);
 }
 
 function updateModalFav(id) {
@@ -905,6 +1000,178 @@ function selectEscenariByKey(key) {
   if (items[idx]) items[idx].classList.add('escenario-item--active');
 }
 
+// Renderiza la lista lateral de escenarios usando los datos reales de la BD
+function renderEscenariosList() {
+  const container = document.getElementById('escenarios-list-container');
+  if (!container) return;
+  container.innerHTML = '';
+
+  ubicacionesList.forEach(ubi => {
+    // Icono según el nombre
+    let icono = '📍';
+    if (ubi.nombre.includes('Teatro')) icono = '🎭';
+    else if (ubi.nombre.includes('Recinto')) icono = '🎪';
+    else if (ubi.nombre.includes('Plaza Alta')) icono = '🏰';
+    else if (ubi.nombre.includes('Casco')) icono = '🏘️';
+    else if (ubi.nombre.includes('Plaza')) icono = '🏛️';
+    else if (ubi.nombre.includes('Avda')) icono = '🛣️';
+    else if (ubi.nombre.includes('Calle')) icono = '🚶';
+
+    const li = document.createElement('li');
+    li.className = 'escenario-item';
+    li.setAttribute('data-id', ubi.id_ubicacion);
+    li.setAttribute('data-nombre', ubi.nombre);
+    li.setAttribute('data-lat', ubi.latitud);
+    li.setAttribute('data-lng', ubi.longitud);
+    li.setAttribute('data-dir', ubi.direccion || '');
+
+    // Descripción corta para mostrar debajo del nombre
+    let descCorta = ubi.direccion ? ubi.direccion.split(',')[0] : '';
+    if (ubi.nombre === 'Casco Antiguo') descCorta = 'Pasacalles · Entierro de la Sardina';
+    if (ubi.nombre === 'Recinto Ferial') descCorta = 'Gran Desfile · Desfile Infantil';
+    if (ubi.nombre === 'Teatro López de Ayala') descCorta = 'COMBA · Concurso de Murgas';
+
+    li.innerHTML = `
+      <span class="esc-icon">${icono}</span>
+      <div>
+        <strong>${ubi.nombre}</strong>
+        <span>${descCorta}</span>
+      </div>
+    `;
+
+    // Evento click en el elemento de la lista
+    li.addEventListener('click', () => {
+      // Quitar clase activa de todos los elementos
+      document.querySelectorAll('.escenario-item').forEach(item => item.classList.remove('escenario-item--active'));
+      li.classList.add('escenario-item--active');
+
+      // Centrar mapa y mostrar InfoWindow
+      centrarMapaEnUbicacion(
+        ubi.id_ubicacion,
+        ubi.nombre,
+        parseFloat(ubi.latitud),
+        parseFloat(ubi.longitud),
+        ubi.direccion || 'Ubicación carnavalera'
+      );
+
+      // Actualizar el panel de información lateral (escenario-info)
+      document.getElementById('esc-title').innerHTML = `${icono} ${ubi.nombre}`;
+      document.getElementById('esc-desc').innerHTML = ubi.direccion || 'Escenario del Carnaval de Badajoz';
+      document.getElementById('esc-tag').innerHTML = 'Ubicación';
+    });
+
+    container.appendChild(li);
+  });
+
+  // Seleccionar el primer escenario por defecto
+  if (container.firstChild && ubicacionesList.length > 0) {
+    const primera = ubicacionesList[0];
+    container.firstChild.classList.add('escenario-item--active');
+    let icono = '📍';
+    if (primera.nombre.includes('Teatro')) icono = '🎭';
+    else if (primera.nombre.includes('Recinto')) icono = '🎪';
+    centrarMapaEnUbicacion(
+      primera.id_ubicacion,
+      primera.nombre,
+      parseFloat(primera.latitud),
+      parseFloat(primera.longitud),
+      primera.direccion || 'Ubicación carnavalera'
+    );
+    document.getElementById('esc-title').innerHTML = `${icono} ${primera.nombre}`;
+    document.getElementById('esc-desc').innerHTML = primera.direccion || 'Escenario del Carnaval de Badajoz';
+    document.getElementById('esc-tag').innerHTML = 'Ubicación';
+  }
+}
+
+// Centra el mapa y muestra un InfoWindow con estilo mejorado (fondo oscuro, texto claro)
+function centrarMapaEnUbicacion(id, nombre, lat, lng, direccion) {
+  if (!map) return;
+  map.panTo({ lat, lng });
+  map.setZoom(16);
+
+  Object.values(infoWindows).forEach(iw => iw.close());
+
+  // Eliminar marcador anterior si existe (para no acumular)
+  if (markers[nombre]) {
+    markers[nombre].setMap(null);
+  }
+
+  // Crear nuevo marcador
+  const marker = new google.maps.Marker({
+    position: { lat, lng },
+    map: map,
+    title: nombre,
+    animation: google.maps.Animation.DROP,
+    icon: {
+      url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg" width="46" height="46" viewBox="0 0 46 46">
+          <circle cx="23" cy="23" r="20" fill="#6c3bd1" stroke="#a855f7" stroke-width="3" opacity="0.95"/>
+          <text x="23" y="29" text-anchor="middle" font-size="18">📍</text>
+        </svg>
+      `)}`,
+      scaledSize: new google.maps.Size(46, 46),
+      anchor: new google.maps.Point(23, 23)
+    }
+  });
+
+  // InfoWindow con fondo blanco y texto negro
+  const info = new google.maps.InfoWindow({
+    content: `
+    <div style="
+      background: white;
+      color: black;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      border: 1px solid #ddd;
+      max-width: 260px;
+      text-align: left;
+    ">
+      <strong style="color: #6c3bd1; display: block; margin-bottom: 6px; font-size: 1rem;">${nombre}</strong>
+      <span style="color: #333; font-size: 12px; line-height: 1.4;">${direccion || ''}</span>
+    </div>
+  `
+  });
+
+  markers[nombre] = marker;
+  infoWindows[nombre] = info;
+
+  // Abrir InfoWindow
+  info.open(map, marker);
+  marker.setAnimation(google.maps.Animation.BOUNCE);
+  setTimeout(() => marker.setAnimation(null), 1500);
+
+  // Sincronizar: cuando se haga clic en este marcador, activar el elemento correspondiente en la lista
+  marker.addListener('click', () => {
+    // Cerrar otros InfoWindows
+    Object.values(infoWindows).forEach(iw => iw.close());
+    info.open(map, marker);
+
+    // Resaltar en la lista lateral el elemento con el mismo id
+    const items = document.querySelectorAll('.escenario-item');
+    items.forEach(item => {
+      if (item.getAttribute('data-id') == id) {
+        item.classList.add('escenario-item--active');
+        // Actualizar panel derecho
+        const iconSpan = item.querySelector('.esc-icon');
+        const icono = iconSpan ? iconSpan.textContent : '📍';
+        document.getElementById('esc-title').innerHTML = `${icono} ${nombre}`;
+        document.getElementById('esc-desc').innerHTML = direccion || 'Escenario del Carnaval de Badajoz';
+        document.getElementById('esc-tag').innerHTML = 'Ubicación';
+      } else {
+        item.classList.remove('escenario-item--active');
+      }
+    });
+
+    // Rebote
+    marker.setAnimation(google.maps.Animation.BOUNCE);
+    setTimeout(() => marker.setAnimation(null), 1500);
+  });
+}
+
 function updateEscenarioInfo(key) {
   const d = ESCENARIO_DATA[key];
   if (!d) return;
@@ -941,9 +1208,9 @@ function renderAdminTable(eventos) {
       <td><span class="evento-tag tag--${catClass(e.categoria)}">${e.categoria}</span></td>
       <td>${e.dia}</td>
       <td>${e.hora}</td>
-      <td>${e.escenario}</td>
+      <td>${e.ubicacion?.nombre || '-'}</td>
       <td>
-        <button class="admin-action-btn admin-action-btn--edit" onclick="showToast('✏️ Edición disponible en producción')">Editar</button>
+        <button class="admin-action-btn admin-action-btn--edit" onclick="openEditEventModal(${e.id})">Editar</button>
         <button class="admin-action-btn admin-action-btn--del" onclick="deleteEventAdmin(${e.id}, this)">Eliminar</button>
       </td>
     </tr>
@@ -980,9 +1247,11 @@ function openAddEventModal() {
 async function addEventFromAdmin() {
   const grupo = document.getElementById('new-grupo').value.trim();
   const categoria = document.getElementById('new-categoria').value;
-  const dia = document.getElementById('new-dia').value.trim();
+  const diaRaw = document.getElementById('new-dia').value;
+  if (!diaRaw) { showToast('Selecciona una fecha', true); return; }
+  const dia = dateToFechaTexto(diaRaw);
   const hora = document.getElementById('new-hora').value;
-  const escenario = document.getElementById('new-escenario').value;
+  const id_ubicacion = parseInt(document.getElementById('new-escenario').value);
   const desc = document.getElementById('new-desc').value.trim();
 
   if (!grupo || !dia || !hora) {
@@ -992,7 +1261,7 @@ async function addEventFromAdmin() {
 
   const { data: newEvento, error } = await supabaseAddEvento({
     nombre: grupo,
-    categoria, dia, hora, escenario,
+    categoria, dia, hora, id_ubicacion,
     descripcion: desc || 'Sin descripción.'
   });
 
@@ -1015,6 +1284,78 @@ async function addEventFromAdmin() {
   // Limpiar formulario
   ['new-grupo', 'new-dia', 'new-hora', 'new-desc'].forEach(id => {
     document.getElementById(id).value = '';
+  });
+}
+
+// Abrir modal de edición con los datos del evento precargados
+function openEditEventModal(id) {
+  const e = EVENTOS.find(ev => ev.id === id);
+  if (!e) return;
+  const fechaDate = fechaTextoToDateInput(e.dia);
+  document.getElementById('edit-dia').value = fechaDate;
+  document.getElementById('edit-evento-id').value = e.id;
+  document.getElementById('edit-grupo').value = e.nombre;
+  document.getElementById('edit-categoria').value = e.categoria;
+  document.getElementById('edit-dia').value = e.dia;
+  document.getElementById('edit-hora').value = e.hora;
+  document.getElementById('edit-desc').value = e.descripcion || '';
+
+  // Seleccionar el escenario correcto
+  if (e.id_ubicacion) {
+    document.getElementById('edit-escenario').value = e.id_ubicacion;
+  }
+
+  document.getElementById('modal-edit-evento').classList.add('open');
+}
+
+// Guardar cambios del evento editado
+async function saveEditEvento() {
+  const id = parseInt(document.getElementById('edit-evento-id').value);
+  const nombre = document.getElementById('edit-grupo').value.trim();
+  const categoria = document.getElementById('edit-categoria').value;
+  const diaRaw = document.getElementById('edit-dia').value;
+  const dia = dateToFechaTexto(diaRaw);
+  const hora = document.getElementById('edit-hora').value;
+  const id_ubicacion = parseInt(document.getElementById('edit-escenario').value);
+  const descripcion = document.getElementById('edit-desc').value.trim();
+
+  if (!nombre || !dia || !hora) {
+    showToast('Rellena los campos obligatorios', true);
+    return;
+  }
+
+  const { data, error } = await supabaseUpdateEvento(id, {
+    nombre, categoria, dia, hora, id_ubicacion,
+    descripcion: descripcion || 'Sin descripción.'
+  });
+
+  if (error || !data) {
+    showToast('Error al guardar cambios: ' + error, true);
+    return;
+  }
+
+  // Actualizar en el array local
+  const idx = EVENTOS.findIndex(ev => ev.id === id);
+  if (idx !== -1) EVENTOS[idx] = data;
+  filteredEventos = [...EVENTOS];
+
+  renderAdminTable(EVENTOS);
+  renderEventos(filteredEventos);
+
+  closeModal('modal-edit-evento');
+  showToast('Evento actualizado correctamente');
+}
+
+async function loadUbicacionesSelect() {
+  const ubicaciones = await supabaseGetUbicaciones();
+  const select = document.getElementById('new-escenario');
+  if (!select) return;
+  select.innerHTML = '';
+  ubicaciones.forEach(ubi => {
+    const option = document.createElement('option');
+    option.value = ubi.id_ubicacion;
+    option.textContent = ubi.nombre;
+    select.appendChild(option);
   });
 }
 

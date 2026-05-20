@@ -582,22 +582,35 @@ body {
 }
 .btn-admin-add:hover { background: rgba(124,58,237,0.35); }
 
-.admin-table-wrap { overflow-x: auto; max-height: 380px; overflow-y: auto; }
+.admin-table-wrap {
+  overflow-x: auto;
+  max-height: 380px;
+  overflow-y: auto;
+  position: relative;
+}
+
+.admin-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
 .admin-table {
   width: 100%;
   border-collapse: collapse;
   font-size: .82rem;
 }
+
 .admin-table th {
-  background: rgba(255,255,255,0.04);
+  background: #0f0f1e;
   padding: .75rem 1rem;
   text-align: left;
   font-size: .75rem;
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: .06em;
-  position: sticky; top: 0;
 }
+
 .admin-table td {
   padding: .75rem 1rem;
   border-top: 1px solid var(--card-border);
@@ -1058,4 +1071,57 @@ body {
   .stats-row { grid-template-columns: 1fr 1fr; }
   .categories-row { gap: .5rem; }
   .cat-chip { font-size: .78rem; padding: .45rem .9rem; }
+}
+
+
+/* Estilos para el InfoWindow de Google Maps - fondo blanco y texto negro */
+.gm-style-iw-c {
+  background: white !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+}
+.gm-style-iw-tc {
+  display: none; /* Oculta la pequeña pestaña triangular */
+}
+.gm-style-iw button {
+  background: white !important;
+  color: #333 !important;
+  border-radius: 50% !important;
+  top: 4px !important;
+  right: 4px !important;
+}
+.gm-style-iw button:hover {
+  background: #f0f0f0 !important;
+}
+
+/* Mejora visual de selects en formularios */
+.form-group select {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 0.9rem;
+  padding: 0.6rem 0.9rem;
+  width: 100%;
+  cursor: pointer;
+  appearance: none; /* Elimina estilo nativo para personalizar */
+  -webkit-appearance: none;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%23a855f7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+  background-repeat: no-repeat;
+  background-position: right 0.8rem center;
+  background-size: 1rem;
+}
+
+.form-group select option {
+  background: var(--bg-3);
+  color: var(--text);
+  padding: 0.5rem;
+}
+
+/* En móviles, para evitar zoom automático en iOS */
+@media (max-width: 768px) {
+  .form-group select {
+    font-size: 16px;
+  }
 }

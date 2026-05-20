@@ -237,30 +237,9 @@
       <div class="mapa-layout">
         <div class="mapa-sidebar">
           <h3>Escenarios</h3>
-          <ul class="escenarios-list">
-            <li class="escenario-item escenario-item--active" onclick="selectEscenario(this, 'recinto')">
-              <span class="esc-icon">🎪</span>
-              <div>
-                <strong>Recinto Ferial</strong>
-                <span>Gran Desfile · Desfile Infantil</span>
-              </div>
-            </li>
-            <li class="escenario-item" onclick="selectEscenario(this, 'teatro')">
-              <span class="esc-icon">🎭</span>
-              <div>
-                <strong>Teatro López de Ayala</strong>
-                <span>COMBA · Concurso de Murgas</span>
-              </div>
-            </li>
-            <li class="escenario-item" onclick="selectEscenario(this, 'casco')">
-              <span class="esc-icon">🏘️</span>
-              <div>
-                <strong>Casco Antiguo</strong>
-                <span>Pasacalles · Entierro de la Sardina</span>
-              </div>
-            </li>
+          <ul class="escenarios-list" id="escenarios-list-container">
+            <!-- Aquí se cargarán dinámicamente todas las ubicaciones desde Supabase -->
           </ul>
-
           <div class="escenario-info" id="escenario-info">
             <h4 id="esc-title">🎪 Recinto Ferial</h4>
             <p id="esc-desc">El mayor escenario del Carnaval. Sede del Gran Desfile del Carnaval y del Desfile Infantil.
@@ -396,7 +375,7 @@
           </div>
           <div class="form-group">
             <label for="new-dia">Día</label>
-            <input type="text" id="new-dia" placeholder="Ej: Sáb 15 Feb" />
+            <input type="date" id="new-dia" />
           </div>
         </div>
         <div class="form-row">
@@ -407,9 +386,21 @@
           <div class="form-group">
             <label for="new-escenario">Escenario</label>
             <select id="new-escenario">
-              <option>Recinto Ferial</option>
-              <option>Teatro López de Ayala</option>
-              <option>Casco Antiguo</option>
+              <option value="78">Plaza Alta</option>
+              <option value="79">Plaza de la Soledad</option>
+              <option value="80">Calle Francisco Pizarro</option>
+              <option value="81">Plaza de España</option>
+              <option value="82">Plaza Conquistadores</option>
+              <option value="83">Plaza San Atón</option>
+              <option value="84">Plaza López de Ayala</option>
+              <option value="85">Teatro López de Ayala</option>
+              <option value="86">Plaza de San Francisco</option>
+              <option value="87">C/ Lady Smith (Cerro Gordo)</option>
+              <option value="88">Entrepuentes</option>
+              <option value="89">Avda. Santa Marina</option>
+              <option value="90">Avda. Ricardo Carapeto</option>
+              <option value="91">Recinto Ferial</option>
+              <option value="92">Casco Antiguo</option>
             </select>
           </div>
         </div>
@@ -419,6 +410,53 @@
         </div>
         <button class="btn-primary" style="width:100%;margin-top:1rem" onclick="addEventFromAdmin()">Guardar evento
           ✓</button>
+      </div>
+    </div>
+  </div>
+  <!-- ========== MODAL: EDITAR EVENTO (Admin) ========== -->
+  <div class="modal-overlay" id="modal-edit-evento" onclick="closeModal('modal-edit-evento')">
+    <div class="modal-card modal-card--small" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeModal('modal-edit-evento')">✕</button>
+      <div class="modal-body">
+        <h2>Editar Evento</h2>
+        <input type="hidden" id="edit-evento-id" />
+        <div class="form-group">
+          <label for="edit-grupo">Nombre del grupo</label>
+          <input type="text" id="edit-grupo" placeholder="Nombre de la agrupación" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="edit-categoria">Categoría</label>
+            <select id="edit-categoria">
+              <option>Murga</option>
+              <option>Comparsa</option>
+              <option>Artefacto</option>
+              <option>Grupo Animación</option>
+              <option>Desfile</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="edit-dia">Día</label>
+            <input type="date" id="edit-dia" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="edit-hora">Hora</label>
+            <input type="time" id="edit-hora" />
+          </div>
+          <div class="form-group">
+            <label for="edit-escenario">Escenario</label>
+            <select id="edit-escenario"></select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="edit-desc">Descripción</label>
+          <textarea id="edit-desc" placeholder="Descripción del grupo o evento..."></textarea>
+        </div>
+        <button class="btn-primary" style="width:100%;margin-top:1rem" onclick="saveEditEvento()">
+          Guardar cambios
+        </button>
       </div>
     </div>
   </div>
