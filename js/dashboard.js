@@ -253,27 +253,70 @@ document.addEventListener('DOMContentLoaded', async () => {
   currentUser = JSON.parse(storedUser);
 
   // ---- Verificar sesión con Supabase ----
-  try {
-    const { user, perfil } = await supabaseGetUser();
-    if (!user) {
-      // Sesión expirada, redirigir
-      localStorage.removeItem('cbdj-user');
+try {
+  const { user, perfil } = await supabaseGetUser();
+
+  if (!user) {
+    // No hay sesión activa en Supabase, redirigir al login
+    localStorage.removeItem('cbdj-user');
+    window.location.href = 'auth.html';
+    return;
+  }
+
+  // Si el usuario existe pero no tiene perfil en tabla 'persona' (caso Google), lo creamos
+  let userPerfil = perfil;
+  if (user && !userPerfil) {
+    console.log('Usuario autenticado sin perfil. Creando perfil automáticamente...');
+    const nombre = user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0];
+    const { error: insertError } = await supabaseClient
+      .from('persona')
+      .insert([{
+        id_persona: user.id,
+        nombre: nombre,
+        email: user.email,
+        contrasena: 'oauth_google',
+        fecha_registro: new Date().toISOString(),
+        rol: 'usuario'
+      }]);
+
+    if (insertError) {
+      console.error('Error al crear perfil:', insertError);
+      showToast('Error al crear tu perfil. Contacta con soporte.', true);
       window.location.href = 'auth.html';
       return;
     }
-    // Actualizar datos del usuario con los de Supabase
-    if (perfil) {
-      currentUser = {
-        id: user.id,
-        name: perfil.nombre || currentUser.name,
-        email: user.email,
-        role: perfil.rol === 'admin' ? 'admin' : 'user'
-      };
-      localStorage.setItem('cbdj-user', JSON.stringify(currentUser));
-    }
-  } catch (err) {
-    console.warn('No se pudo verificar la sesión con Supabase, usando datos locales:', err);
+
+    // Recuperar el perfil recién creado
+    const { data: nuevoPerfil } = await supabaseClient
+      .from('persona')
+      .select('*')
+      .eq('id_persona', user.id)
+      .single();
+    userPerfil = nuevoPerfil;
   }
+
+  // Si aún no hay perfil (no debería ocurrir), redirigir
+  if (!userPerfil) {
+    window.location.href = 'auth.html';
+    return;
+  }
+
+  // Construir objeto currentUser
+  currentUser = {
+    id: user.id,
+    name: userPerfil.nombre,
+    email: user.email,
+    role: userPerfil.rol === 'admin' ? 'admin' : 'user'
+  };
+
+  // Guardar en localStorage para que la app lo use en futuras cargas
+  localStorage.setItem('cbdj-user', JSON.stringify(currentUser));
+
+} catch (err) {
+  console.warn('Error al verificar sesión con Supabase:', err);
+  window.location.href = 'auth.html';
+  return;
+}
 
   // ---- Configurar UI según rol ----
   setupUserUI();

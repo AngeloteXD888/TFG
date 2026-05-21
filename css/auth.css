@@ -628,3 +628,51 @@ body {
   .form-row { grid-template-columns: 1fr; }
   .auth-header { padding: 14px 20px; }
 }
+
+
+/* Ajuste de iconos SVG */
+.input-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.input-icon svg {
+  stroke: var(--text-muted);
+  transition: stroke 0.2s;
+}
+.input-wrap input:focus + .input-icon svg,
+.input-wrap input:focus ~ .input-icon svg {
+  stroke: var(--purple-light);
+}
+.perk-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.perk-icon svg {
+  stroke: var(--purple-light);
+}
+.btn-icon svg {
+  stroke: white;
+}
+
+/* Ajuste suave para el color de los SVG en botones toggle-pass y en input-icon */
+.toggle-pass svg,
+.input-icon svg {
+  stroke: #b8a9d9;  /* Color más claro que el texto secundario original (#b8a9d9) */
+  transition: stroke 0.2s ease;
+}
+
+.toggle-pass:hover svg {
+  stroke: #d1c4e9;  /* Aún más claro al pasar el ratón */
+}
+
+.input-wrap input:focus ~ .input-icon svg,
+.input-wrap input:focus + .input-icon svg {
+  stroke: var(--purple-light); /* Mantiene el morado al focus del input */
+}
+
+/* Opcional: si quieres que el ojo tachado tenga el mismo tono */
+.toggle-pass svg {
+  stroke-width: 1.5;
+}

@@ -93,28 +93,6 @@ async function supabaseSignIn(email, password) {
 }
 
 /**
- * Iniciar sesión con Google OAuth.
- */
-async function supabaseSignInWithGoogle() {
-  try {
-    const { data, error } = await supabaseClient.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: window.location.origin + '/app.html'
-      }
-    });
-
-    if (error) {
-      return { error: traducirError(error.message) };
-    }
-    return { data, error: null };
-  } catch (err) {
-    console.error('supabaseSignInWithGoogle error:', err);
-    return { error: 'Error al conectar con Google.' };
-  }
-}
-
-/**
  * Cerrar sesión.
  */
 async function supabaseSignOut() {
