@@ -160,6 +160,50 @@ let infoWindows = {};
 let currentUser = null;
 let ubicacionesList = [];
 
+// =====================================================================
+// FUNCIÓN PARA GENERAR SVG
+// =====================================================================
+function getSvgIcon(tipo, className = 'icon-svg') {
+  const baseClass = className;
+  switch (tipo) {
+    case 'chat':
+      return `<svg class="${baseClass}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" /></svg>`;
+    case 'map':
+      return `<svg class="${baseClass}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" /></svg>`;
+    case 'calendar':
+      return `<svg class="${baseClass}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>`;
+    case 'trash':
+      return `<svg class="${baseClass}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" /></svg>`;
+    case 'home':
+      return `<svg class="${baseClass}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" /></svg>`;
+    case 'shield':
+      return `<svg class="${baseClass}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" /></svg>`;
+    case 'pin':
+      return `<svg class="${baseClass}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" /></svg>`;
+    case 'logout':
+      return `<svg class="${baseClass}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" /></svg>`;
+    case 'users':
+      return `<svg class="${baseClass}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" /></svg>`;
+    case 'heart-outline':
+      return `<svg class="${baseClass}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" /></svg>`;
+    case 'heart-solid':
+      return `<svg class="${baseClass}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" /></svg>`;
+    case 'calendar-alt':
+      return `<svg class="${baseClass}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" /></svg>`;
+    case 'users':
+      return `<svg class="${baseClass}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" /></svg>`;
+    case 'arrow-right':
+      return `<svg class="${baseClass}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" /></svg>`;
+    case 'pencil':
+      return `<svg class="${baseClass}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>`;
+    case 'check':
+      return `<svg class="${baseClass}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>`;
+    default:
+      return '';
+  }
+}
+
 // Convierte "2026-02-13" a "Jue 13 Feb"
 function dateToFechaTexto(fechaISO) {
   if (!fechaISO) return '';
@@ -240,6 +284,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   populateEscenarioSelect('new-escenario');
   populateEscenarioSelect('edit-escenario');
   const totalUsuarios = await supabaseGetTotalUsuarios();
+  const totalAgrupacionesAdmin = await supabaseGetTotalAgrupaciones();
+  const agrupacionesAdminEl = document.getElementById('admin-total-agrupaciones');
+  if (agrupacionesAdminEl) agrupacionesAdminEl.textContent = totalAgrupacionesAdmin;
   const usuariosEl = document.getElementById('admin-total-usuarios');
   if (usuariosEl) usuariosEl.textContent = totalUsuarios;
   filteredEventos = [...EVENTOS];
@@ -253,7 +300,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderUpcomingList();
   renderEventos(EVENTOS);
   renderAdminTable(EVENTOS);
-  renderEscenariosList();
   updateFavBadge();
   updateStatFav();
   loadUbicacionesSelect()
@@ -404,36 +450,22 @@ function initMap() {
       title: esc.title.replace(/^[^\s]+\s/, ''),
       animation: google.maps.Animation.DROP,
 
-      icon: {
-        url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
-          <svg xmlns="http://www.w3.org/2000/svg"
-               width="46"
-               height="46"
-               viewBox="0 0 46 46">
-
-            <circle
-              cx="23"
-              cy="23"
-              r="20"
-              fill="#6c3bd1"
-              stroke="#a855f7"
-              stroke-width="3"
-              opacity="0.95"/>
-
-            <text
-              x="23"
-              y="29"
-              text-anchor="middle"
-              font-size="18">
-              ${markerEmoji}
-            </text>
-
-          </svg>
-        `)}`,
-
-        scaledSize: new google.maps.Size(46, 46),
-        anchor: new google.maps.Point(23, 23)
-      }
+    icon: {
+      url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="48" height="48">
+          <defs>
+            <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="2" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.5"/>
+            </filter>
+          </defs>
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" 
+                fill="#7c3aed" stroke="#a855f7" stroke-width="1.5" filter="url(#shadow)"/>
+          <circle cx="12" cy="9" r="3" fill="white"/>
+        </svg>
+      `)}`,
+      scaledSize: new google.maps.Size(48, 48),
+      anchor: new google.maps.Point(24, 48)  // La punta de la chincheta está abajo
+    }
     });
 
     // ---------------------------------------------------------------
@@ -585,7 +617,6 @@ function toggleSidebar() {
 function renderUpcomingList() {
   const container = document.getElementById('upcoming-list');
   if (!container) return;
-  // Mostrar los desfiles principales
   const items = EVENTOS.filter(e => e.categoria === 'Desfile').slice(0, 5);
   container.innerHTML = items.map(e => `
     <div class="upcoming-item" onclick="openEventoModal(${e.id})">
@@ -596,7 +627,7 @@ function renderUpcomingList() {
       <div class="upcoming-divider"></div>
       <div class="upcoming-info">
         <strong>${e.nombre}</strong>
-        <span>📍 ${e.ubicacion?.nombre || 'Sin ubicación'}</span>
+        <span>${getSvgIcon('pin')} ${e.ubicacion?.nombre || 'Sin ubicación'}</span>
       </div>
       <div class="upcoming-cat">
         <span class="evento-tag tag--${e.categoria.replace(/\s/g, '')}">${e.categoria}</span>
@@ -634,15 +665,15 @@ function buildEventoCard(e) {
       <div class="evento-card-header">
         <span class="evento-title">${e.nombre}</span>
         <button class="fav-btn ${isFav ? 'active' : ''}" 
-                title="${isFav ? 'Quitar de favoritos' : 'Añadir a favoritos'}"
-                onclick="event.stopPropagation(); toggleFav(${e.id}, this)">
-          ${isFav ? '❤️' : '🤍'}
+        title="${isFav ? 'Quitar de favoritos' : 'Añadir a favoritos'}"
+        onclick="event.stopPropagation(); toggleFav(${e.id}, this)">
+        ${isFav ? getSvgIcon('heart-solid') : getSvgIcon('heart-outline')}
         </button>
       </div>
       <div class="evento-meta">
-        <div class="evento-meta-row"><span>📅</span> ${e.dia}</div>
-        <div class="evento-meta-row"><span>🕐</span> ${e.hora}</div>
-        <div class="evento-meta-row"><span>📍</span> ${e.ubicacion?.nombre || 'Sin ubicación'}</div>
+        <div class="evento-meta-row">${getSvgIcon('calendar')} ${e.dia}</div>
+        <div class="evento-meta-row">${getSvgIcon('pin')} ${e.hora}</div>
+        <div class="evento-meta-row">${getSvgIcon('map')} ${e.ubicacion?.nombre || 'Sin ubicación'}</div>
       </div>
       <div class="evento-tags">
         <span class="evento-tag tag--${catClass}">${e.categoria}</span>
@@ -688,25 +719,23 @@ function filterByCategory(cat) {
 // =====================================================================
 async function toggleFav(id, btn) {
   if (!currentUser || !currentUser.id) {
-    showToast('⚠️ Inicia sesión para guardar favoritos', true);
+    showToast('Inicia sesión para guardar favoritos', true);
     return;
   }
 
   const idx = favoritos.indexOf(id);
   if (idx === -1) {
-    // Añadir a favoritos
-    btn.textContent = '❤️';
-    btn.classList.add('active');
     favoritos.push(id);
-    showToast('❤️ Añadido a favoritos');
+    showToast('Añadido a favoritos');
     await supabaseAddFavorito(currentUser.id, id);
+    btn.innerHTML = getSvgIcon('heart-solid');
+    btn.classList.add('active');
   } else {
-    // Quitar de favoritos
-    btn.textContent = '🤍';
-    btn.classList.remove('active');
     favoritos.splice(idx, 1);
-    showToast('💔 Eliminado de favoritos');
+    showToast('Eliminado de favoritos');
     await supabaseRemoveFavorito(currentUser.id, id);
+    btn.innerHTML = getSvgIcon('heart-outline');
+    btn.classList.remove('active');
   }
   updateFavBadge();
   updateStatFav();
@@ -750,47 +779,41 @@ function openEventoModal(id) {
   const catClass = e.categoria.replace(/\s/g, '');
   const body = document.getElementById('modal-evento-body');
   body.innerHTML = `
-    <div class="modal-evento-header">
-      <div class="modal-evento-title">${e.nombre}</div>
-      <div class="evento-tags" style="margin-bottom:.75rem">
-        <span class="evento-tag tag--${catClass}">${e.categoria}</span>
-      </div>
-      <div class="modal-evento-meta">
-        <div class="modal-evento-meta-row"><span>📅</span> ${e.dia}</div>
-        <div class="modal-evento-meta-row"><span>🕐</span> ${e.hora}</div>
-        <div class="modal-evento-meta-row"><span>📍</span> ${e.ubicacion?.nombre || 'Sin ubicación'}</div>
+  <div class="modal-evento-header">
+    <div class="modal-evento-title">${e.nombre}</div>
+    <div class="evento-tags" style="margin-bottom:.75rem">
+      <span class="evento-tag tag--${catClass}">${e.categoria}</span>
+    </div>
+    <div class="modal-evento-meta">
+      <div class="modal-evento-meta-row">${getSvgIcon('calendar')} ${e.dia}</div>
+      <div class="modal-evento-meta-row">${getSvgIcon('pin')} ${e.hora}</div>
+      <div class="modal-evento-meta-row">${getSvgIcon('map')} ${e.ubicacion?.nombre || 'Sin ubicación'}</div>
+    </div>
+  </div>
+  <p class="modal-evento-desc">${e.descripcion}</p>
+  <div style="margin-top:1.5rem;display:flex;gap:.75rem;flex-wrap:wrap">
+    <button class="btn-primary" onclick="toggleFav(${e.id}, document.getElementById('modal-fav-btn')); updateModalFav(${e.id})" 
+            id="modal-fav-btn" style="${isFav ? 'background:linear-gradient(135deg,#991b1b,#ef4444)' : ''}">
+      ${isFav ? getSvgIcon('heart-solid') : getSvgIcon('heart-outline')} ${isFav ? 'En favoritos' : 'Añadir a favoritos'}
+    </button>
+    <button class="btn-primary" style="background:rgba(59,130,246,0.2);border:1px solid rgba(59,130,246,0.4);color:#60a5fa" onclick="verEnMapa('${e.ubicacion?.nombre || ''}', ${e.id_ubicacion || 0})">
+      ${getSvgIcon('map')} Ver en el mapa
+    </button>
+  </div>
+  <div class="comments-section">
+    <div class="comments-header">
+      <h3>${getSvgIcon('chat')} Comentarios</h3>
+      <span class="comments-count" id="comments-count-${e.id}">0</span>
+    </div>
+    <div class="comment-form">
+      <div class="comment-form-avatar">${currentUser ? currentUser.name.charAt(0).toUpperCase() : 'U'}</div>
+      <div class="comment-form-input-wrap">
+        <textarea id="comment-input-${e.id}" class="comment-textarea" placeholder="Escribe un comentario..." rows="2"></textarea>
+        <button class="comment-submit-btn" onclick="addComment(${e.id})">${getSvgIcon('chat')} Publicar</button>
       </div>
     </div>
-    <p class="modal-evento-desc">${e.descripcion}</p>
-    <div style="margin-top:1.5rem;display:flex;gap:.75rem;flex-wrap:wrap">
-      <button class="btn-primary" onclick="toggleFav(${e.id}, document.getElementById('modal-fav-btn')); updateModalFav(${e.id})" 
-              id="modal-fav-btn" style="${isFav ? 'background:linear-gradient(135deg,#991b1b,#ef4444)' : ''}">
-        ${isFav ? '❤️ En favoritos' : '🤍 Añadir a favoritos'}
-      </button>
-      <button class="btn-primary" style="background:rgba(59,130,246,0.2);border:1px solid rgba(59,130,246,0.4);color:#60a5fa" onclick="verEnMapa('${e.ubicacion?.nombre || ''}', ${e.id_ubicacion || 0})">
-        📍Ver en el mapa
-      </button>
-    </div>
-
-    <!-- SECCIÓN DE COMENTARIOS -->
-    <div class="comments-section">
-      <div class="comments-header">
-        <h3>💬 Comentarios</h3>
-        <span class="comments-count" id="comments-count-${e.id}">0</span>
-      </div>
-
-      <div class="comment-form">
-        <div class="comment-form-avatar">${currentUser ? currentUser.name.charAt(0).toUpperCase() : 'U'}</div>
-        <div class="comment-form-input-wrap">
-          <textarea id="comment-input-${e.id}" class="comment-textarea" placeholder="Escribe un comentario..." rows="2"></textarea>
-          <button class="comment-submit-btn" onclick="addComment(${e.id})">Publicar</button>
-        </div>
-      </div>
-
-      <div class="comments-list" id="comments-list-${e.id}">
-        <!-- JS inserta aquí -->
-      </div>
-    </div>`;
+    <div class="comments-list" id="comments-list-${e.id}"></div>
+  </div>`;
 
   renderComments(e.id);
   document.getElementById('modal-evento').classList.add('open');
@@ -851,12 +874,12 @@ async function addComment(eventoId) {
   if (!input) return;
   const text = input.value.trim();
   if (!text) {
-    showToast('⚠️ Escribe un comentario antes de publicar', true);
+    showToast('Escribe un comentario antes de publicar', true);
     return;
   }
 
   if (!currentUser || !currentUser.id) {
-    showToast('⚠️ Inicia sesión para comentar', true);
+    showToast('Inicia sesión para comentar', true);
     return;
   }
 
@@ -870,12 +893,12 @@ async function addComment(eventoId) {
 
   input.value = '';
   renderComments(eventoId);
-  showToast('💬 Comentario publicado');
+  showToast('Comentario publicado');
 }
 
 async function deleteComment(eventoId, commentId) {
   if (!currentUser || currentUser.role !== 'admin') {
-    showToast('⛔ Solo el administrador puede eliminar comentarios', true);
+    showToast('Solo el administrador puede eliminar comentarios', true);
     return;
   }
 
@@ -883,9 +906,9 @@ async function deleteComment(eventoId, commentId) {
   if (success) {
     renderComments(eventoId);
     renderModerationPanel();
-    showToast('🗑️ Comentario eliminado');
+    showToast('Comentario eliminado');
   } else {
-    showToast('❌ Error al eliminar comentario', true);
+    showToast('Error al eliminar comentario', true);
   }
 }
 
@@ -954,7 +977,7 @@ async function renderModerationPanel() {
   if (allComments.length === 0) {
     container.innerHTML = `
       <div class="moderation-empty">
-        <span>💬</span>
+        <span>${getSvgIcon('chat')}</span>
         <p>No hay comentarios para moderar.</p>
       </div>`;
     return;
@@ -979,7 +1002,7 @@ async function renderModerationPanel() {
           <p class="moderation-item-text">${escapeHtml(c.contenido)}</p>
           <span class="moderation-item-date">${timeStr}</span>
         </div>
-        <button class="admin-action-btn admin-action-btn--del" onclick="deleteComment(${c.id_evento}, ${c.id_publicacion})">Eliminar</button>
+        <button class="admin-action-btn admin-action-btn--del" onclick="deleteComment(${c.id_evento}, ${c.id_publicacion})">${getSvgIcon('trash')} Eliminar</button>
       </div>`;
   }).join('');
 }
@@ -1014,18 +1037,12 @@ function renderEscenariosList() {
   const container = document.getElementById('escenarios-list-container');
   if (!container) return;
   container.innerHTML = '';
-
   ubicacionesList.forEach(ubi => {
-    // Icono según el nombre
-    let icono = '📍';
-    if (ubi.nombre.includes('Teatro')) icono = '🎭';
-    else if (ubi.nombre.includes('Recinto')) icono = '🎪';
-    else if (ubi.nombre.includes('Plaza Alta')) icono = '🏰';
-    else if (ubi.nombre.includes('Casco')) icono = '🏘️';
-    else if (ubi.nombre.includes('Plaza')) icono = '🏛️';
-    else if (ubi.nombre.includes('Avda')) icono = '🛣️';
-    else if (ubi.nombre.includes('Calle')) icono = '🚶';
-
+    let iconoSvg = getSvgIcon('pin');
+    if (ubi.nombre.includes('Teatro')) iconoSvg = getSvgIcon('map');
+    else if (ubi.nombre.includes('Recinto')) iconoSvg = getSvgIcon('home');
+    else if (ubi.nombre.includes('Plaza Alta')) iconoSvg = getSvgIcon('map');
+    else if (ubi.nombre.includes('Casco')) iconoSvg = getSvgIcon('home');
     const li = document.createElement('li');
     li.className = 'escenario-item';
     li.setAttribute('data-id', ubi.id_ubicacion);
@@ -1033,60 +1050,35 @@ function renderEscenariosList() {
     li.setAttribute('data-lat', ubi.latitud);
     li.setAttribute('data-lng', ubi.longitud);
     li.setAttribute('data-dir', ubi.direccion || '');
-
-    // Descripción corta para mostrar debajo del nombre
     let descCorta = ubi.direccion ? ubi.direccion.split(',')[0] : '';
     if (ubi.nombre === 'Casco Antiguo') descCorta = 'Pasacalles · Entierro de la Sardina';
     if (ubi.nombre === 'Recinto Ferial') descCorta = 'Gran Desfile · Desfile Infantil';
     if (ubi.nombre === 'Teatro López de Ayala') descCorta = 'COMBA · Concurso de Murgas';
-
     li.innerHTML = `
-      <span class="esc-icon">${icono}</span>
+      <span class="esc-icon">${iconoSvg}</span>
       <div>
         <strong>${ubi.nombre}</strong>
         <span>${descCorta}</span>
       </div>
     `;
-
-    // Evento click en el elemento de la lista
     li.addEventListener('click', () => {
-      // Quitar clase activa de todos los elementos
       document.querySelectorAll('.escenario-item').forEach(item => item.classList.remove('escenario-item--active'));
       li.classList.add('escenario-item--active');
-
-      // Centrar mapa y mostrar InfoWindow
-      centrarMapaEnUbicacion(
-        ubi.id_ubicacion,
-        ubi.nombre,
-        parseFloat(ubi.latitud),
-        parseFloat(ubi.longitud),
-        ubi.direccion || 'Ubicación carnavalera'
-      );
-
-      // Actualizar el panel de información lateral (escenario-info)
-      document.getElementById('esc-title').innerHTML = `${icono} ${ubi.nombre}`;
+      centrarMapaEnUbicacion(ubi.id_ubicacion, ubi.nombre, parseFloat(ubi.latitud), parseFloat(ubi.longitud), ubi.direccion || 'Ubicación carnavalera');
+      document.getElementById('esc-title').innerHTML = `${iconoSvg} ${ubi.nombre}`;
       document.getElementById('esc-desc').innerHTML = ubi.direccion || 'Escenario del Carnaval de Badajoz';
       document.getElementById('esc-tag').innerHTML = 'Ubicación';
     });
-
     container.appendChild(li);
   });
-
-  // Seleccionar el primer escenario por defecto
   if (container.firstChild && ubicacionesList.length > 0) {
     const primera = ubicacionesList[0];
     container.firstChild.classList.add('escenario-item--active');
-    let icono = '📍';
-    if (primera.nombre.includes('Teatro')) icono = '🎭';
-    else if (primera.nombre.includes('Recinto')) icono = '🎪';
-    centrarMapaEnUbicacion(
-      primera.id_ubicacion,
-      primera.nombre,
-      parseFloat(primera.latitud),
-      parseFloat(primera.longitud),
-      primera.direccion || 'Ubicación carnavalera'
-    );
-    document.getElementById('esc-title').innerHTML = `${icono} ${primera.nombre}`;
+    let iconoSvg = getSvgIcon('pin');
+    if (primera.nombre.includes('Teatro')) iconoSvg = getSvgIcon('map');
+    else if (primera.nombre.includes('Recinto')) iconoSvg = getSvgIcon('home');
+    centrarMapaEnUbicacion(primera.id_ubicacion, primera.nombre, parseFloat(primera.latitud), parseFloat(primera.longitud), primera.direccion || 'Ubicación carnavalera');
+    document.getElementById('esc-title').innerHTML = `${iconoSvg} ${primera.nombre}`;
     document.getElementById('esc-desc').innerHTML = primera.direccion || 'Escenario del Carnaval de Badajoz';
     document.getElementById('esc-tag').innerHTML = 'Ubicación';
   }
@@ -1096,89 +1088,71 @@ function renderEscenariosList() {
 function centrarMapaEnUbicacion(id, nombre, lat, lng, direccion) {
   if (!map) return;
   map.panTo({ lat, lng });
-  map.setZoom(16);
+  map.setZoom(17);
 
+  // Cerrar todos los InfoWindows abiertos
   Object.values(infoWindows).forEach(iw => iw.close());
 
-  // Eliminar marcador anterior si existe (para no acumular)
-  if (markers[nombre]) {
-    markers[nombre].setMap(null);
-  }
-
-  // Crear nuevo marcador
-  const marker = new google.maps.Marker({
-    position: { lat, lng },
-    map: map,
-    title: nombre,
-    animation: google.maps.Animation.DROP,
-    icon: {
-      url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
-        <svg xmlns="http://www.w3.org/2000/svg" width="46" height="46" viewBox="0 0 46 46">
-          <circle cx="23" cy="23" r="20" fill="#6c3bd1" stroke="#a855f7" stroke-width="3" opacity="0.95"/>
-          <text x="23" y="29" text-anchor="middle" font-size="18">📍</text>
-        </svg>
-      `)}`,
-      scaledSize: new google.maps.Size(46, 46),
-      anchor: new google.maps.Point(23, 23)
-    }
-  });
-
-  // InfoWindow con fondo blanco y texto negro
-  const info = new google.maps.InfoWindow({
-    content: `
-    <div style="
-      background: white;
-      color: black;
-      padding: 12px 16px;
-      border-radius: 8px;
-      font-family: 'Outfit', sans-serif;
-      font-size: 14px;
-      font-weight: 500;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-      border: 1px solid #ddd;
-      max-width: 260px;
-      text-align: left;
-    ">
-      <strong style="color: #6c3bd1; display: block; margin-bottom: 6px; font-size: 1rem;">${nombre}</strong>
-      <span style="color: #333; font-size: 12px; line-height: 1.4;">${direccion || ''}</span>
-    </div>
-  `
-  });
-
-  markers[nombre] = marker;
-  infoWindows[nombre] = info;
-
-  // Abrir InfoWindow
-  info.open(map, marker);
-  marker.setAnimation(google.maps.Animation.BOUNCE);
-  setTimeout(() => marker.setAnimation(null), 1500);
-
-  // Sincronizar: cuando se haga clic en este marcador, activar el elemento correspondiente en la lista
-  marker.addListener('click', () => {
-    // Cerrar otros InfoWindows
-    Object.values(infoWindows).forEach(iw => iw.close());
-    info.open(map, marker);
-
-    // Resaltar en la lista lateral el elemento con el mismo id
-    const items = document.querySelectorAll('.escenario-item');
-    items.forEach(item => {
-      if (item.getAttribute('data-id') == id) {
-        item.classList.add('escenario-item--active');
-        // Actualizar panel derecho
-        const iconSpan = item.querySelector('.esc-icon');
-        const icono = iconSpan ? iconSpan.textContent : '📍';
-        document.getElementById('esc-title').innerHTML = `${icono} ${nombre}`;
-        document.getElementById('esc-desc').innerHTML = direccion || 'Escenario del Carnaval de Badajoz';
-        document.getElementById('esc-tag').innerHTML = 'Ubicación';
-      } else {
-        item.classList.remove('escenario-item--active');
-      }
-    });
-
-    // Rebote
+  let marker = markers[nombre];
+  if (marker) {
+    // Reutilizar marcador existente
+    marker.setPosition({ lat, lng });
+    marker.setMap(map);
     marker.setAnimation(google.maps.Animation.BOUNCE);
     setTimeout(() => marker.setAnimation(null), 1500);
-  });
+  } else {
+    // Crear nuevo marcador
+    marker = new google.maps.Marker({
+      position: { lat, lng },
+      map: map,
+      title: nombre,
+      animation: google.maps.Animation.DROP,
+      icon: {
+        url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="48" height="48">
+            <defs>
+              <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="2" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.5"/>
+              </filter>
+            </defs>
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" 
+                  fill="#7c3aed" stroke="#a855f7" stroke-width="1.5" filter="url(#shadow)"/>
+            <circle cx="12" cy="9" r="3" fill="white"/>
+          </svg>
+        `)}`,
+        scaledSize: new google.maps.Size(48, 48),
+        anchor: new google.maps.Point(24, 48)
+      }
+    });
+    markers[nombre] = marker;
+  }
+
+  let info = infoWindows[nombre];
+  if (!info) {
+    info = new google.maps.InfoWindow({
+      content: `
+        <div style="
+          background: white;
+          color: black;
+          padding: 12px 16px;
+          border-radius: 8px;
+          font-family: 'Outfit', sans-serif;
+          font-size: 14px;
+          font-weight: 500;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+          border: 1px solid #ddd;
+          max-width: 260px;
+          text-align: left;
+        ">
+          <strong style="color: #6c3bd1; display: block; margin-bottom: 6px; font-size: 1rem;">${nombre}</strong>
+          <span style="color: #333; font-size: 12px; line-height: 1.4;">${direccion || ''}</span>
+        </div>
+      `
+    });
+    infoWindows[nombre] = info;
+  }
+
+  info.open(map, marker);
 }
 
 function updateEscenarioInfo(key) {
@@ -1219,8 +1193,8 @@ function renderAdminTable(eventos) {
       <td>${e.hora}</td>
       <td>${e.ubicacion?.nombre || '-'}</td>
       <td>
-        <button class="admin-action-btn admin-action-btn--edit" onclick="openEditEventModal(${e.id})">Editar</button>
-        <button class="admin-action-btn admin-action-btn--del" onclick="deleteEventAdmin(${e.id}, this)">Eliminar</button>
+        <button class="admin-action-btn admin-action-btn--edit" onclick="openEditEventModal(${e.id})">${getSvgIcon('pencil')} Editar</button>
+        <button class="admin-action-btn admin-action-btn--del" onclick="deleteEventAdmin(${e.id}, this)">${getSvgIcon('trash')} Eliminar</button>
       </td>
     </tr>
   `).join('');
@@ -1302,18 +1276,15 @@ function openEditEventModal(id) {
   if (!e) return;
   const fechaDate = fechaTextoToDateInput(e.dia);
   document.getElementById('edit-dia').value = fechaDate;
+  // Elimina esta línea: document.getElementById('edit-dia').value = e.dia;
   document.getElementById('edit-evento-id').value = e.id;
   document.getElementById('edit-grupo').value = e.nombre;
   document.getElementById('edit-categoria').value = e.categoria;
-  document.getElementById('edit-dia').value = e.dia;
   document.getElementById('edit-hora').value = e.hora;
   document.getElementById('edit-desc').value = e.descripcion || '';
-
-  // Seleccionar el escenario correcto
   if (e.id_ubicacion) {
     document.getElementById('edit-escenario').value = e.id_ubicacion;
   }
-
   document.getElementById('modal-edit-evento').classList.add('open');
 }
 
