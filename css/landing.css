@@ -343,18 +343,19 @@ body {
 
 .hero-stats {
   display: flex;
-  gap: 0;
   justify-content: center;
   align-items: center;
   animation: fadeInUp 0.9s ease-out 0.4s both;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 0;
 }
 .stat-item {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 4px;
+  min-width: 140px;
+  text-align: center;
 }
 .stat-number { font-size: 2rem; }
 .stat-label {
@@ -369,27 +370,39 @@ body {
   background: var(--border);
 }
 
+/* Indicador de scroll */
 .hero-scroll-indicator {
-  position: absolute;
-  bottom: 32px;
-  left: 50%;
-  transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  z-index: 2;
-  opacity: 0.6;
+  margin-top: 40px;
+  opacity: 0.7;
   animation: fadeInUp 1s ease-out 1s both;
+  pointer-events: none;
+  text-align: center;
 }
-.hero-scroll-indicator span { font-size: 0.78rem; color: var(--text-muted); font-weight: 500; }
+.hero-scroll-indicator span {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  line-height: 1;
+  margin: 0 auto;
+}
 .scroll-arrow {
-  width: 24px; height: 24px;
+  width: 24px;
+  height: 24px;
   border-right: 2px solid var(--text-muted);
   border-bottom: 2px solid var(--text-muted);
   transform: rotate(45deg);
   animation: scrollBounce 1.5s ease-in-out infinite;
+  margin: 0 auto;
 }
+
+
 @keyframes scrollBounce { 0%,100%{transform:rotate(45deg) translateY(0);}50%{transform:rotate(45deg) translateY(6px);} }
 
 @keyframes fadeInDown {
@@ -480,6 +493,34 @@ body {
   padding-left: 4px;
 }
 
+/* Enlace "Descubre más" dentro de la tarjeta */
+.card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 16px;
+  color: var(--purple-light);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  line-height: 1;
+  transition: gap 0.2s ease;
+}
+.card-link svg {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  stroke-width: 2;
+  flex-shrink: 0;
+  margin: 0;
+  vertical-align: middle;
+  transform: translateY(-1px);
+}
+.card-link:hover {
+  gap: 10px;
+}
+
 /* =============================================
    HOW IT WORKS
    ============================================= */
@@ -518,7 +559,7 @@ body {
 }
 .step-content h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 8px; }
 .step-content p { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.7; }
-.step-icon { font-size: 2.5rem; margin-top: auto; }
+.step-icon { margin-top: auto; }
 
 .step-connector {
   width: 60px;
@@ -526,14 +567,12 @@ body {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  position: relative;
 }
-.step-connector::before {
-  content: '';
-  width: 40px;
-  height: 2px;
-  background: linear-gradient(90deg, var(--purple), var(--gold));
-  border-radius: 2px;
+.connector-arrow {
+  color: var(--purple-light);
+  stroke-width: 2;
+  width: 32px;
+  height: 32px;
 }
 
 /* =============================================
@@ -561,7 +600,6 @@ body {
   box-shadow: var(--shadow-glow);
 }
 .tech-logo {
-  font-size: 2.5rem;
   margin-bottom: 16px;
   display: block;
 }
@@ -674,7 +712,6 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
   flex-shrink: 0;
 }
 .role-header h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 6px; }
@@ -841,10 +878,14 @@ body {
   .roles-grid { grid-template-columns: 1fr; }
   .steps-container { flex-direction: column; }
   .step-connector {
-    width: auto; height: 30px;
+    width: auto;
+    height: 40px;
     transform: rotate(90deg);
   }
-  .step-connector::before { width: 30px; }
+  .step-connector .connector-arrow {
+    width: 28px;
+    height: 28px;
+  }
 }
 
 @media (max-width: 768px) {
@@ -943,8 +984,9 @@ body {
   .tech-card {
     padding: 24px 16px;
   }
-  .tech-logo {
-    font-size: 2rem;
+  .tech-logo svg {
+    width: 36px;
+    height: 36px;
   }
   .arch-banner {
     padding: 24px 20px;
@@ -960,7 +1002,7 @@ body {
     padding: 6px 12px;
   }
   .arch-arrow {
-    display: none;  /* simplifica el diagrama en móvil */
+    display: none;
   }
   .role-card {
     padding: 24px 20px;
@@ -993,7 +1035,6 @@ body {
   .footer-col ul {
     align-items: center;
   }
-  /* Mejorar la hamburguesa: algo de espacio */
   .nav-links.open {
     top: 70px;
   }

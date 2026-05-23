@@ -689,30 +689,48 @@ async function verEnMapa(nombreUbicacion, idUbicacion) {
     showToast('❌ No se encontró la ubicación en el mapa', true);
     return;
   }
+
+  // Cambiar a la sección del mapa
   showSection('mapa');
+
+  // Esperar a que la sección se renderice y el mapa esté listo
   setTimeout(() => {
-    centrarMapaEnUbicacion(
-      ubicacion.id_ubicacion,
-      ubicacion.nombre,
-      parseFloat(ubicacion.latitud),
-      parseFloat(ubicacion.longitud),
-      ubicacion.direccion || 'Ubicación carnavalera'
-    );
-    // Resaltar en la lista lateral
-    const items = document.querySelectorAll('.escenario-item');
-    items.forEach(item => {
-      if (item.getAttribute('data-id') == ubicacion.id_ubicacion) {
-        item.classList.add('escenario-item--active');
-        const iconSpan = item.querySelector('.esc-icon');
-        const icono = iconSpan ? iconSpan.textContent : '📍';
-        document.getElementById('esc-title').innerHTML = `${icono} ${ubicacion.nombre}`;
-        document.getElementById('esc-desc').innerHTML = ubicacion.direccion || 'Escenario del Carnaval de Badajoz';
-        document.getElementById('esc-tag').innerHTML = 'Ubicación';
-      } else {
-        item.classList.remove('escenario-item--active');
+    if (!map) {
+      showToast('El mapa aún no está listo, inténtalo de nuevo', true);
+      return;
+    }
+    // Forzar redimensionamiento del mapa (clave en móviles)
+    google.maps.event.trigger(map, 'resize');
+    // Pequeño retardo para que el resize termine
+    setTimeout(() => {
+      centrarMapaEnUbicacion(
+        ubicacion.id_ubicacion,
+        ubicacion.nombre,
+        parseFloat(ubicacion.latitud),
+        parseFloat(ubicacion.longitud),
+        ubicacion.direccion || 'Ubicación carnavalera'
+      );
+      // Resaltar en la lista lateral
+      const items = document.querySelectorAll('.escenario-item');
+      items.forEach(item => {
+        if (item.getAttribute('data-id') == ubicacion.id_ubicacion) {
+          item.classList.add('escenario-item--active');
+          const iconSpan = item.querySelector('.esc-icon');
+          const icono = iconSpan ? iconSpan.textContent : '📍';
+          document.getElementById('esc-title').innerHTML = `${icono} ${ubicacion.nombre}`;
+          document.getElementById('esc-desc').innerHTML = ubicacion.direccion || 'Escenario del Carnaval de Badajoz';
+          document.getElementById('esc-tag').innerHTML = 'Ubicación';
+        } else {
+          item.classList.remove('escenario-item--active');
+        }
+      });
+      // En móviles, desplazar la vista para que se vea el mapa (no solo la lista)
+      if (window.innerWidth <= 768) {
+        const mapContainer = document.getElementById('google-map');
+        if (mapContainer) mapContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
-    });
-  }, 300);
+    }, 150);
+  }, 150);
 }
 
 function updateModalFav(id) {
@@ -944,6 +962,11 @@ function renderEscenariosList() {
 // Centra el mapa y muestra un InfoWindow con estilo mejorado (fondo oscuro, texto claro)
 function centrarMapaEnUbicacion(id, nombre, lat, lng, direccion) {
   if (!map) return;
+
+  // Forzar que el mapa se redimensione al contenedor actual (importante en móviles)
+  google.maps.event.trigger(map, 'resize');
+
+  // Centrar y hacer zoom (un zoom más cercano, 17 es buena opción)
   map.panTo({ lat, lng });
   map.setZoom(17);
 
@@ -967,13 +990,8 @@ function centrarMapaEnUbicacion(id, nombre, lat, lng, direccion) {
       icon: {
         url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="48" height="48">
-            <defs>
-              <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-                <feDropShadow dx="2" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.5"/>
-              </filter>
-            </defs>
-            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" 
-                  fill="#7c3aed" stroke="#a855f7" stroke-width="1.5" filter="url(#shadow)"/>
+            <defs><filter id="shadow"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.5"/></filter></defs>
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#7c3aed" stroke="#a855f7" stroke-width="1.5" filter="url(#shadow)"/>
             <circle cx="12" cy="9" r="3" fill="white"/>
           </svg>
         `)}`,
