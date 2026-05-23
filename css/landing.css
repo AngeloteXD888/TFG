@@ -899,3 +899,114 @@ body {
 [data-aos="fade-right"].aos-visible { transform: translateX(0); }
 [data-aos="zoom-in"] { transform: scale(0.9); }
 [data-aos="zoom-in"].aos-visible { transform: scale(1); }
+
+/* Móviles pequeños (≤ 480px) - ajustes adicionales */
+@media (max-width: 480px) {
+  .section {
+    padding: 60px 0;
+  }
+  .section-header {
+    margin-bottom: 40px;
+  }
+  .section-header h2 {
+    font-size: 1.8rem;
+  }
+  .hero-title {
+    font-size: 1.8rem;
+  }
+  .hero-subtitle {
+    font-size: 0.95rem;
+    padding: 0 16px;
+  }
+  .hero-actions {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .btn {
+    width: 100%;
+    justify-content: center;
+    padding: 14px 20px;
+  }
+  .stat-number {
+    font-size: 1.5rem;
+  }
+  .stat-label {
+    font-size: 0.7rem;
+  }
+  .feature-card {
+    padding: 24px 20px;
+  }
+  .feature-card h3 {
+    font-size: 1.1rem;
+  }
+  .tech-card {
+    padding: 24px 16px;
+  }
+  .tech-logo {
+    font-size: 2rem;
+  }
+  .arch-banner {
+    padding: 24px 20px;
+    text-align: center;
+  }
+  .arch-diagram {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .arch-node {
+    font-size: 0.75rem;
+    padding: 6px 12px;
+  }
+  .arch-arrow {
+    display: none;  /* simplifica el diagrama en móvil */
+  }
+  .role-card {
+    padding: 24px 20px;
+  }
+  .role-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+  }
+  .role-features li {
+    font-size: 0.85rem;
+  }
+  .cta-content h2 {
+    font-size: 1.8rem;
+  }
+  .cta-content p {
+    font-size: 0.95rem;
+    padding: 0 16px;
+  }
+  .footer-container {
+    text-align: center;
+  }
+  .footer-brand .nav-logo {
+    justify-content: center;
+  }
+  .footer-links {
+    justify-content: center;
+    text-align: center;
+  }
+  .footer-col ul {
+    align-items: center;
+  }
+  /* Mejorar la hamburguesa: algo de espacio */
+  .nav-links.open {
+    top: 70px;
+  }
+}
+/* Tablets pequeñas (481px - 768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+  .section {
+    padding: 80px 0;
+  }
+  .features-grid {
+    gap: 20px;
+  }
+  .tech-grid {
+    gap: 16px;
+  }
+}
