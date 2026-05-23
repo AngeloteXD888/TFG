@@ -22,13 +22,13 @@ const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
  * Registrar un nuevo usuario con email y contraseña.
  * También inserta su perfil en la tabla 'persona'.
  */
-async function supabaseSignUp(nombre, email, password) {
+async function supabaseSignUp(nombre, apellidos, email, password) {
   try {
     const { data, error } = await supabaseClient.auth.signUp({
       email: email,
       password: password,
       options: {
-        data: { nombre: nombre }
+        data: { nombre: nombre, apellidos: apellidos }
       }
     });
 
@@ -42,6 +42,7 @@ async function supabaseSignUp(nombre, email, password) {
         .insert({
           id_persona: data.user.id,
           nombre: nombre,
+          apellidos: apellidos || null,
           email: email,
           contrasena: '***',
           fecha_registro: new Date().toISOString(),

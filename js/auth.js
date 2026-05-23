@@ -200,6 +200,7 @@ async function handleRegister(e) {
   ]);
 
   const name = document.getElementById('reg-name').value.trim();
+  const apellidos = document.getElementById('reg-surname').value.trim() || null;
   const email = document.getElementById('reg-email').value.trim();
   const password = document.getElementById('reg-password').value;
   const confirm = document.getElementById('reg-confirm').value;
@@ -255,7 +256,7 @@ async function handleRegister(e) {
   setLoading('btn-register', 'spinner-register', true);
 
   // Registro real con Supabase
-  const { user, error } = await supabaseSignUp(name, email, password);
+  const { user, error } = await supabaseSignUp(name, apellidos, email, password);
 
   setLoading('btn-register', 'spinner-register', false);
 

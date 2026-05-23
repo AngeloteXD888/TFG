@@ -13,135 +13,7 @@ let EVENTOS = [];
 // =====================================================================
 // ESCENARIOS CON COORDENADAS REALES DE BADAJOZ
 // =====================================================================
-const ESCENARIO_DATA = {
 
-  'Teatro López de Ayala': {
-    title: '🎭 Teatro López de Ayala',
-    desc: 'Sede del COMBA, el Concurso Oficial de Murgas.',
-    tag: 'Murgas',
-    lat: 38.876273,
-    lng: -6.972268,
-    icon: '🎭'
-  },
-
-  'Plaza de Conquistadores': {
-    title: '🥁 Plaza de Conquistadores',
-    desc: 'Punto de encuentro de comparsas.',
-    tag: 'Comparsas',
-    lat: 38.872339,
-    lng: -6.974782,
-    icon: '🥁'
-  },
-
-  'Avda. Entrepuentes': {
-    title: '⚙️ Avda. Entrepuentes',
-    desc: 'Zona de artefactos carnavaleros.',
-    tag: 'Artefactos',
-    lat: 38.880383,
-    lng: -6.976842,
-    icon: '⚙️'
-  },
-
-  'Plaza de San Atón': {
-    title: '🎉 Plaza de San Atón',
-    desc: 'Actuaciones y grupos de animación.',
-    tag: 'Animación',
-    lat: 38.876557,
-    lng: -6.971081,
-    icon: '🎉'
-  },
-
-  'Avda. Santa Marina': {
-    title: '👑 Avda. Santa Marina',
-    desc: 'Inicio del Gran Desfile.',
-    tag: 'Desfiles',
-    lat: 38.877506,
-    lng: -6.980230,
-    icon: '👑'
-  },
-
-  'Plaza de España': {
-    title: '👧 Plaza de España',
-    desc: 'Carnaval Infantil y Mascotas.',
-    tag: 'Infantil',
-    lat: 38.878141,
-    lng: -6.970191,
-    icon: '👧'
-  },
-
-  'Avda. Ricardo Carapeto': {
-    title: '🐟 Avda. Ricardo Carapeto',
-    desc: 'Entierro de la Sardina.',
-    tag: 'Entierro Sardina',
-    lat: 38.878946,
-    lng: -6.955701,
-    icon: '🐟'
-  },
-
-  'Plaza Alta': {
-    title: '🏰 Plaza Alta',
-    desc: 'Pasacalles Majara.',
-    tag: 'Pasacalles',
-    lat: 38.881073,
-    lng: -6.968276,
-    icon: '🏰'
-  },
-
-  'Plaza de San Francisco': {
-    title: '👋 Plaza de San Francisco',
-    desc: 'Desfile de Despedida.',
-    tag: 'Despedida',
-    lat: 38.876394,
-    lng: -6.973452,
-    icon: '👋'
-  },
-
-  'Plaza de la Soledad': {
-    title: '✨ Plaza de la Soledad',
-    desc: 'Zona emblemática del Carnaval.',
-    tag: 'Carnaval',
-    lat: 38.880502,
-    lng: -6.970952,
-    icon: '✨'
-  },
-
-  'Calle Francisco Pizarro': {
-    title: '🎺 Calle Francisco Pizarro',
-    desc: 'Zona de agrupaciones.',
-    tag: 'Pasacalles',
-    lat: 38.879386,
-    lng: -6.971912,
-    icon: '🎺'
-  },
-
-  'Plaza López de Ayala': {
-    title: '🌴 Plaza López de Ayala',
-    desc: 'Plaza situada junto a San Francisco.',
-    tag: 'Centro',
-    lat: 38.878690,
-    lng: -6.972526,
-    icon: '🌴'
-  },
-
-  'Recinto Ferial': {
-    title: '🎪 Recinto Ferial',
-    desc: 'Gran Desfile y Desfile Infantil del Carnaval.',
-    tag: 'Desfiles',
-    lat: 38.873229,
-    lng: -6.992398,
-    icon: '🎪'
-  },
-
-  'C/ Lady Smith (Cerro Gordo)': {
-    title: '🏘️ Cerro Gordo - Lady Smith',
-    desc: 'Escenario carnavalesco en Cerro Gordo.',
-    tag: 'Barriadas',
-    lat: 38.889367,
-    lng: -6.902655,
-    icon: '🏘️'
-  }
-
-};
 
 // =====================================================================
 // GOOGLE MAPS API KEY
@@ -324,6 +196,18 @@ try {
   // ---- Cargar eventos desde Supabase ----
   EVENTOS = await supabaseGetEventos();
   ubicacionesList = await supabaseGetUbicaciones();
+  // Esperar a que el mapa esté inicializado (Google Maps es asíncrono)
+  if (typeof map !== 'undefined' && map) {
+    crearTodosLosMarcadores();
+  } else {
+    const checkMap = setInterval(() => {
+      if (map) {
+        clearInterval(checkMap);
+        crearTodosLosMarcadores();
+      }
+    }, 100);
+  }
+  crearTodosLosMarcadores()
   populateEscenarioSelect('new-escenario');
   populateEscenarioSelect('edit-escenario');
   const totalUsuarios = await supabaseGetTotalUsuarios();
@@ -437,12 +321,7 @@ async function logout() {
 // GOOGLE MAPS — INICIALIZACIÓN
 // =====================================================================
 function initMap() {
-
-  const badajozCenter = {
-    lat: 38.8794,
-    lng: -6.9705
-  };
-
+  const badajozCenter = { lat: 38.8794, lng: -6.9705 };
   map = new google.maps.Map(document.getElementById('google-map'), {
     zoom: 14,
     center: badajozCenter,
@@ -461,145 +340,80 @@ function initMap() {
       { featureType: 'poi', elementType: 'geometry', stylers: [{ color: '#252540' }] },
       { featureType: 'poi.park', elementType: 'geometry', stylers: [{ color: '#1a2e1a' }] },
       { featureType: 'poi', elementType: 'labels.text.fill', stylers: [{ color: '#6a6a8a' }] },
-      { featureType: 'transit', stylers: [{ visibility: 'off' }] },
+      { featureType: 'transit', stylers: [{ visibility: 'off' }] }
     ]
   });
+  markers = {};
+  infoWindows = {};
+}
 
-  // Limpiar objetos por si se vuelve a ejecutar
+function crearTodosLosMarcadores() {
+  if (!map || !ubicacionesList.length) return;
+  // Limpiar marcadores existentes
+  Object.values(markers).forEach(m => m.setMap(null));
   markers = {};
   infoWindows = {};
 
-  // =================================================================
-  // CREAR LOS 13 MARCADORES
-  // =================================================================
-  Object.keys(ESCENARIO_DATA).forEach((key) => {
+  ubicacionesList.forEach(ubi => {
+    const lat = parseFloat(ubi.latitud);
+    const lng = parseFloat(ubi.longitud);
+    if (isNaN(lat) || isNaN(lng)) return;
 
-    const esc = ESCENARIO_DATA[key];
-
-    // Emoji individual
-    const markerEmoji = esc.icon || '📍';
-
-    const position = {
-      lat: esc.lat,
-      lng: esc.lng
-    };
-
-    // ---------------------------------------------------------------
-    // MARCADOR
-    // ---------------------------------------------------------------
     const marker = new google.maps.Marker({
-      position: position,
+      position: { lat, lng },
       map: map,
-      title: esc.title.replace(/^[^\s]+\s/, ''),
+      title: ubi.nombre,
       animation: google.maps.Animation.DROP,
-
-    icon: {
-      url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="48" height="48">
-          <defs>
-            <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-              <feDropShadow dx="2" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.5"/>
-            </filter>
-          </defs>
-          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" 
-                fill="#7c3aed" stroke="#a855f7" stroke-width="1.5" filter="url(#shadow)"/>
-          <circle cx="12" cy="9" r="3" fill="white"/>
-        </svg>
-      `)}`,
-      scaledSize: new google.maps.Size(48, 48),
-      anchor: new google.maps.Point(24, 48)  // La punta de la chincheta está abajo
-    }
+      icon: {
+        url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="48" height="48">
+            <defs><filter id="shadow"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.5"/></filter></defs>
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#7c3aed" stroke="#a855f7" stroke-width="1.5" filter="url(#shadow)"/>
+            <circle cx="12" cy="9" r="3" fill="white"/>
+          </svg>
+        `)}`,
+        scaledSize: new google.maps.Size(48, 48),
+        anchor: new google.maps.Point(24, 48)
+      }
     });
 
-    // ---------------------------------------------------------------
-    // INFOWINDOW
-    // ---------------------------------------------------------------
-    const infoWindow = new google.maps.InfoWindow({
+    const info = new google.maps.InfoWindow({
       content: `
-        <div style="
-          padding:10px;
-          max-width:240px;
-          font-family:'Outfit',sans-serif;
-          color:#111;
-        ">
-          <h3 style="
-            margin:0 0 8px;
-            font-size:16px;
-            font-weight:700;
-          ">
-            ${esc.title}
-          </h3>
-
-          <p style="
-            margin:0 0 8px;
-            font-size:13px;
-            color:#555;
-            line-height:1.4;
-          ">
-            ${esc.desc}
-          </p>
-
-          <span style="
-            display:inline-block;
-            padding:4px 10px;
-            background:#6c3bd1;
-            color:white;
-            border-radius:999px;
-            font-size:11px;
-            font-weight:600;
-          ">
-            ${esc.tag}
-          </span>
+        <div style="background: white; color: black; padding: 12px 16px; border-radius: 8px; font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 500; box-shadow: 0 2px 8px rgba(0,0,0,0.15); border: 1px solid #ddd; max-width: 260px; text-align: left;">
+          <strong style="color: #6c3bd1; display: block; margin-bottom: 6px; font-size: 1rem;">${ubi.nombre}</strong>
+          <span style="color: #333; font-size: 12px; line-height: 1.4;">${ubi.direccion || ''}</span>
         </div>
       `
     });
 
-    // ---------------------------------------------------------------
-    // CLICK DEL MARCADOR
-    // ---------------------------------------------------------------
+    markers[ubi.nombre] = marker;
+    infoWindows[ubi.nombre] = info;
+
     marker.addListener('click', () => {
-
-      // cerrar todos
       Object.values(infoWindows).forEach(iw => iw.close());
-
-      // abrir actual
-      infoWindow.open(map, marker);
-
-      // animación rebote
+      info.open(map, marker);
       marker.setAnimation(google.maps.Animation.BOUNCE);
-
-      setTimeout(() => {
-        marker.setAnimation(null);
-      }, 1400);
-
-      // sincronizar lista lateral
-      selectEscenariByKey(key);
+      setTimeout(() => marker.setAnimation(null), 1500);
+      // Sincronizar lista lateral
+      const items = document.querySelectorAll('.escenario-item');
+      items.forEach(item => {
+        if (item.getAttribute('data-id') == ubi.id_ubicacion) {
+          item.classList.add('escenario-item--active');
+          document.getElementById('esc-title').innerHTML = `${getSvgIcon('pin')} ${ubi.nombre}`;
+          document.getElementById('esc-desc').innerHTML = ubi.direccion || 'Escenario del Carnaval de Badajoz';
+          document.getElementById('esc-tag').innerHTML = 'Ubicación';
+        } else {
+          item.classList.remove('escenario-item--active');
+        }
+      });
     });
-
-    // ---------------------------------------------------------------
-    // GUARDAR REFERENCIAS
-    // ---------------------------------------------------------------
-    markers[key] = marker;
-    infoWindows[key] = infoWindow;
   });
 
-  // =================================================================
-  // AJUSTAR MAPA PARA QUE SE VEAN LOS 13 PUNTOS
-  // =================================================================
+  // Ajustar vista
   const bounds = new google.maps.LatLngBounds();
-
-  Object.values(markers).forEach(marker => {
-    bounds.extend(marker.getPosition());
-  });
-
+  Object.values(markers).forEach(m => bounds.extend(m.getPosition()));
   map.fitBounds(bounds);
-
-  // evitar zoom exagerado
-  google.maps.event.addListenerOnce(map, 'bounds_changed', () => {
-    if (map.getZoom() > 15) {
-      map.setZoom(15);
-    }
-  });
+  if (map.getZoom() > 15) map.setZoom(15);
 }
 
 // =====================================================================
