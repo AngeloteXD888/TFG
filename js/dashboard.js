@@ -895,20 +895,66 @@ function updateModalFav(id) {
 async function renderParticipaciones(eventoId) {
   const container = document.getElementById(`participaciones-list-${eventoId}`);
   if (!container) return;
+
+  // Skeleton loader mientras carga
+  container.innerHTML = `
+    <div class="part-skeleton-wrap">
+      ${[1,2,3].map(() => `
+        <div class="part-skeleton">
+          <div class="part-skeleton-icon"></div>
+          <div class="part-skeleton-lines">
+            <div class="part-skeleton-line part-skeleton-line--name"></div>
+            <div class="part-skeleton-line part-skeleton-line--cat"></div>
+          </div>
+        </div>
+      `).join('')}
+    </div>`;
+
   const participaciones = await supabaseGetParticipaciones(eventoId);
+
   if (participaciones.length === 0) {
-    container.innerHTML = '<p style="color:var(--text-muted);font-size:.85rem">No hay agrupaciones registradas para este evento.</p>';
+    container.innerHTML = `
+      <div class="part-empty">
+        <span class="part-empty-icon">🎭</span>
+        <p>No hay agrupaciones registradas para este evento.</p>
+      </div>`;
     return;
   }
-  container.innerHTML = participaciones.map(p => `
-    <div style="display:flex;align-items:center;gap:.75rem;padding:.6rem .75rem;background:rgba(255,255,255,0.04);border-radius:8px;margin-bottom:.4rem;">
-      <span style="font-size:1.3rem">${getCategoriaEmoji(p.agrupacion?.categoria)}</span>
-      <div>
-        <strong style="font-size:.9rem;color:var(--text-primary);display:block">${p.agrupacion?.nombre || 'Sin nombre'}</strong>
-        <span style="font-size:.75rem;color:var(--text-muted)">${p.agrupacion?.categoria || ''} · ${p.anio}</span>
-      </div>
-    </div>
-  `).join('');
+
+  // Agrupar por categoría
+  const grupos = {};
+  participaciones.forEach(p => {
+    const cat = p.agrupacion?.categoria || 'Otras';
+    if (!grupos[cat]) grupos[cat] = [];
+    grupos[cat].push(p);
+  });
+
+  const catConfig = {
+    'Murgas':           { emoji: '🎵', tagClass: 'Murga' },
+    'Comparsas':        { emoji: '🎭', tagClass: 'Comparsa' },
+    'Artefactos':       { emoji: '🏗️', tagClass: 'Artefacto' },
+    'Grupos Animación': { emoji: '🎪', tagClass: 'GrupoAnimación' },
+    'Otras':            { emoji: '🎶', tagClass: 'Desfile' },
+  };
+
+  container.innerHTML = Object.entries(grupos).map(([cat, items]) => {
+    const cfg = catConfig[cat] || { emoji: '🎶', tagClass: 'Desfile' };
+    return `
+      <div class="part-grupo">
+        <div class="part-grupo-header">
+          <span class="part-grupo-emoji">${cfg.emoji}</span>
+          <span class="part-grupo-nombre">${cat}</span>
+          <span class="part-grupo-count">${items.length}</span>
+        </div>
+        <div class="part-chips">
+          ${items.map(p => `
+            <div class="part-chip part-chip--${cfg.tagClass}" title="${p.agrupacion?.descripcion || ''}">
+              <span class="part-chip-name">${p.agrupacion?.nombre || 'Sin nombre'}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>`;
+  }).join('');
 }
 
 function getCategoriaEmoji(categoria) {
@@ -1294,7 +1340,7 @@ function renderAdminTable(eventos) {
   const tbody = document.getElementById('admin-table-body');
   if (!tbody) return;
   const catClass = (c) => c.replace(/\s/g, '');
-  tbody.innerHTML = eventos.slice(0, 15).map(e => `
+  tbody.innerHTML = eventos.map(e => `
     <tr>
       <td><strong>${e.nombre}</strong></td>
       <td><span class="evento-tag tag--${catClass(e.categoria)}">${e.categoria}</span></td>
@@ -1337,6 +1383,53 @@ function openAddEventModal() {
   document.getElementById('modal-add-evento').classList.add('open');
 }
 
+// =====================================================================
+// CHIPS DE AGRUPACIONES — modal añadir evento
+// =====================================================================
+let selectedAgrupaciones = []; // [{id, nombre}]
+
+function addAgrupacionChip() {
+  const sel = document.getElementById('new-agrupacion');
+  const id = parseInt(sel.value);
+  const nombre = sel.options[sel.selectedIndex]?.text;
+  if (!id) return;
+  if (selectedAgrupaciones.find(a => a.id === id)) {
+    showToast('Esa agrupación ya está añadida', true);
+    return;
+  }
+  selectedAgrupaciones.push({ id, nombre });
+  renderAgrupacionChips();
+  sel.value = '';
+}
+
+function removeAgrupacionChip(id) {
+  selectedAgrupaciones = selectedAgrupaciones.filter(a => a.id !== id);
+  renderAgrupacionChips();
+}
+
+function renderAgrupacionChips() {
+  const container = document.getElementById('new-agrupacion-chips');
+  const placeholder = document.getElementById('new-agrupacion-placeholder');
+  if (!container) return;
+  if (selectedAgrupaciones.length === 0) {
+    container.innerHTML = '';
+    container.appendChild(placeholder || (() => {
+      const s = document.createElement('span');
+      s.id = 'new-agrupacion-placeholder';
+      s.style = 'font-size:.78rem;color:var(--text-subtle)';
+      s.textContent = 'Sin agrupaciones añadidas';
+      return s;
+    })());
+    return;
+  }
+  container.innerHTML = selectedAgrupaciones.map(a => `
+    <span class="agrupacion-chip">
+      ${a.nombre.split(' (')[0]}
+      <button type="button" onclick="removeAgrupacionChip(${a.id})" title="Quitar">✕</button>
+    </span>
+  `).join('');
+}
+
 async function addEventFromAdmin() {
   const grupo = document.getElementById('new-grupo').value.trim();
   const categoria = document.getElementById('new-categoria').value;
@@ -1363,6 +1456,15 @@ async function addEventFromAdmin() {
     return;
   }
 
+  // Vincular todas las agrupaciones seleccionadas
+  if (selectedAgrupaciones.length > 0) {
+    const resultados = await Promise.all(
+      selectedAgrupaciones.map(a => supabaseAddParticipacion(newEvento.id, a.id, 2026))
+    );
+    const fallidas = resultados.filter(r => !r).length;
+    if (fallidas > 0) showToast(`⚠️ ${fallidas} agrupación(es) no se pudieron vincular`, true);
+  }
+
   EVENTOS.unshift(newEvento);
   filteredEventos = [...EVENTOS];
   renderAdminTable(EVENTOS);
@@ -1374,10 +1476,13 @@ async function addEventFromAdmin() {
   closeModal('modal-add-evento');
   showToast('✅ Evento añadido correctamente');
 
-  // Limpiar formulario
+  // Limpiar formulario y chips
   ['new-grupo', 'new-dia', 'new-hora', 'new-desc'].forEach(id => {
     document.getElementById(id).value = '';
   });
+  document.getElementById('new-agrupacion').value = '';
+  selectedAgrupaciones = [];
+  renderAgrupacionChips();
 }
 
 // Abrir modal de edición con los datos del evento precargados
@@ -1447,6 +1552,19 @@ async function loadUbicacionesSelect() {
     option.textContent = ubi.nombre;
     select.appendChild(option);
   });
+
+  // Rellenar también el select de agrupaciones
+  if (!agrupacionesList.length) agrupacionesList = await supabaseGetAgrupaciones();
+  const selectAgr = document.getElementById('new-agrupacion');
+  if (selectAgr) {
+    selectAgr.innerHTML = '<option value="">— Sin agrupación vinculada —</option>';
+    agrupacionesList.forEach(a => {
+      const opt = document.createElement('option');
+      opt.value = a.id_agrupacion;
+      opt.textContent = `${a.nombre} (${a.categoria})`;
+      selectAgr.appendChild(opt);
+    });
+  }
 }
 
 // =====================================================================
