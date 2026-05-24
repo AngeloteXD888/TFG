@@ -417,6 +417,144 @@ function crearTodosLosMarcadores() {
 }
 
 // =====================================================================
+// MAPA — RECORRIDOS DE DESFILES
+// =====================================================================
+let polylinesDesfile = [];
+let markersDesfile = [];
+
+const RECORRIDOS = {
+  granDesfile: {
+    nombre: 'Gran Desfile del Carnaval',
+    color: '#3b82f6',
+    puntos: [
+      { lat: 38.877820, lng: -6.980364 },
+      { lat: 38.877125, lng: -6.980139 },
+      { lat: 38.876416, lng: -6.979994 },
+      { lat: 38.876044, lng: -6.979760 },
+      { lat: 38.875916, lng: -6.979631 },
+      { lat: 38.875698, lng: -6.979406 },
+      { lat: 38.875442, lng: -6.979141 },
+      { lat: 38.875145, lng: -6.978807 },
+      { lat: 38.874965, lng: -6.978580 },
+      { lat: 38.874678, lng: -6.978250 },
+      { lat: 38.874469, lng: -6.977804 },
+      { lat: 38.874318, lng: -6.977492 },
+      { lat: 38.874104, lng: -6.976998 },
+      { lat: 38.873805, lng: -6.976281 },
+      { lat: 38.873274, lng: -6.975034 },
+      // Calle Enrique Segura Otaño
+      { lat: 38.873212, lng: -6.974366 },
+      { lat: 38.873159, lng: -6.973454 },
+      { lat: 38.873126, lng: -6.972998 },
+      { lat: 38.873055, lng: -6.972933 },
+      { lat: 38.872998, lng: -6.972830 },
+      { lat: 38.873060, lng: -6.972711 },
+      { lat: 38.873114, lng: -6.972688 },
+      { lat: 38.873193, lng: -6.972726 },
+      { lat: 38.873241, lng: -6.972794 },
+      // Av. Europa
+      { lat: 38.873316, lng: -6.972800 },
+      { lat: 38.873397, lng: -6.972800 },
+      { lat: 38.873639, lng: -6.972788 },
+      { lat: 38.873864, lng: -6.972784 },
+      { lat: 38.874089, lng: -6.972775 },
+      { lat: 38.874474, lng: -6.972766 },
+      { lat: 38.874623, lng: -6.972763 },
+      { lat: 38.874848, lng: -6.972743 },
+      { lat: 38.875193, lng: -6.972716 },
+      { lat: 38.875256, lng: -6.972690 },
+      // C. Pedro de Valdivia
+      { lat: 38.875343, lng: -6.972640 },
+      { lat: 38.875491, lng: -6.972544 },
+      { lat: 38.876019, lng: -6.972191 },
+    ]
+  },
+  desfileInfantil: {
+    nombre: 'Desfile Infantil de Comparsas',
+    color: '#ef4444',
+    puntos: [
+      { lat: 38.873267, lng: -6.972799 },
+      { lat: 38.873431, lng: -6.972798 },
+      { lat: 38.873653, lng: -6.972785 },
+      { lat: 38.873897, lng: -6.972781 },
+      { lat: 38.874085, lng: -6.972776 },
+      { lat: 38.874361, lng: -6.972769 },
+      { lat: 38.874588, lng: -6.972762 },
+      { lat: 38.874845, lng: -6.972741 },
+      { lat: 38.875137, lng: -6.972727 },
+      { lat: 38.875247, lng: -6.972692 },
+      { lat: 38.875345, lng: -6.972626 },
+      { lat: 38.875535, lng: -6.972515 },
+      { lat: 38.875646, lng: -6.972453 },
+      { lat: 38.875892, lng: -6.972286 },
+      { lat: 38.876096, lng: -6.972135 },
+      { lat: 38.876371, lng: -6.971968 },
+      { lat: 38.876621, lng: -6.971818 },
+      { lat: 38.876778, lng: -6.971635 },
+    ]
+  }
+};
+
+function toggleRecorridoDesfile(tipo) {
+  const btnActivo = document.getElementById(`btn-recorrido-${tipo}`);
+  const yaActivo = btnActivo.dataset.active === 'true';
+
+  polylinesDesfile.forEach(p => p.setMap(null));
+  markersDesfile.forEach(m => m.setMap(null));
+  polylinesDesfile = [];
+  markersDesfile = [];
+  document.querySelectorAll('.btn-recorrido').forEach(b => {
+    b.dataset.active = 'false';
+    b.style.opacity = '1';
+  });
+
+  if (yaActivo) return;
+
+  const recorrido = RECORRIDOS[tipo];
+  btnActivo.dataset.active = 'true';
+  btnActivo.style.opacity = '0.7';
+
+  const polyline = new google.maps.Polyline({
+    path: recorrido.puntos,
+    geodesic: true,
+    strokeColor: recorrido.color,
+    strokeOpacity: 0.9,
+    strokeWeight: 6,
+    map: map
+  });
+  polylinesDesfile.push(polyline);
+
+  recorrido.puntos.forEach((punto, i) => {
+    if (i !== 0 && i !== recorrido.puntos.length - 1) return;
+    const esInicio = i === 0;
+    const marker = new google.maps.Marker({
+      position: punto,
+      map: map,
+      icon: {
+        url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="36" height="36">
+            <circle cx="12" cy="12" r="10" fill="${esInicio ? '#22c55e' : recorrido.color}" stroke="white" stroke-width="2.5"/>
+          </svg>
+        `)}`,
+        scaledSize: new google.maps.Size(36, 36),
+        anchor: new google.maps.Point(18, 18)
+      }
+    });
+    const info = new google.maps.InfoWindow({
+      content: `<div style="font-family:'Outfit',sans-serif;padding:6px 10px;font-weight:600;color:#333;">
+        ${esInicio ? '🟢 Salida' : '🏁 Llegada'} — ${recorrido.nombre}
+      </div>`
+    });
+    marker.addListener('click', () => info.open(map, marker));
+    markersDesfile.push(marker);
+  });
+
+  const bounds = new google.maps.LatLngBounds();
+  recorrido.puntos.forEach(p => bounds.extend(p));
+  map.fitBounds(bounds);
+}
+
+// =====================================================================
 // NAVEGACIÓN ENTRE SECCIONES
 // =====================================================================
 const SECTION_TITLES = {
@@ -648,6 +786,16 @@ function openEventoModal(id) {
     </div>
   </div>
   <p class="modal-evento-desc">${e.descripcion}</p>
+
+  <div style="margin-top:1.25rem;">
+    <h4 style="font-size:.85rem;font-weight:600;color:var(--text-secondary);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.05em;">
+      🎭 Agrupaciones participantes
+    </h4>
+    <div id="participaciones-list-${e.id}">
+      <p style="color:var(--text-muted);font-size:.85rem">Cargando...</p>
+    </div>
+  </div>
+
   <div style="margin-top:1.5rem;display:flex;gap:.75rem;flex-wrap:wrap">
     <button class="btn-primary" onclick="toggleFav(${e.id}, document.getElementById('modal-fav-btn')); updateModalFav(${e.id})" 
             id="modal-fav-btn" style="${isFav ? 'background:linear-gradient(135deg,#991b1b,#ef4444)' : ''}">
@@ -673,6 +821,7 @@ function openEventoModal(id) {
   </div>`;
 
   renderComments(e.id);
+  renderParticipaciones(e.id);
   document.getElementById('modal-evento').classList.add('open');
 }
 
@@ -738,6 +887,91 @@ function updateModalFav(id) {
   const isFav = favoritos.includes(id);
   btn.textContent = isFav ? '❤️ En favoritos' : '🤍 Añadir a favoritos';
   btn.style.background = isFav ? 'linear-gradient(135deg,#991b1b,#ef4444)' : '';
+}
+
+// =====================================================================
+// PARTICIPACIONES — MODAL PÚBLICO
+// =====================================================================
+async function renderParticipaciones(eventoId) {
+  const container = document.getElementById(`participaciones-list-${eventoId}`);
+  if (!container) return;
+  const participaciones = await supabaseGetParticipaciones(eventoId);
+  if (participaciones.length === 0) {
+    container.innerHTML = '<p style="color:var(--text-muted);font-size:.85rem">No hay agrupaciones registradas para este evento.</p>';
+    return;
+  }
+  container.innerHTML = participaciones.map(p => `
+    <div style="display:flex;align-items:center;gap:.75rem;padding:.6rem .75rem;background:rgba(255,255,255,0.04);border-radius:8px;margin-bottom:.4rem;">
+      <span style="font-size:1.3rem">${getCategoriaEmoji(p.agrupacion?.categoria)}</span>
+      <div>
+        <strong style="font-size:.9rem;color:var(--text-primary);display:block">${p.agrupacion?.nombre || 'Sin nombre'}</strong>
+        <span style="font-size:.75rem;color:var(--text-muted)">${p.agrupacion?.categoria || ''} · ${p.anio}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function getCategoriaEmoji(categoria) {
+  const emojis = { 'Murgas': '🎵', 'Comparsas': '🎭', 'Artefactos': '🏗️', 'Grupos Animación': '🎪', 'Desfiles': '🎠' };
+  return emojis[categoria] || '🎶';
+}
+
+// =====================================================================
+// PARTICIPACIONES — PANEL ADMIN
+// =====================================================================
+let agrupacionesList = [];
+let currentEventoParticipaciones = null;
+
+async function openParticipacionesModal(eventoId) {
+  const evento = EVENTOS.find(e => e.id === eventoId);
+  if (!evento) return;
+  currentEventoParticipaciones = eventoId;
+  document.getElementById('modal-part-evento-nombre').textContent = evento.nombre;
+
+  if (!agrupacionesList.length) {
+    agrupacionesList = await supabaseGetAgrupaciones();
+  }
+  const select = document.getElementById('part-select-agrupacion');
+  select.innerHTML = agrupacionesList.map(a =>
+    `<option value="${a.id_agrupacion}">${a.nombre} (${a.categoria})</option>`
+  ).join('');
+
+  await renderParticipacionesAdmin(eventoId);
+  document.getElementById('modal-participaciones').classList.add('open');
+}
+
+async function renderParticipacionesAdmin(eventoId) {
+  const container = document.getElementById('modal-part-lista');
+  if (!container) return;
+  const participaciones = await supabaseGetParticipaciones(eventoId);
+  if (participaciones.length === 0) {
+    container.innerHTML = '<p style="color:var(--text-muted);font-size:.85rem">Sin agrupaciones asignadas.</p>';
+    return;
+  }
+  container.innerHTML = participaciones.map(p => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem .75rem;background:rgba(255,255,255,0.04);border-radius:8px;margin-bottom:.4rem;">
+      <span style="font-size:.9rem;">${getCategoriaEmoji(p.agrupacion?.categoria)} <strong>${p.agrupacion?.nombre}</strong> · ${p.anio}</span>
+      <button onclick="removeParticipacion(${p.id_participacion})"
+        style="background:rgba(239,68,68,0.2);border:none;color:#f87171;padding:.3rem .6rem;border-radius:6px;cursor:pointer;font-size:.8rem;">
+        Quitar
+      </button>
+    </div>
+  `).join('');
+}
+
+async function addParticipacion() {
+  const idAgrupacion = parseInt(document.getElementById('part-select-agrupacion').value);
+  const anio = parseInt(document.getElementById('part-input-anio').value);
+  if (!idAgrupacion || !anio) { showToast('Selecciona agrupación y año', true); return; }
+  const ok = await supabaseAddParticipacion(currentEventoParticipaciones, idAgrupacion, anio);
+  if (ok) { showToast('✅ Agrupación añadida'); await renderParticipacionesAdmin(currentEventoParticipaciones); }
+  else showToast('❌ Error al añadir agrupación', true);
+}
+
+async function removeParticipacion(idParticipacion) {
+  const ok = await supabaseDeleteParticipacion(idParticipacion);
+  if (ok) { showToast('Agrupación eliminada'); await renderParticipacionesAdmin(currentEventoParticipaciones); }
+  else showToast('❌ Error al eliminar', true);
 }
 
 // =====================================================================
@@ -1069,6 +1303,7 @@ function renderAdminTable(eventos) {
       <td>${e.ubicacion?.nombre || '-'}</td>
       <td>
         <button class="admin-action-btn admin-action-btn--edit" onclick="openEditEventModal(${e.id})">${getSvgIcon('pencil')} Editar</button>
+        <button class="admin-action-btn" style="background:rgba(124,58,237,0.2);border:1px solid rgba(124,58,237,0.4);color:#a78bfa;" onclick="openParticipacionesModal(${e.id})">🎭 Participantes</button>
         <button class="admin-action-btn admin-action-btn--del" onclick="deleteEventAdmin(${e.id}, this)">${getSvgIcon('trash')} Eliminar</button>
       </td>
     </tr>

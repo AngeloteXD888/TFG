@@ -461,4 +461,68 @@ function traducirError(msg) {
   return msg;
 }
 
+// =====================================================================
+// AGRUPACIONES — CRUD
+// =====================================================================
+
+async function supabaseGetAgrupaciones() {
+  try {
+    const { data, error } = await supabaseClient
+      .from('agrupacion')
+      .select('*')
+      .order('nombre', { ascending: true });
+    if (error) { console.warn('Error al obtener agrupaciones:', error.message); return []; }
+    return data || [];
+  } catch (err) {
+    console.error('supabaseGetAgrupaciones error:', err);
+    return [];
+  }
+}
+
+// =====================================================================
+// PARTICIPACIONES — CRUD
+// =====================================================================
+
+async function supabaseGetParticipaciones(eventoId) {
+  try {
+    const { data, error } = await supabaseClient
+      .from('participacion')
+      .select('*, agrupacion(nombre, categoria, descripcion)')
+      .eq('id_evento', eventoId)
+      .order('id_participacion', { ascending: true });
+    if (error) { console.warn('Error al obtener participaciones:', error.message); return []; }
+    return data || [];
+  } catch (err) {
+    console.error('supabaseGetParticipaciones error:', err);
+    return [];
+  }
+}
+
+async function supabaseAddParticipacion(idEvento, idAgrupacion, anio) {
+  try {
+    const { error } = await supabaseClient
+      .from('participacion')
+      .insert({ id_evento: idEvento, id_agrupacion: idAgrupacion, anio: anio });
+    if (error) { console.warn('Error al añadir participación:', error.message); return false; }
+    return true;
+  } catch (err) {
+    console.error('supabaseAddParticipacion error:', err);
+    return false;
+  }
+}
+
+async function supabaseDeleteParticipacion(idParticipacion) {
+  try {
+    const { error } = await supabaseClient
+      .from('participacion')
+      .delete()
+      .eq('id_participacion', idParticipacion);
+    if (error) { console.warn('Error al eliminar participación:', error.message); return false; }
+    return true;
+  } catch (err) {
+    console.error('supabaseDeleteParticipacion error:', err);
+    return false;
+  }
+}
+
 console.log('✅ Supabase conectado —', SUPABASE_URL);

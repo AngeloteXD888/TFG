@@ -287,6 +287,18 @@
 
         <div class="mapa-container">
           <div id="google-map" class="google-map"></div>
+          <div
+            style="position:absolute; top:1rem; right:1rem; z-index:10; display:flex; flex-direction:column; gap:.5rem;">
+            <button id="btn-recorrido-granDesfile" class="btn-recorrido" onclick="toggleRecorridoDesfile('granDesfile')"
+              style="background:#3b82f6; color:white; border:none; padding:.6rem 1rem; border-radius:8px; cursor:pointer; font-family:'Outfit',sans-serif; font-size:.85rem; box-shadow:0 2px 8px rgba(0,0,0,0.4);">
+              🔵 Gran Desfile
+            </button>
+            <button id="btn-recorrido-desfileInfantil" class="btn-recorrido"
+              onclick="toggleRecorridoDesfile('desfileInfantil')"
+              style="background:#ef4444; color:white; border:none; padding:.6rem 1rem; border-radius:8px; cursor:pointer; font-family:'Outfit',sans-serif; font-size:.85rem; box-shadow:0 2px 8px rgba(0,0,0,0.4);">
+              🔴 Desfile Infantil
+            </button>
+          </div>
         </div>
       </div>
     </section>
