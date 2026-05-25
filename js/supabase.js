@@ -525,4 +525,22 @@ async function supabaseDeleteParticipacion(idParticipacion) {
   }
 }
 
-console.log('✅ Supabase conectado —', SUPABASE_URL);
+console.log('Supabase conectado —', SUPABASE_URL);
+
+/**
+ * Iniciar sesión anónima en Supabase
+ * Crea un usuario temporal sin email/contraseña
+ */
+async function supabaseSignInAnonymously() {
+  try {
+    const { data, error } = await supabaseClient.auth.signInAnonymously();
+    if (error) {
+      console.error('Error en login anónimo:', error.message);
+      return { user: null, error: traducirError(error.message) };
+    }
+    return { user: data.user, error: null };
+  } catch (err) {
+    console.error('supabaseSignInAnonymously error:', err);
+    return { user: null, error: 'Error al iniciar sesión anónima.' };
+  }
+}
