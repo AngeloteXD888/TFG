@@ -243,6 +243,16 @@ body {
   font-size: 1rem;
   pointer-events: none;
   z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.input-icon svg {
+  width: 20px;
+  height: 20px;
+  stroke: var(--text-muted);
+  stroke-width: 1.5;
+  transition: stroke 0.2s ease;
 }
 .input-wrap input {
   width: 100%;
@@ -256,11 +266,18 @@ body {
   transition: var(--transition);
   outline: none;
 }
-.input-wrap input::placeholder { color: var(--text-muted); }
+.input-wrap input::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
+}
 .input-wrap input:focus {
   border-color: var(--border-focus);
   background: rgba(124,58,237,0.08);
   box-shadow: 0 0 0 3px rgba(124,58,237,0.15);
+}
+.input-wrap input:focus ~ .input-icon svg,
+.input-wrap input:focus + .input-icon svg {
+  stroke: var(--purple-light);
 }
 .input-wrap input.input-error {
   border-color: var(--error);
@@ -283,6 +300,16 @@ body {
   transition: opacity 0.2s;
 }
 .toggle-pass:hover { opacity: 1; }
+.toggle-pass svg {
+  width: 20px;
+  height: 20px;
+  stroke: #b8a9d9;
+  stroke-width: 1.5;
+  transition: stroke 0.2s ease;
+}
+.toggle-pass:hover svg {
+  stroke: #d1c4e9;
+}
 
 /* ---- ERRORES DE CAMPO ---- */
 .field-error {
@@ -417,6 +444,7 @@ body {
 .btn-submit:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
 
 .btn-icon { font-size: 1.1rem; }
+.btn-icon svg { stroke: white; }
 .btn-spinner {
   width: 18px; height: 18px;
   border: 2px solid rgba(255,255,255,0.3);
@@ -596,6 +624,9 @@ body {
   font-size: 1.1rem;
   flex-shrink: 0;
 }
+.perk-icon svg {
+  stroke: var(--purple-light);
+}
 
 .side-quote {
   background: rgba(255,255,255,0.04);
@@ -629,55 +660,6 @@ body {
   .auth-header { padding: 14px 20px; }
 }
 
-
-/* Ajuste de iconos SVG */
-.input-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.input-icon svg {
-  stroke: var(--text-muted);
-  transition: stroke 0.2s;
-}
-.input-wrap input:focus + .input-icon svg,
-.input-wrap input:focus ~ .input-icon svg {
-  stroke: var(--purple-light);
-}
-.perk-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-.perk-icon svg {
-  stroke: var(--purple-light);
-}
-.btn-icon svg {
-  stroke: white;
-}
-
-/* Ajuste suave para el color de los SVG en botones toggle-pass y en input-icon */
-.toggle-pass svg,
-.input-icon svg {
-  stroke: #b8a9d9;  /* Color más claro que el texto secundario original (#b8a9d9) */
-  transition: stroke 0.2s ease;
-}
-
-.toggle-pass:hover svg {
-  stroke: #d1c4e9;  /* Aún más claro al pasar el ratón */
-}
-
-.input-wrap input:focus ~ .input-icon svg,
-.input-wrap input:focus + .input-icon svg {
-  stroke: var(--purple-light); /* Mantiene el morado al focus del input */
-}
-
-/* Opcional: si quieres que el ojo tachado tenga el mismo tono */
-.toggle-pass svg {
-  stroke-width: 1.5;
-}
-
-/* Móviles pequeños (≤ 480px) - ajustes adicionales */
 @media (max-width: 480px) {
   .auth-card {
     padding: 32px 20px 48px;
@@ -690,15 +672,14 @@ body {
     font-size: 0.9rem;
   }
   .toast {
-    white-space: normal;          /* Evita que se salga de la pantalla */
+    white-space: normal;
     max-width: 90%;
     text-align: center;
     padding: 10px 16px;
     font-size: 0.85rem;
   }
-  /* Aumentar un poco el tamaño de los inputs para evitar zoom en iOS */
   .input-wrap input {
-    font-size: 16px;  /* iOS no hará zoom automático */
+    font-size: 16px;
   }
 }
 
@@ -714,7 +695,7 @@ input[type="date"] {
   padding: 13px 44px;
   transition: var(--transition);
   outline: none;
-  color-scheme: dark;  /* Hace el calendario nativo oscuro */
+  color-scheme: dark;
 }
 input[type="date"]:focus {
   border-color: var(--border-focus);
@@ -902,4 +883,20 @@ input[type="date"].input-ok {
 @media (max-width: 520px) {
   .terms-modal { max-height: 90vh; border-radius: var(--radius-md); }
   .terms-modal__header, .terms-modal__body, .terms-modal__footer { padding-left: 20px; padding-right: 20px; }
+}
+
+/* =============================================
+   FIXES ESPECÍFICOS PARA TELÉFONO
+   ============================================= */
+.input-wrap input[type="tel"] {
+  padding: 13px 44px 13px 44px !important;
+}
+.input-wrap input[type="tel"]::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
+  font-size: 0.95rem;
+}
+.input-wrap input:-webkit-autofill,
+.input-wrap input:-webkit-autofill:focus {
+  transition: background-color 0s 600000s, color 0s 600000s;
 }
