@@ -26,6 +26,9 @@ let infoWindows = {};
 let currentUser = null;
 let ubicacionesList = [];
 
+// Evita errores por ESCENARIO_DATA no definido
+const ESCENARIO_DATA = {};
+
 // =====================================================================
 // FUNCIÓN PARA GENERAR SVG
 // =====================================================================
@@ -201,8 +204,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
   renderEscenariosList();
 
-  const adminTotal = document.getElementById('admin-total-eventos');
-  if (adminTotal) adminTotal.textContent = EVENTOS.length;
+  // ---- Actualizar panel de administración ----
+  const adminTotalEventos = document.getElementById('admin-total-eventos');
+  if (adminTotalEventos) adminTotalEventos.textContent = EVENTOS.length;
+
+  const totalUsuarios = await supabaseGetTotalUsuarios();
+  const adminTotalUsuarios = document.getElementById('admin-total-usuarios');
+  if (adminTotalUsuarios) adminTotalUsuarios.textContent = totalUsuarios;
+
+  const adminTotalAgrupaciones = document.getElementById('admin-total-agrupaciones');
+  if (adminTotalAgrupaciones) adminTotalAgrupaciones.textContent = totalAgrupaciones;
+
   if (currentUser && currentUser.role === 'admin') renderModerationPanel();
 });
 
@@ -921,7 +933,20 @@ function renderAdminTable(eventos) {
   const tbody = document.getElementById('admin-table-body');
   if (!tbody) return;
   const catClass = (c) => c.replace(/\s/g, '');
-  tbody.innerHTML = eventos.map(e => `<tr><td><strong>${e.nombre}</strong></td><td><span class="evento-tag tag--${catClass(e.categoria)}">${e.categoria}</span></td><td>${e.dia}</td><td>${e.hora}</td><td>${e.ubicacion?.nombre || '-'}</td><td><button class="admin-action-btn admin-action-btn--edit" onclick="openEditEventModal(${e.id})">${getSvgIcon('pencil')} Editar</button><button class="admin-action-btn" style="background:rgba(124,58,237,0.2);border:1px solid rgba(124,58,237,0.4);color:#a78bfa;" onclick="openParticipacionesModal(${e.id})">🎭 Participantes</button><button class="admin-action-btn admin-action-btn--del" onclick="deleteEventAdmin(${e.id}, this)">${getSvgIcon('trash')} Eliminar</button></td></tr>`).join('');
+  tbody.innerHTML = eventos.map(e => `
+    <tr>
+      <td><strong>${e.nombre}</strong></td>
+      <td><span class="evento-tag tag--${catClass(e.categoria)}">${e.categoria}</span></td>
+      <td>${e.dia}</td>
+      <td>${e.hora}</td>
+      <td>${e.ubicacion?.nombre || '-'}</td>
+      <td>
+        <button class="admin-action-btn admin-action-btn--edit" onclick="openEditEventModal(${e.id})">${getSvgIcon('pencil')} Editar</button>
+        <button class="admin-action-btn" style="background:rgba(124,58,237,0.2);border:1px solid rgba(124,58,237,0.4);color:#a78bfa;" onclick="openParticipacionesModal(${e.id})">🎭 Participantes</button>
+        <button class="admin-action-btn admin-action-btn--del" onclick="deleteEventAdmin(${e.id}, this)">${getSvgIcon('trash')} Eliminar</button>
+      </td>
+    </tr>
+  `).join('');
 }
 
 async function deleteEventAdmin(id, btn) {
