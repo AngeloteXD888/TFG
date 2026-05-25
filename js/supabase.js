@@ -546,3 +546,65 @@ async function supabaseSignInAnonymously() {
     return { user: null, error: 'Error al iniciar sesión anónima.' };
   }
 }
+
+// =====================================================================
+// PERFIL DE USUARIO (ACTUALIZACIÓN Y AVATAR) - CORREGIDO
+// =====================================================================
+
+async function supabaseUpdatePerfil(userId, datos) {
+  try {
+    const { error } = await supabaseClient
+      .from('persona')
+      .update(datos)
+      .eq('id_persona', userId);
+    if (error) {
+      console.error('Error al actualizar perfil:', error);
+      return { success: false, error: error.message };
+    }
+    return { success: true, error: null };
+  } catch (err) {
+    console.error('supabaseUpdatePerfil error:', err);
+    return { success: false, error: err.message };
+  }
+}
+
+async function supabaseUploadAvatar(file, userId) {
+  if (!file) return null;
+  
+  // Validaciones
+  if (file.size > 2 * 1024 * 1024) {
+    console.error('La imagen supera los 2MB');
+    return null;
+  }
+  const allowed = ['image/jpeg', 'image/png', 'image/webp'];
+  if (!allowed.includes(file.type)) {
+    console.error('Formato no permitido. Usa JPEG, PNG o WEBP.');
+    return null;
+  }
+
+  const fileExt = file.name.split('.').pop();
+  const fileName = `${userId}-${Date.now()}.${fileExt}`;
+  const filePath = fileName;
+
+  try {
+    // Subir archivo
+    const { error: uploadError } = await supabaseClient.storage
+      .from('avatars')
+      .upload(filePath, file, { upsert: true });
+
+    if (uploadError) {
+      console.error('Error storage:', uploadError);
+      return null;
+    }
+
+    // Obtener URL pública
+    const { data: publicUrlData } = supabaseClient.storage
+      .from('avatars')
+      .getPublicUrl(filePath);
+
+    return publicUrlData.publicUrl;
+  } catch (err) {
+    console.error('supabaseUploadAvatar excepción:', err);
+    return null;
+  }
+}

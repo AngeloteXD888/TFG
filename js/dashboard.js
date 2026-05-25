@@ -196,15 +196,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
       }
 
-      if (userPerfil) {
-        currentUser = {
-          id: user.id,
-          name: userPerfil.nombre,
-          email: user.email,
-          role: userPerfil.rol
-        };
-        localStorage.setItem('cbdj-user', JSON.stringify(currentUser));
-      } else {
+    if (userPerfil) {
+      currentUser = {
+        id: user.id,
+        name: userPerfil.nombre,
+        email: user.email,
+        role: userPerfil.rol,
+        avatar: userPerfil.avatar_url || null
+      };
+      localStorage.setItem('cbdj-user', JSON.stringify(currentUser));
+    } else {
         currentUser = null;
       }
       setupUserUI();
@@ -288,9 +289,16 @@ function setupUserUI() {
 
   if (!currentUser) {
     if (navAdmin) navAdmin.style.display = 'none';
-    if (userAvatar) { userAvatar.textContent = '?'; userAvatar.style.background = 'rgba(255,255,255,0.1)'; }
+    if (userAvatar) {
+      userAvatar.textContent = '?';
+      userAvatar.style.backgroundImage = '';
+      userAvatar.style.background = 'rgba(255,255,255,0.1)';
+    }
     if (userName) userName.textContent = 'Invitado';
-    if (userRole) { userRole.textContent = 'Sin registro'; userRole.style.color = 'var(--text-muted)'; }
+    if (userRole) {
+      userRole.textContent = 'Sin registro';
+      userRole.style.color = 'var(--text-muted)';
+    }
     if (topbarAvatar) topbarAvatar.textContent = '?';
     if (logoutBtn) {
       logoutBtn.title = 'Iniciar sesión';
@@ -300,14 +308,12 @@ function setupUserUI() {
     return;
   }
 
-  // Usuario registrado o anónimo con rol
   if (navAdmin) {
     if (currentUser.role === 'admin') navAdmin.style.display = '';
     else navAdmin.style.display = 'none';
   }
 
   const initial = currentUser.name.charAt(0).toUpperCase();
-  if (userAvatar) userAvatar.textContent = initial;
   if (userName) userName.textContent = currentUser.name;
   if (userRole) {
     if (currentUser.role === 'admin') {
@@ -321,9 +327,32 @@ function setupUserUI() {
       userRole.style.color = '';
     }
   }
-  if (topbarAvatar) topbarAvatar.textContent = initial;
-}
 
+  // Avatar: imagen o inicial
+  if (userAvatar) {
+    if (currentUser.avatar) {
+      userAvatar.style.backgroundImage = `url(${currentUser.avatar})`;
+      userAvatar.style.backgroundSize = 'cover';
+      userAvatar.style.backgroundPosition = 'center';
+      userAvatar.textContent = '';
+    } else {
+      userAvatar.style.backgroundImage = '';
+      userAvatar.textContent = initial;
+    }
+  }
+
+  if (topbarAvatar) {
+    if (currentUser.avatar) {
+      topbarAvatar.style.backgroundImage = `url(${currentUser.avatar})`;
+      topbarAvatar.style.backgroundSize = 'cover';
+      topbarAvatar.style.backgroundPosition = 'center';
+      topbarAvatar.textContent = '';
+    } else {
+      topbarAvatar.style.backgroundImage = '';
+      topbarAvatar.textContent = initial;
+    }
+  }
+}
 // =====================================================================
 // CERRAR SESIÓN
 // =====================================================================
@@ -1171,4 +1200,116 @@ function showToast(msg, warn = false) {
   toast.classList.add('visible');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => toast.classList.remove('visible'), 3000);
+}
+
+// =====================================================================
+// PERFIL DE USUARIO (MODAL Y EDICIÓN) - CORREGIDO
+// =====================================================================
+
+let currentAvatarFile = null;
+
+async function openProfileModal() {
+  if (!currentUser) {
+    showToast('Debes iniciar sesión para editar tu perfil', true);
+    return;
+  }
+
+  const { data, error } = await supabaseClient
+    .from('persona')
+    .select('*')
+    .eq('id_persona', currentUser.id)
+    .single();
+
+  if (error) {
+    showToast('Error al cargar los datos del perfil', true);
+    return;
+  }
+
+  document.getElementById('profile-name').value = data.nombre || '';
+  document.getElementById('profile-surname').value = data.apellidos || '';
+  document.getElementById('profile-phone').value = data.telefono || '';
+  document.getElementById('profile-birthdate').value = data.fecha_nacimiento || '';
+  document.getElementById('profile-email').value = currentUser.email || '';
+
+  const avatarImg = document.getElementById('profile-avatar-img');
+  if (data.avatar_url) {
+    avatarImg.src = data.avatar_url;
+  } else {
+    avatarImg.src = '';
+  }
+
+  currentAvatarFile = null;
+  document.getElementById('profile-avatar-input').value = '';
+
+  document.getElementById('modal-perfil').classList.add('open');
+}
+
+// Previsualizar nueva foto en el modal
+document.getElementById('profile-avatar-input')?.addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (file) {
+    currentAvatarFile = file;
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      const img = document.getElementById('profile-avatar-img');
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+async function saveProfile() {
+  if (!currentUser) return;
+
+  const nombre = document.getElementById('profile-name').value.trim();
+  const apellidos = document.getElementById('profile-surname').value.trim();
+  const telefono = document.getElementById('profile-phone').value.trim();
+  const birthdate = document.getElementById('profile-birthdate').value;
+
+  if (!nombre) {
+    showToast('El nombre es obligatorio', true);
+    return;
+  }
+
+  const btn = document.getElementById('btn-save-profile');
+  const originalText = btn.innerHTML;
+  btn.innerHTML = 'Guardando...';
+  btn.disabled = true;
+
+  let avatarUrl = null;
+  const avatarFile = document.getElementById('profile-avatar-input').files[0];
+  
+  if (avatarFile) {
+    avatarUrl = await supabaseUploadAvatar(avatarFile, currentUser.id);
+    if (!avatarUrl) {
+      showToast('Error al subir la imagen. Tamaño máximo 2MB, formato JPEG/PNG/WEBP', true);
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+      return;
+    }
+  }
+
+  const updates = {
+    nombre: nombre,
+    apellidos: apellidos || null,
+    telefono: telefono || null,
+    fecha_nacimiento: birthdate || null
+  };
+  if (avatarUrl) updates.avatar_url = avatarUrl;
+
+  const result = await supabaseUpdatePerfil(currentUser.id, updates);
+
+  if (result.success) {
+    currentUser.name = nombre;
+    if (avatarUrl) currentUser.avatar = avatarUrl;
+    localStorage.setItem('cbdj-user', JSON.stringify(currentUser));
+    setupUserUI();  // refrescar avatar en sidebar/topbar
+    showToast('Perfil actualizado correctamente');
+    closeModal('modal-perfil');
+  } else {
+    showToast('Error: ' + result.error, true);
+  }
+
+  btn.innerHTML = originalText;
+  btn.disabled = false;
 }

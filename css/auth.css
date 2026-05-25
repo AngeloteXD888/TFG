@@ -900,3 +900,38 @@ input[type="date"].input-ok {
 .input-wrap input:-webkit-autofill:focus {
   transition: background-color 0s 600000s, color 0s 600000s;
 }
+
+/* ---- AVATAR REGISTRO ---- */
+.avatar-upload-reg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.avatar-preview-reg {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(124,58,237,0.2);
+  border: 2px dashed var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+}
+.avatar-placeholder {
+  font-size: 2rem;
+  color: var(--purple-light);
+}
+.avatar-preview-reg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.form-hint {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}

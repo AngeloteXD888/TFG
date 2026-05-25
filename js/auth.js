@@ -49,6 +49,22 @@ function switchTab(tab) {
   });
 }
 
+// Previsualizar avatar en registro
+document.getElementById('reg-avatar-input')?.addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      const img = document.getElementById('reg-avatar-img');
+      const placeholder = document.querySelector('#reg-avatar-preview .avatar-placeholder');
+      img.src = event.target.result;
+      img.style.display = 'block';
+      if (placeholder) placeholder.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
 // ---- TOGGLE CONTRASEÑA con SVG ----
 function togglePass(inputId, btn) {
   const input = document.getElementById(inputId);
@@ -288,22 +304,32 @@ async function handleRegister(e) {
 
   setLoading('btn-register', 'spinner-register', true);
 
-  // Registro real con Supabase
+  // 1. Registrar usuario
   const { user, error } = await supabaseSignUp(name, apellidos, email, password, telefono, birthdate);
 
-  setLoading('btn-register', 'spinner-register', false);
-
   if (error) {
+    setLoading('btn-register', 'spinner-register', false);
     setError('reg-email', 'reg-email-err', error);
     return;
   }
 
-  // Guardar sesión activa en localStorage
+  // 2. Subir avatar si existe
+  let avatarUrl = null;
+  const avatarFile = document.getElementById('reg-avatar-input').files[0];
+  if (avatarFile && user) {
+    avatarUrl = await supabaseUploadAvatar(avatarFile, user.id);
+    if (avatarUrl) {
+      await supabaseUpdatePerfil(user.id, { avatar_url: avatarUrl });
+    }
+  }
+
+  // 3. Guardar sesión en localStorage
   const userData = {
     id: user.id,
     name: name,
     email: email,
-    role: 'user'
+    role: 'user',
+    avatar: avatarUrl
   };
   localStorage.setItem('cbdj-user', JSON.stringify(userData));
 
