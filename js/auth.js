@@ -194,6 +194,8 @@ async function handleRegister(e) {
   clearAllErrors([
     ['reg-name', 'reg-name-err'],
     ['reg-email', 'reg-email-err'],
+    ['reg-phone', 'reg-phone-err'],
+    ['reg-birthdate', 'reg-birthdate-err'],
     ['reg-password', 'reg-password-err'],
     ['reg-confirm', 'reg-confirm-err'],
     ['reg-terms', 'reg-terms-err'],
@@ -202,6 +204,8 @@ async function handleRegister(e) {
   const name = document.getElementById('reg-name').value.trim();
   const apellidos = document.getElementById('reg-surname').value.trim() || null;
   const email = document.getElementById('reg-email').value.trim();
+  const telefono = document.getElementById('reg-phone').value.trim();
+  const birthdate = document.getElementById('reg-birthdate').value;
   const password = document.getElementById('reg-password').value;
   const confirm = document.getElementById('reg-confirm').value;
   const terms = document.getElementById('reg-terms').checked;
@@ -214,6 +218,35 @@ async function handleRegister(e) {
   } else {
     clearError('reg-name', 'reg-name-err');
   }
+
+  if (!telefono) {
+    setError('reg-phone', 'reg-phone-err', 'El teléfono es obligatorio.');
+    valid = false;
+  } else if (!/^\+?[\d\s\-]{7,15}$/.test(telefono)) {
+    setError('reg-phone', 'reg-phone-err', 'Introduce un teléfono válido.');
+    valid = false;
+  } else {
+    clearError('reg-phone', 'reg-phone-err');
+  }
+
+ if (!birthdate) {
+    setError('reg-birthdate', 'reg-birthdate-err', 'La fecha de nacimiento es obligatoria.');
+    valid = false;
+  } else {
+    const hoy = new Date();
+    const nacimiento = new Date(birthdate);
+    const edad = hoy.getFullYear() - nacimiento.getFullYear() -
+      (hoy < new Date(hoy.getFullYear(), nacimiento.getMonth(), nacimiento.getDate()) ? 1 : 0);
+    if (edad < 14) {
+      setError('reg-birthdate', 'reg-birthdate-err', 'Debes tener al menos 14 años.');
+      valid = false;
+    } else if (edad > 120) {
+      setError('reg-birthdate', 'reg-birthdate-err', 'Introduce una fecha válida.');
+      valid = false;
+    } else {
+      clearError('reg-birthdate', 'reg-birthdate-err');
+    }
+  } 
 
   if (!email) {
     setError('reg-email', 'reg-email-err', 'El correo es obligatorio.');
@@ -256,7 +289,7 @@ async function handleRegister(e) {
   setLoading('btn-register', 'spinner-register', true);
 
   // Registro real con Supabase
-  const { user, error } = await supabaseSignUp(name, apellidos, email, password);
+  const { user, error } = await supabaseSignUp(name, apellidos, email, password, telefono, birthdate);
 
   setLoading('btn-register', 'spinner-register', false);
 
@@ -302,4 +335,43 @@ function showToast(msg) {
   toastMsg.textContent = msg;
   toast.classList.add('visible');
   setTimeout(() => toast.classList.remove('visible'), 3500);
+}
+
+// ---- MODAL TÉRMINOS ----
+function openTermsModal(e) {
+  if (e) e.preventDefault();
+  const overlay = document.getElementById('terms-overlay');
+  const btnAccept = document.getElementById('btn-accept-terms');
+  const body = overlay.querySelector('.terms-modal__body');
+
+  // Resetear estado cada vez que se abre
+  btnAccept.disabled = true;
+  body.scrollTop = 0;
+
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  // Escuchar scroll
+  body.onscroll = () => {
+    const llegadoAlFinal = body.scrollTop + body.clientHeight >= body.scrollHeight - 10;
+    if (llegadoAlFinal) {
+      btnAccept.disabled = false;
+      body.onscroll = null; // Una vez activado, dejar de escuchar
+    }
+  };
+}
+
+function closeTermsModal(e) {
+  // Si se hace click en el overlay (fondo), cerrar
+  if (e && e.target !== document.getElementById('terms-overlay')) return;
+  document.getElementById('terms-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function acceptTermsModal() {
+  // Marca el checkbox automáticamente al aceptar
+  const checkbox = document.getElementById('reg-terms');
+  if (checkbox) checkbox.checked = true;
+  document.getElementById('terms-overlay').classList.remove('open');
+  document.body.style.overflow = '';
 }
