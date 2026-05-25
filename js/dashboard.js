@@ -68,6 +68,63 @@ function getSvgIcon(tipo, className = 'icon-svg') {
   }
 }
 
+// =====================================================================
+// FILTRO DE PALABRAS PROHIBIDAS
+// =====================================================================
+const PALABRAS_PROHIBIDAS = [
+  // Insultos graves y groserías comunes
+  'puta', 'puto', 'putamadre', 'puta madre', 'joder', 'cojones', 'coño', 'cabrón', 'cabrona',
+  'gilipollas', 'capullo', 'mierda', 'cagar', 'cagada', 'cagaste', 'cagado', 'cagona', 'cagon',
+  'subnormal', 'idiota', 'imbécil', 'estúpido', 'tarado', 'retrasado', 'tontolaba', 'tonto del culo',
+  'hijo de puta', 'hija de puta', 'zorra', 'perra', 'maricón', 'marica', 'bollera', 'tortillera',
+  'follame', 'chinga', 'verga', 'carajo', 'pendejo', 'wey', 'guey', 'culiao', 'conchetumare',
+  'mongolo', 'mongólica', 'mongolico', 'mongolito', 'disminuido', 'deficiente', 'enfermo mental',
+  'enferma mental', 'psiquiátrico', 'loquito', 'loquita', 'basura', 'escoria', 'malparido',
+  'malparida', 'soplapollas', 'pringao', 'pringado', 'pelele', 'inútil', 'incompetente',
+  'fracasado', 'fracasada', 'cabronazo', 'cabroncete', 'gilipuertas', 'gilipollín', 'capullín',
+  'capullito', 'cojonudo', 'cojonuda', 'cojonazos', 'mamada', 'mamadas', 'chupapollas', 'chupapija',
+  'chupar polla', 'chupar pija', 'comepollas', 'concha tu madre', 'conchatumadre', 'la reputa madre',
+  'reputa', 'reputísima', 'putísima', 'puto amo', 'puta amo', 'sudaca', 'panchito', 'negro de mierda',
+  'indio', 'moro', 'morito', 'moraco', 'fascista', 'nazi', 'facha', 'progre de mierda', 'rojo',
+  'comunista de mierda', 'marimacho', 'marimacha', 'camionera', 'bujarra', 'bujarrón', 'analfabeto',
+  'analfabeta', 'zopenco', 'zopenca', 'zoquete', 'botarate', 'memo', 'mema', 'lelo', 'lela', 'simple',
+  'soplagaitas', 'papanatas', 'cenutrio', 'cenutria', 'cara culo', 'cara de verga', 'cara de pija',
+  'huevón', 'huevona', 'güevón', 'güevona', 'boludo', 'boluda', 'pelotudo', 'pelotuda', 'choto',
+  'chota', 'pedazo de mierda', 'pedazo de gilipollas', 'pedazo de cabrón', 'hijo de la gran puta',
+  'me cago en', 'cago en', 'caguen en', 'cagüen', 'recontra', 'requete', 'imbecil', 'imbećil',
+  'estupido', 'estupida', 'retrasado', 'retrasada', 'tarada', 'idiotizado', 'pendejada', 'gilipollez',
+  'cojonudo', 'puñeta', 'ostia', 'hostia', 'me cago en dios', 'me cago en la hostia', 'la hostia',
+  'puto amo', 'puta vida', 'puta mierda', 'hijueputa', 'hijueputas', 'mariconazo', 'maricona',
+  'mariquita', 'mariquita', 'bollera', 'bujarra', 'camionero', 'camionera', 'cazurro', 'cazurra',
+  'necio', 'necia', 'bruto', 'bruta', 'bestia', 'bestia', 'cerdo', 'cerda', 'chancho', 'chancha',
+  'culear', 'culeado', 'culeada', 'chingar', 'chingado', 'chingada', 'follar', 'follado', 'follada',
+  'coger', 'cogido', 'cogida', 'cojer', 'cojido', 'cojida', 'pito', 'pija', 'teta', 'tetas', 'culo',
+  'nalgas', 'culo sucio', 'muerde almohada', 'come mierda', 'comepollas', 'chupamedias', 'lamebotas',
+  'lameculos', 'soplaculos', 'tragasables', 'tragaleches', 'saca leche', 'saca mierda', 'tonto', 'tonta', 'tontos', 'tontas'
+];
+
+function contienePalabrotas(texto) {
+  // Normalizar: minúsculas, eliminar tildes, convertir números comunes a letras
+  let textoLower = texto.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  // Reemplazar caracteres comunes de evasión
+  textoLower = textoLower
+    .replace(/0/g, 'o')
+    .replace(/1/g, 'i')
+    .replace(/3/g, 'e')
+    .replace(/4/g, 'a')
+    .replace(/5/g, 's')
+    .replace(/7/g, 't')
+    .replace(/@/g, 'a')
+    .replace(/[$]/g, 's')
+    .replace(/[+]/g, 't')
+    .replace(/[#]/g, 'h');
+  
+  return PALABRAS_PROHIBIDAS.some(palabra => {
+    const palabraLower = palabra.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    // Detectar palabra completa o con espacios/separadores
+    return textoLower.includes(palabraLower);
+  });
+}
 // Convierte "2026-02-13" a "Jue 13 Feb"
 function dateToFechaTexto(fechaISO) {
   if (!fechaISO) return '';
@@ -753,7 +810,7 @@ async function addParticipacion() {
 async function removeParticipacion(idParticipacion) {
   const ok = await supabaseDeleteParticipacion(idParticipacion);
   if (ok) { showToast('Agrupación eliminada'); await renderParticipacionesAdmin(currentEventoParticipaciones); }
-  else showToast('❌ Error al eliminar', true);
+  else showToast('Error al eliminar', true);
 }
 
 // =====================================================================
@@ -763,8 +820,15 @@ async function addComment(eventoId) {
   if (!requireAuth('Publicar comentarios')) return;
   const input = document.getElementById(`comment-input-${eventoId}`);
   if (!input) return;
-  const text = input.value.trim();
+  let text = input.value.trim();
   if (!text) { showToast('Escribe un comentario antes de publicar', true); return; }
+  
+  // Verificar palabras prohibidas
+  if (contienePalabrotas(text)) {
+    showToast('El comentario contiene lenguaje inapropiado. Por favor, edítalo.', true);
+    return;
+  }
+  
   const { comment, error } = await supabaseAddComentario(currentUser.id, eventoId, text);
   if (error) { showToast('❌ ' + error, true); return; }
   input.value = '';
@@ -818,7 +882,19 @@ async function renderModerationPanel() {
     const userName = (c.persona && c.persona.nombre) ? c.persona.nombre : 'Anónimo';
     const evento = EVENTOS.find(e => e.id === c.id_evento);
     const eventoName = evento ? evento.nombre : 'Evento #' + c.id_evento;
-    return `<div class="moderation-item"><div class="moderation-item-info"><div class="moderation-item-top"><strong>${userName}</strong><span class="moderation-event-tag">📌 ${eventoName}</span></div><p class="moderation-item-text">${escapeHtml(c.contenido)}</p><span class="moderation-item-date">${timeStr}</span></div><button class="admin-action-btn admin-action-btn--del" onclick="deleteComment(${c.id_evento}, ${c.id_publicacion})">${getSvgIcon('trash')} Eliminar</button></div>`;
+    const hasBadWords = contienePalabrotas(c.contenido);
+    return `<div class="moderation-item ${hasBadWords ? 'moderation-item--warning' : ''}">
+      <div class="moderation-item-info">
+        <div class="moderation-item-top">
+          <strong>${userName}</strong>
+          <span class="moderation-event-tag"> ${eventoName}</span>
+          ${hasBadWords ? '<span class="bad-word-badge">Contiene insultos</span>' : ''}
+        </div>
+        <p class="moderation-item-text">${escapeHtml(c.contenido)}</p>
+        <span class="moderation-item-date">${timeStr}</span>
+      </div>
+      <button class="admin-action-btn admin-action-btn--del" onclick="deleteComment(${c.id_evento}, ${c.id_publicacion})">${getSvgIcon('trash')} Eliminar</button>
+    </div>`;
   }).join('');
 }
 

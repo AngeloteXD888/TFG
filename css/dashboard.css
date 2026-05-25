@@ -1387,3 +1387,19 @@ body {
 .fav-btn.active {
   filter: drop-shadow(0 0 4px #ef4444);
 }
+
+/* ===================== ADVERTENCIA POR INSULTOS EN MODERACIÓN ===================== */
+.moderation-item--warning {
+  border-left: 4px solid #ef4444;
+  background: rgba(239,68,68,0.08);
+}
+.bad-word-badge {
+  display: inline-block;
+  background: rgba(239,68,68,0.2);
+  color: #f87171;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  margin-left: 0.5rem;
+}
