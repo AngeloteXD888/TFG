@@ -1524,3 +1524,11 @@ body {
   background-position: center !important;
   background-repeat: no-repeat !important;
 }
+
+/* Alineación de iconos SVG con texto */
+.nav-logo svg,
+.btn svg,
+.side-badge svg {
+  vertical-align: middle;
+  margin-right: 6px;
+}

@@ -935,3 +935,11 @@ input[type="date"].input-ok {
   color: var(--text-muted);
   margin-top: 4px;
 }
+
+/* Alineación de iconos SVG con texto */
+.nav-logo svg,
+.btn svg,
+.side-badge svg {
+  vertical-align: middle;
+  margin-right: 6px;
+}
