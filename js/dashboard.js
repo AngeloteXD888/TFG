@@ -707,8 +707,23 @@ function renderFavoritos() {
 function openEventoModal(id) {
   const e = EVENTOS.find(ev => ev.id === id);
   if (!e) return;
+
   const isFav = (currentUser && currentUser.id && currentUser.role !== 'anonimo') ? favoritos.includes(e.id) : false;
   const catClass = e.categoria.replace(/\s/g, '');
+  
+  // Calcular avatar del usuario actual para el formulario
+  let currentUserAvatarHtml = '';
+  if (currentUser) {
+    if (currentUser.avatar && currentUser.avatar.trim() !== '') {
+      currentUserAvatarHtml = `<div class="comment-form-avatar" style="background-image: url(${currentUser.avatar}); background-size: cover; background-position: center;"></div>`;
+    } else {
+      const initial = currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'U';
+      currentUserAvatarHtml = `<div class="comment-form-avatar">${initial}</div>`;
+    }
+  } else {
+    currentUserAvatarHtml = `<div class="comment-form-avatar">U</div>`;
+  }
+
   const body = document.getElementById('modal-evento-body');
   body.innerHTML = `
     <div class="modal-evento-header">
@@ -732,7 +747,7 @@ function openEventoModal(id) {
     <div class="comments-section">
       <div class="comments-header"><h3>${getSvgIcon('chat')} Comentarios</h3><span class="comments-count" id="comments-count-${e.id}">0</span></div>
       <div class="comment-form">
-        <div class="comment-form-avatar">${currentUser ? currentUser.name.charAt(0).toUpperCase() : 'U'}</div>
+        ${currentUserAvatarHtml}
         <div class="comment-form-input-wrap">
           <textarea id="comment-input-${e.id}" class="comment-textarea" placeholder="Escribe un comentario..." rows="2"></textarea>
           <button class="comment-submit-btn" onclick="addComment(${e.id})">${getSvgIcon('chat')} Publicar</button>
@@ -876,16 +891,48 @@ async function renderComments(eventoId) {
   const container = document.getElementById(`comments-list-${eventoId}`);
   const countEl = document.getElementById(`comments-count-${eventoId}`);
   if (!container) return;
+
   const eventComments = await supabaseGetComentarios(eventoId);
   if (countEl) countEl.textContent = eventComments.length;
-  if (eventComments.length === 0) { container.innerHTML = `<div class="comments-empty"><span>💭</span><p>No hay comentarios aún. ¡Sé el primero en opinar!</p></div>`; return; }
+
+  if (eventComments.length === 0) {
+    container.innerHTML = `<div class="comments-empty"><span>💭</span><p>No hay comentarios aún. ¡Sé el primero en opinar!</p></div>`;
+    return;
+  }
+
   const isAdmin = currentUser && currentUser.role === 'admin';
+
   container.innerHTML = eventComments.slice().reverse().map(c => {
     const date = new Date(c.fecha);
-    const timeStr = date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-    const userName = (c.persona && c.persona.nombre) ? c.persona.nombre : 'Anónimo';
-    const initial = userName.charAt(0).toUpperCase();
-    return `<div class="comment-item" id="comment-${c.id_publicacion}"><div class="comment-avatar">${initial}</div><div class="comment-body"><div class="comment-header"><strong class="comment-user">${userName}</strong><span class="comment-date">${timeStr}</span></div><p class="comment-text">${escapeHtml(c.contenido)}</p></div>${isAdmin ? `<button class="comment-delete-btn" onclick="event.stopPropagation(); deleteComment(${eventoId}, ${c.id_publicacion})" title="Eliminar comentario">🗑️</button>` : ''}</div>`;
+    const timeStr = date.toLocaleDateString('es-ES', {
+      day: 'numeric', month: 'short', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    });
+    const userName = c.persona?.nombre || 'Anónimo';
+    const avatarUrl = c.persona?.avatar_url;
+
+    // Si tiene avatar_url válido, mostramos imagen; si no, la inicial
+    let avatarHtml;
+    if (avatarUrl && avatarUrl.trim() !== '') {
+      avatarHtml = `<div class="comment-avatar" style="background-image: url(${avatarUrl}); background-size: cover; background-position: center; background-repeat: no-repeat;"></div>`;
+    } else {
+      const initial = userName.charAt(0).toUpperCase();
+      avatarHtml = `<div class="comment-avatar">${initial}</div>`;
+    }
+
+    return `
+      <div class="comment-item" id="comment-${c.id_publicacion}">
+        ${avatarHtml}
+        <div class="comment-body">
+          <div class="comment-header">
+            <strong class="comment-user">${escapeHtml(userName)}</strong>
+            <span class="comment-date">${timeStr}</span>
+          </div>
+          <p class="comment-text">${escapeHtml(c.contenido)}</p>
+        </div>
+        ${isAdmin ? `<button class="comment-delete-btn" onclick="event.stopPropagation(); deleteComment(${eventoId}, ${c.id_publicacion})" title="Eliminar comentario">🗑️</button>` : ''}
+      </div>
+    `;
   }).join('');
 }
 

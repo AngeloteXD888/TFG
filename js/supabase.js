@@ -199,16 +199,14 @@ async function supabaseGetComentarios(eventoId) {
   try {
     const { data, error } = await supabaseClient
       .from('publicacion')
-      .select('*, persona(nombre)')
+      .select('*, persona(nombre, avatar_url)')  // ← añadido avatar_url
       .eq('id_evento', eventoId)
       .eq('tipo', 'comentario')
       .order('fecha', { ascending: true });
-
     if (error) {
       console.warn('Error al obtener comentarios:', error.message);
       return [];
     }
-
     return data || [];
   } catch (err) {
     console.error('supabaseGetComentarios error:', err);
@@ -264,7 +262,7 @@ async function supabaseGetAllComentarios() {
   try {
     const { data, error } = await supabaseClient
       .from('publicacion')
-      .select('*, persona(nombre)')
+      .select('*, persona(nombre, avatar_url)')
       .eq('tipo', 'comentario')
       .order('fecha', { ascending: false })
       .limit(50);
@@ -273,7 +271,6 @@ async function supabaseGetAllComentarios() {
       console.warn('Error al obtener todos los comentarios:', error.message);
       return [];
     }
-
     return data || [];
   } catch (err) {
     console.error('supabaseGetAllComentarios error:', err);
