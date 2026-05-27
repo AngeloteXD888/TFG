@@ -22,13 +22,24 @@ const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
  * Registrar un nuevo usuario con email y contraseña.
  * También inserta su perfil en la tabla 'persona'.
  */
-async function supabaseSignUp(nombre, apellidos, email, password, telefono, fechaNacimiento) {
+async function supabaseSignUp(nombre, apellidos, email, password, telefono, fechaNacimiento, username) {
   try {
+    // Verificar que el username no esté ya en uso
+    const { data: existingUser } = await supabaseClient
+      .from('persona')
+      .select('username')
+      .eq('username', username)
+      .single();
+
+    if (existingUser) {
+      return { user: null, error: 'Ese nombre de usuario ya está en uso.' };
+    }
+
     const { data, error } = await supabaseClient.auth.signUp({
       email: email,
       password: password,
       options: {
-        data: { nombre: nombre, apellidos: apellidos }
+        data: { nombre: nombre, apellidos: apellidos, username: username }
       }
     });
 
@@ -44,6 +55,7 @@ async function supabaseSignUp(nombre, apellidos, email, password, telefono, fech
           nombre: nombre,
           apellidos: apellidos || null,
           email: email,
+          username: username,
           telefono: telefono,
           fecha_nacimiento: fechaNacimiento,
           contrasena: '***',
@@ -199,7 +211,7 @@ async function supabaseGetComentarios(eventoId) {
   try {
     const { data, error } = await supabaseClient
       .from('publicacion')
-      .select('*, persona(nombre, avatar_url)')  // ← añadido avatar_url
+      .select('*, persona(nombre, username, avatar_url)')
       .eq('id_evento', eventoId)
       .eq('tipo', 'comentario')
       .order('fecha', { ascending: true });
@@ -262,7 +274,7 @@ async function supabaseGetAllComentarios() {
   try {
     const { data, error } = await supabaseClient
       .from('publicacion')
-      .select('*, persona(nombre, avatar_url)')
+      .select('*, persona(nombre, username, avatar_url)')
       .eq('tipo', 'comentario')
       .order('fecha', { ascending: false })
       .limit(50);
@@ -563,6 +575,16 @@ async function supabaseUpdatePerfil(userId, datos) {
     console.error('supabaseUpdatePerfil error:', err);
     return { success: false, error: err.message };
   }
+}
+
+async function supabaseCheckUsernameAvailable(username, currentUserId) {
+  const { data } = await supabaseClient
+    .from('persona')
+    .select('id_persona')
+    .eq('username', username)
+    .neq('id_persona', currentUserId)  // excluir al propio usuario
+    .single();
+  return !data; // true = disponible
 }
 
 async function supabaseUploadAvatar(file, userId) {

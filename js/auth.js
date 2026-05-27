@@ -1,3 +1,9 @@
+// =====================================================================
+// CARNAVAL DE BADAJOZ — Auth JavaScript
+// Con login por username y ocultar sidebar en registro
+// Author: Ángel Galea Anisa | TFG 2025/2026
+// =====================================================================
+
 // ---- CONFETTI ----
 (function spawnConfetti() {
   const container = document.getElementById('confetti-container');
@@ -19,13 +25,15 @@
   }
 })();
 
-// ---- TABS ----
+// ---- TABS (modificada para ocultar/mostrar sidebar) ----
 function switchTab(tab) {
   const loginForm = document.getElementById('form-login');
   const registerForm = document.getElementById('form-register');
   const tabLogin = document.getElementById('tab-login');
   const tabRegister = document.getElementById('tab-register');
   const indicator = document.getElementById('tab-indicator');
+  const authMain = document.querySelector('.auth-main');
+  const authSide = document.getElementById('auth-side');
 
   if (tab === 'login') {
     loginForm.classList.remove('auth-form--hidden');
@@ -33,12 +41,18 @@ function switchTab(tab) {
     tabLogin.classList.add('tab--active');
     tabRegister.classList.remove('tab--active');
     indicator.classList.remove('right');
+    // Mostrar sidebar (quitar clase)
+    if (authMain) authMain.classList.remove('sidebar-hidden');
+    if (authSide) authSide.style.display = ''; // Asegurar que se muestre (si no está oculto por media query)
   } else {
     registerForm.classList.remove('auth-form--hidden');
     loginForm.classList.add('auth-form--hidden');
     tabRegister.classList.add('tab--active');
     tabLogin.classList.remove('tab--active');
     indicator.classList.add('right');
+    // Ocultar sidebar (añadir clase)
+    if (authMain) authMain.classList.add('sidebar-hidden');
+    if (authSide) authSide.style.display = 'none'; // Forzamos oculto (por si acaso)
   }
   // Forzar re-animación
   loginForm.style.animation = 'none';
@@ -65,27 +79,18 @@ document.getElementById('reg-avatar-input')?.addEventListener('change', function
   }
 });
 
-// ---- TOGGLE CONTRASEÑA con SVG ----
+// ---- TOGGLE CONTRASEÑA ----
 function togglePass(inputId, btn) {
   const input = document.getElementById(inputId);
   if (!input) return;
   const isText = input.type === 'text';
   input.type = isText ? 'password' : 'text';
-  
-  // Cambiar el SVG dentro del botón
   const svg = btn.querySelector('svg');
   if (svg) {
     if (isText) {
-      // Cambiar a ojo abierto (mostrar)
-      svg.innerHTML = `
-        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
-      `;
+      svg.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />`;
     } else {
-      // Cambiar a ojo tachado (ocultar)
-      svg.innerHTML = `
-        <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
-      `;
+      svg.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />`;
     }
   }
 }
@@ -118,22 +123,19 @@ document.getElementById('reg-password')?.addEventListener('input', function () {
   label.style.color = lvl.color;
 });
 
-// ---- VALIDACIÓN ---- 
+// ---- VALIDACIÓN ----
 function setError(inputId, errId, msg) {
   const input = document.getElementById(inputId);
   const err = document.getElementById(errId);
   if (input) input.classList.add('input-error');
   if (err) err.textContent = msg;
-  return false;
 }
-
 function clearError(inputId, errId) {
   const input = document.getElementById(inputId);
   const err = document.getElementById(errId);
   if (input) { input.classList.remove('input-error'); input.classList.add('input-ok'); }
   if (err) err.textContent = '';
 }
-
 function clearAllErrors(ids) {
   ids.forEach(([inputId, errId]) => {
     const input = document.getElementById(inputId);
@@ -143,42 +145,58 @@ function clearAllErrors(ids) {
   });
 }
 
-// ---- LOGIN ----
+// ---- FUNCIÓN PARA RESOLVER EMAIL DESDE USERNAME ----
+async function resolveLoginIdentifier(identifier) {
+  if (identifier.includes('@')) {
+    return identifier;
+  }
+  const { data, error } = await supabaseClient
+    .from('persona')
+    .select('email')
+    .eq('username', identifier)
+    .single();
+  if (error || !data) {
+    return null;
+  }
+  return data.email;
+}
+
+// ---- HANDLE LOGIN (con soporte username/email) ----
 async function handleLogin(e) {
   e.preventDefault();
   clearAllErrors([
-    ['login-email', 'login-email-err'],
+    ['login-identifier', 'login-identifier-err'],
     ['login-password', 'login-password-err'],
   ]);
 
-  const email = document.getElementById('login-email').value.trim();
+  const identifier = document.getElementById('login-identifier').value.trim();
   const password = document.getElementById('login-password').value;
 
   let valid = true;
-  if (!email) {
-    setError('login-email', 'login-email-err', 'El correo es obligatorio.');
-    valid = false;
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    setError('login-email', 'login-email-err', 'Introduce un correo válido.');
+  if (!identifier) {
+    setError('login-identifier', 'login-identifier-err', 'Introduce tu nombre de usuario o correo.');
     valid = false;
   } else {
-    clearError('login-email', 'login-email-err');
+    clearError('login-identifier', 'login-identifier-err');
   }
-
   if (!password) {
     setError('login-password', 'login-password-err', 'La contraseña es obligatoria.');
     valid = false;
   } else {
     clearError('login-password', 'login-password-err');
   }
-
   if (!valid) return;
 
   setLoading('btn-login', 'spinner-login', true);
 
-  // Autenticación real con Supabase
-  const { user, perfil, error } = await supabaseSignIn(email, password);
+  const email = await resolveLoginIdentifier(identifier);
+  if (!email) {
+    setLoading('btn-login', 'spinner-login', false);
+    setError('login-identifier', 'login-identifier-err', 'No se encontró ningún usuario con ese nombre de usuario o correo.');
+    return;
+  }
 
+  const { user, perfil, error } = await supabaseSignIn(email, password);
   setLoading('btn-login', 'spinner-login', false);
 
   if (error) {
@@ -186,7 +204,6 @@ async function handleLogin(e) {
     return;
   }
 
-  // Guardar datos de sesión en localStorage para acceso rápido en la app
   const isAdmin = perfil && perfil.rol === 'admin';
   const userData = {
     id: user.id,
@@ -204,11 +221,12 @@ async function handleLogin(e) {
   setTimeout(() => { window.location.href = 'app.html'; }, 1000);
 }
 
-// ---- REGISTRO ----
+// ---- HANDLE REGISTER (sin cambios) ----
 async function handleRegister(e) {
   e.preventDefault();
   clearAllErrors([
     ['reg-name', 'reg-name-err'],
+    ['reg-username', 'reg-username-err'],
     ['reg-email', 'reg-email-err'],
     ['reg-phone', 'reg-phone-err'],
     ['reg-birthdate', 'reg-birthdate-err'],
@@ -219,6 +237,7 @@ async function handleRegister(e) {
 
   const name = document.getElementById('reg-name').value.trim();
   const apellidos = document.getElementById('reg-surname').value.trim() || null;
+  const username   = document.getElementById('reg-username').value.trim().toLowerCase();
   const email = document.getElementById('reg-email').value.trim();
   const telefono = document.getElementById('reg-phone').value.trim();
   const birthdate = document.getElementById('reg-birthdate').value;
@@ -228,109 +247,30 @@ async function handleRegister(e) {
 
   let valid = true;
 
-  if (!name) {
-    setError('reg-name', 'reg-name-err', 'El nombre es obligatorio.');
-    valid = false;
-  } else {
-    clearError('reg-name', 'reg-name-err');
-  }
-
-  if (!telefono) {
-    setError('reg-phone', 'reg-phone-err', 'El teléfono es obligatorio.');
-    valid = false;
-  } else if (!/^\+?[\d\s\-]{7,15}$/.test(telefono)) {
-    setError('reg-phone', 'reg-phone-err', 'Introduce un teléfono válido.');
-    valid = false;
-  } else {
-    clearError('reg-phone', 'reg-phone-err');
-  }
-
- if (!birthdate) {
-    setError('reg-birthdate', 'reg-birthdate-err', 'La fecha de nacimiento es obligatoria.');
-    valid = false;
-  } else {
-    const hoy = new Date();
-    const nacimiento = new Date(birthdate);
-    const edad = hoy.getFullYear() - nacimiento.getFullYear() -
-      (hoy < new Date(hoy.getFullYear(), nacimiento.getMonth(), nacimiento.getDate()) ? 1 : 0);
-    if (edad < 14) {
-      setError('reg-birthdate', 'reg-birthdate-err', 'Debes tener al menos 14 años.');
-      valid = false;
-    } else if (edad > 120) {
-      setError('reg-birthdate', 'reg-birthdate-err', 'Introduce una fecha válida.');
-      valid = false;
-    } else {
-      clearError('reg-birthdate', 'reg-birthdate-err');
-    }
-  } 
-
-  if (!email) {
-    setError('reg-email', 'reg-email-err', 'El correo es obligatorio.');
-    valid = false;
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    setError('reg-email', 'reg-email-err', 'Introduce un correo válido.');
-    valid = false;
-  } else {
-    clearError('reg-email', 'reg-email-err');
-  }
-
-  if (!password) {
-    setError('reg-password', 'reg-password-err', 'La contraseña es obligatoria.');
-    valid = false;
-  } else if (password.length < 8) {
-    setError('reg-password', 'reg-password-err', 'Mínimo 8 caracteres.');
-    valid = false;
-  } else {
-    clearError('reg-password', 'reg-password-err');
-  }
-
-  if (!confirm) {
-    setError('reg-confirm', 'reg-confirm-err', 'Confirma tu contraseña.');
-    valid = false;
-  } else if (confirm !== password) {
-    setError('reg-confirm', 'reg-confirm-err', 'Las contraseñas no coinciden.');
-    valid = false;
-  } else {
-    clearError('reg-confirm', 'reg-confirm-err');
-  }
-
-  if (!terms) {
-    const err = document.getElementById('reg-terms-err');
-    if (err) err.textContent = 'Debes aceptar los términos para continuar.';
-    valid = false;
-  }
+  if (!name) { setError('reg-name', 'reg-name-err', 'El nombre es obligatorio.'); valid = false; } else { clearError('reg-name', 'reg-name-err'); }
+  if (!telefono) { setError('reg-phone', 'reg-phone-err', 'El teléfono es obligatorio.'); valid = false; } else if (!/^\+?[\d\s\-]{7,15}$/.test(telefono)) { setError('reg-phone', 'reg-phone-err', 'Introduce un teléfono válido.'); valid = false; } else { clearError('reg-phone', 'reg-phone-err'); }
+  if (!birthdate) { setError('reg-birthdate', 'reg-birthdate-err', 'La fecha de nacimiento es obligatoria.'); valid = false; } else { const hoy = new Date(); const nacimiento = new Date(birthdate); const edad = hoy.getFullYear() - nacimiento.getFullYear() - (hoy < new Date(hoy.getFullYear(), nacimiento.getMonth(), nacimiento.getDate()) ? 1 : 0); if (edad < 14) { setError('reg-birthdate', 'reg-birthdate-err', 'Debes tener al menos 14 años.'); valid = false; } else if (edad > 120) { setError('reg-birthdate', 'reg-birthdate-err', 'Introduce una fecha válida.'); valid = false; } else { clearError('reg-birthdate', 'reg-birthdate-err'); } }
+  if (!email) { setError('reg-email', 'reg-email-err', 'El correo es obligatorio.'); valid = false; } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError('reg-email', 'reg-email-err', 'Introduce un correo válido.'); valid = false; } else { clearError('reg-email', 'reg-email-err'); }
+  if (!password) { setError('reg-password', 'reg-password-err', 'La contraseña es obligatoria.'); valid = false; } else if (password.length < 8) { setError('reg-password', 'reg-password-err', 'Mínimo 8 caracteres.'); valid = false; } else { clearError('reg-password', 'reg-password-err'); }
+  if (!confirm) { setError('reg-confirm', 'reg-confirm-err', 'Confirma tu contraseña.'); valid = false; } else if (confirm !== password) { setError('reg-confirm', 'reg-confirm-err', 'Las contraseñas no coinciden.'); valid = false; } else { clearError('reg-confirm', 'reg-confirm-err'); }
+  if (!terms) { const err = document.getElementById('reg-terms-err'); if (err) err.textContent = 'Debes aceptar los términos para continuar.'; valid = false; }
+  if (!username) { setError('reg-username', 'reg-username-err', 'El nombre de usuario es obligatorio.'); valid = false; } else if (!/^[a-z0-9._]{3,20}$/.test(username)) { setError('reg-username', 'reg-username-err', 'Solo minúsculas, números, puntos y guiones bajos. Entre 3 y 20 caracteres.'); valid = false; } else { clearError('reg-username', 'reg-username-err'); }
 
   if (!valid) return;
 
   setLoading('btn-register', 'spinner-register', true);
 
-  // 1. Registrar usuario
-  const { user, error } = await supabaseSignUp(name, apellidos, email, password, telefono, birthdate);
+  const { user, error } = await supabaseSignUp(name, apellidos, email, password, telefono, birthdate, username);
+  if (error) { setLoading('btn-register', 'spinner-register', false); setError('reg-email', 'reg-email-err', error); return; }
 
-  if (error) {
-    setLoading('btn-register', 'spinner-register', false);
-    setError('reg-email', 'reg-email-err', error);
-    return;
-  }
-
-  // 2. Subir avatar si existe
   let avatarUrl = null;
   const avatarFile = document.getElementById('reg-avatar-input').files[0];
   if (avatarFile && user) {
     avatarUrl = await supabaseUploadAvatar(avatarFile, user.id);
-    if (avatarUrl) {
-      await supabaseUpdatePerfil(user.id, { avatar_url: avatarUrl });
-    }
+    if (avatarUrl) await supabaseUpdatePerfil(user.id, { avatar_url: avatarUrl });
   }
 
-  // 3. Guardar sesión en localStorage
-  const userData = {
-    id: user.id,
-    name: name,
-    email: email,
-    role: 'user',
-    avatar: avatarUrl
-  };
+  const userData = { id: user.id, name: name, email: email, role: 'user', avatar: avatarUrl };
   localStorage.setItem('cbdj-user', JSON.stringify(userData));
 
   showToast('¡Cuenta creada! Bienvenido al Carnaval 🎊');
@@ -370,32 +310,26 @@ function openTermsModal(e) {
   const btnAccept = document.getElementById('btn-accept-terms');
   const body = overlay.querySelector('.terms-modal__body');
 
-  // Resetear estado cada vez que se abre
   btnAccept.disabled = true;
   body.scrollTop = 0;
 
   overlay.classList.add('open');
   document.body.style.overflow = 'hidden';
 
-  // Escuchar scroll
   body.onscroll = () => {
     const llegadoAlFinal = body.scrollTop + body.clientHeight >= body.scrollHeight - 10;
     if (llegadoAlFinal) {
       btnAccept.disabled = false;
-      body.onscroll = null; // Una vez activado, dejar de escuchar
+      body.onscroll = null;
     }
   };
 }
-
 function closeTermsModal(e) {
-  // Si se hace click en el overlay (fondo), cerrar
   if (e && e.target !== document.getElementById('terms-overlay')) return;
   document.getElementById('terms-overlay').classList.remove('open');
   document.body.style.overflow = '';
 }
-
 function acceptTermsModal() {
-  // Marca el checkbox automáticamente al aceptar
   const checkbox = document.getElementById('reg-terms');
   if (checkbox) checkbox.checked = true;
   document.getElementById('terms-overlay').classList.remove('open');

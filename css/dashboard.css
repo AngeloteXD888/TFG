@@ -358,7 +358,7 @@ body {
 .cat-chip--murga     { background: rgba(168,85,247,0.2); color: var(--purple-light); border: 1px solid rgba(168,85,247,0.3); }
 .cat-chip--comparsa  { background: rgba(245,158,11,0.2); color: var(--gold); border: 1px solid rgba(245,158,11,0.3); }
 .cat-chip--artefacto { background: rgba(249,115,22,0.2); color: #fb923c; border: 1px solid rgba(249,115,22,0.3); }
-.cat-chip--animacion { background: rgba(20,184,166,0.2); color: #2dd4bf; border: 1px solid rgba(20,184,166,0.3); }
+.cat-chip--animacion { background: rgba(20,184,166,0.2); color: #2dd4bf; border: 1px solid rgba(20,184,166,0.3); white-space: nowrap; }
 .cat-chip--desfile   { background: rgba(16,185,129,0.2); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
 
 /* ===================== FILTERS BAR ===================== */
@@ -483,7 +483,7 @@ body {
 .tag--Murga           { background: rgba(168,85,247,0.15); color: var(--purple-light); border-color: rgba(168,85,247,0.3); }
 .tag--Comparsa        { background: rgba(245,158,11,0.15); color: var(--gold); border-color: rgba(245,158,11,0.3); }
 .tag--Artefacto       { background: rgba(249,115,22,0.15); color: #fb923c; border-color: rgba(249,115,22,0.3); }
-.tag--GrupoAnimación  { background: rgba(20,184,166,0.15); color: #2dd4bf; border-color: rgba(20,184,166,0.3); }
+.tag--GrupoAnimación  { background: rgba(20,184,166,0.15); color: #2dd4bf; border-color: rgba(20,184,166,0.3); white-space: nowrap; }
 .tag--Desfile         { background: rgba(16,185,129,0.15); color: #34d399; border-color: rgba(16,185,129,0.3); }
 
 /* Empty state */
@@ -918,7 +918,7 @@ body {
 .part-chip--Murga         { background: rgba(168,85,247,0.12); color: var(--purple-light); border-color: rgba(168,85,247,0.25); }
 .part-chip--Comparsa      { background: rgba(245,158,11,0.12); color: var(--gold); border-color: rgba(245,158,11,0.25); }
 .part-chip--Artefacto     { background: rgba(249,115,22,0.12); color: #fb923c; border-color: rgba(249,115,22,0.25); }
-.part-chip--GrupoAnimación { background: rgba(20,184,166,0.12); color: #2dd4bf; border-color: rgba(20,184,166,0.25); }
+.part-chip--GrupoAnimación { background: rgba(20,184,166,0.12); color: #2dd4bf; border-color: rgba(20,184,166,0.25); white-space: nowrap; }
 .part-chip--Desfile        { background: rgba(52,211,153,0.12); color: #34d399; border-color: rgba(52,211,153,0.25); }
 
 /* Empty state participaciones */
@@ -1555,4 +1555,16 @@ body {
 .side-badge svg {
   vertical-align: middle;
   margin-right: 6px;
+}
+
+.comment-username {
+  font-size: .75rem;
+  color: var(--purple-light);
+  font-weight: 500;
+}
+
+/* Columna categoría de la tabla admin */
+.admin-table td:nth-child(2) {
+  min-width: 120px;
+  white-space: nowrap;
 }

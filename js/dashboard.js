@@ -890,6 +890,7 @@ async function deleteComment(eventoId, commentId) {
 async function renderComments(eventoId) {
   const container = document.getElementById(`comments-list-${eventoId}`);
   const countEl = document.getElementById(`comments-count-${eventoId}`);
+  
   if (!container) return;
 
   const eventComments = await supabaseGetComentarios(eventoId);
@@ -908,7 +909,8 @@ async function renderComments(eventoId) {
       day: 'numeric', month: 'short', year: 'numeric',
       hour: '2-digit', minute: '2-digit'
     });
-    const userName = c.persona?.nombre || 'Anónimo';
+    const displayName = c.persona?.nombre || 'Anónimo';
+    const username    = c.persona?.username ? `@${c.persona.username}` : '';
     const avatarUrl = c.persona?.avatar_url;
 
     // Si tiene avatar_url válido, mostramos imagen; si no, la inicial
@@ -925,7 +927,8 @@ async function renderComments(eventoId) {
         ${avatarHtml}
         <div class="comment-body">
           <div class="comment-header">
-            <strong class="comment-user">${escapeHtml(userName)}</strong>
+            <strong class="comment-user">${escapeHtml(displayName)}</strong>
+            ${username ? `<span class="comment-username">${escapeHtml(username)}</span>` : ''}
             <span class="comment-date">${timeStr}</span>
           </div>
           <p class="comment-text">${escapeHtml(c.contenido)}</p>
@@ -1282,6 +1285,7 @@ async function openProfileModal() {
 
   document.getElementById('profile-name').value = data.nombre || '';
   document.getElementById('profile-surname').value = data.apellidos || '';
+  document.getElementById('profile-username').value = data.username || '';
   document.getElementById('profile-phone').value = data.telefono || '';
   document.getElementById('profile-birthdate').value = data.fecha_nacimiento || '';
   document.getElementById('profile-email').value = currentUser.email || '';
@@ -1320,6 +1324,22 @@ async function saveProfile() {
   const apellidos = document.getElementById('profile-surname').value.trim();
   const telefono = document.getElementById('profile-phone').value.trim();
   const birthdate = document.getElementById('profile-birthdate').value;
+  const username = document.getElementById('profile-username').value.trim().toLowerCase();
+
+  if (username && !/^[a-zA-Z0-9._]{3,20}$/.test(username)) {
+    showToast('Formato de usuario incorrecto', true);
+    return;
+  }
+
+  // Verificar disponibilidad si cambió
+  if (username && username !== currentUser.username) {
+    const available = await supabaseCheckUsernameAvailable(username, currentUser.id);
+    if (!available) {
+      showToast('Ese nombre de usuario ya está en uso', true);
+      return;
+    }
+    updates.username = username;
+  }
 
   if (!nombre) {
     showToast('El nombre es obligatorio', true);
