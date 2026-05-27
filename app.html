@@ -290,6 +290,9 @@
           <label for="filter-escenario">Escenario</label>
           <select id="filter-escenario" onchange="applyFilters()">
             <option value="">Todos</option>
+            <option value="Recinto Ferial">Recinto Ferial</option>
+            <option value="Teatro López de Ayala">Teatro López de Ayala</option>
+            <option value="Casco Antiguo">Casco Antiguo</option>
           </select>
         </div>
         <div class="filter-group search-group">
@@ -314,6 +317,15 @@
         <p>Localiza todos los escenarios del Carnaval en Badajoz.</p>
       </div>
 
+      <!-- Barra de recorridos -->
+      <div class="recorridos-panel">
+        <span class="recorridos-label">Recorridos</span>
+        <button id="btn-recorrido-granDesfile" class="btn-recorrido btn-recorrido--azul" onclick="toggleRecorridoDesfile('granDesfile')">Gran Desfile</button>
+        <button id="btn-recorrido-desfileInfantil" class="btn-recorrido btn-recorrido--rojo" onclick="toggleRecorridoDesfile('desfileInfantil')">Desfile Infantil</button>
+        <button id="btn-recorrido-entierroSardina" class="btn-recorrido btn-recorrido--naranja" onclick="toggleRecorridoDesfile('entierroSardina')">Entierro Sardina</button>
+        <button id="btn-recorrido-despedida" class="btn-recorrido btn-recorrido--morado" onclick="toggleRecorridoDesfile('despedida')">Despedida</button>
+      </div>
+
       <div class="mapa-layout">
         <div class="mapa-sidebar">
           <h3>Escenarios</h3>
@@ -330,18 +342,6 @@
 
         <div class="mapa-container">
           <div id="google-map" class="google-map"></div>
-          <div
-            style="position:absolute; top:1rem; right:1rem; z-index:10; display:flex; flex-direction:column; gap:.5rem;">
-            <button id="btn-recorrido-granDesfile" class="btn-recorrido" onclick="toggleRecorridoDesfile('granDesfile')"
-              style="background:#3b82f6; color:white; border:none; padding:.6rem 1rem; border-radius:8px; cursor:pointer; font-family:'Outfit',sans-serif; font-size:.85rem; box-shadow:0 2px 8px rgba(0,0,0,0.4);">
-              🔵 Gran Desfile
-            </button>
-            <button id="btn-recorrido-desfileInfantil" class="btn-recorrido"
-              onclick="toggleRecorridoDesfile('desfileInfantil')"
-              style="background:#ef4444; color:white; border:none; padding:.6rem 1rem; border-radius:8px; cursor:pointer; font-family:'Outfit',sans-serif; font-size:.85rem; box-shadow:0 2px 8px rgba(0,0,0,0.4);">
-              🔴 Desfile Infantil
-            </button>
-          </div>
         </div>
       </div>
     </section>

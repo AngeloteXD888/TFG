@@ -576,6 +576,63 @@ body {
   border-radius: var(--radius);
 }
 
+/* Barra de recorridos — encima del mapa */
+.recorridos-panel {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-bottom: 1rem;
+  padding: .75rem 1rem;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+}
+.recorridos-label {
+  font-size: .75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--text-muted);
+  margin-right: .25rem;
+  white-space: nowrap;
+}
+.btn-recorrido {
+  color: white;
+  border: none;
+  padding: .5rem 1.1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-size: .82rem;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  transition: opacity .2s, transform .15s, box-shadow .15s;
+  white-space: nowrap;
+}
+.btn-recorrido:hover        { opacity: .85; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.35); }
+.btn-recorrido[data-active="true"] { opacity: .55; transform: none; box-shadow: none; }
+
+.btn-recorrido--azul    { background: #3b82f6; }
+.btn-recorrido--rojo    { background: #ef4444; }
+.btn-recorrido--naranja { background: #f97316; }
+.btn-recorrido--morado  { background: #a855f7; }
+
+@media (max-width: 600px) {
+  .recorridos-panel {
+    gap: .4rem;
+    padding: .6rem;
+    justify-content: center;
+  }
+  .recorridos-label { width: 100%; text-align: center; margin-right: 0; }
+  .btn-recorrido {
+    flex: 1 1 calc(50% - .4rem);
+    min-width: 110px;
+    text-align: center;
+    font-size: .8rem;
+  }
+}
+
 /* ===================== ADMIN ===================== */
 .admin-stats {
   display: grid;
