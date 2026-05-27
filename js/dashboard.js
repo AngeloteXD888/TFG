@@ -262,6 +262,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
   renderEscenariosList();
 
+  // ---- Poblar filtro de escenarios en sección Programa ----
+  loadFilterEscenarioSelect();
+
   // ---- Actualizar panel de administración ----
   const adminTotalEventos = document.getElementById('admin-total-eventos');
   if (adminTotalEventos) adminTotalEventos.textContent = EVENTOS.length;
@@ -1195,9 +1198,16 @@ async function addEventFromAdmin() {
   renderAgrupacionChips();
 }
 
-function openEditEventModal(id) {
+async function openEditEventModal(id) {
   const e = EVENTOS.find(ev => ev.id === id);
   if (!e) return;
+
+  // Asegurarse de que el select de escenarios esté poblado
+  const selectEdit = document.getElementById('edit-escenario');
+  if (selectEdit && selectEdit.options.length <= 1) {
+    await loadUbicacionesSelect();
+  }
+
   const fechaDate = fechaTextoToDateInput(e.dia);
   document.getElementById('edit-dia').value = fechaDate;
   document.getElementById('edit-evento-id').value = e.id;
@@ -1230,17 +1240,57 @@ async function saveEditEvento() {
   showToast('Evento actualizado correctamente');
 }
 
+function loadFilterEscenarioSelect() {
+  const select = document.getElementById('filter-escenario');
+  if (!select || !ubicacionesList.length) return;
+  // Mantener "Todos" y añadir las ubicaciones reales de la BD
+  select.innerHTML = '<option value="">Todos</option>';
+  ubicacionesList.forEach(ubi => {
+    const option = document.createElement('option');
+    option.value = ubi.nombre;   // el filtro compara por nombre
+    option.textContent = ubi.nombre;
+    select.appendChild(option);
+  });
+}
+
 async function loadUbicacionesSelect() {
   const ubicaciones = await supabaseGetUbicaciones();
-  const select = document.getElementById('new-escenario');
-  if (!select) return;
-  select.innerHTML = '';
-  ubicaciones.forEach(ubi => { const option = document.createElement('option'); option.value = ubi.id_ubicacion; option.textContent = ubi.nombre; select.appendChild(option); });
+
+  // Poblar select de "Añadir evento" (new-escenario)
+  const selectNew = document.getElementById('new-escenario');
+  if (selectNew) {
+    selectNew.innerHTML = '';
+    ubicaciones.forEach(ubi => {
+      const option = document.createElement('option');
+      option.value = ubi.id_ubicacion;
+      option.textContent = ubi.nombre;
+      selectNew.appendChild(option);
+    });
+  }
+
+  // Poblar select de "Editar evento" (edit-escenario)
+  const selectEdit = document.getElementById('edit-escenario');
+  if (selectEdit) {
+    selectEdit.innerHTML = '<option value="">— Sin escenario —</option>';
+    ubicaciones.forEach(ubi => {
+      const option = document.createElement('option');
+      option.value = ubi.id_ubicacion;
+      option.textContent = ubi.nombre;
+      selectEdit.appendChild(option);
+    });
+  }
+
+  // Poblar select de agrupaciones
   if (!agrupacionesList.length) agrupacionesList = await supabaseGetAgrupaciones();
   const selectAgr = document.getElementById('new-agrupacion');
   if (selectAgr) {
     selectAgr.innerHTML = '<option value="">— Sin agrupación vinculada —</option>';
-    agrupacionesList.forEach(a => { const opt = document.createElement('option'); opt.value = a.id_agrupacion; opt.textContent = `${a.nombre} (${a.categoria})`; selectAgr.appendChild(opt); });
+    agrupacionesList.forEach(a => {
+      const opt = document.createElement('option');
+      opt.value = a.id_agrupacion;
+      opt.textContent = `${a.nombre} (${a.categoria})`;
+      selectAgr.appendChild(opt);
+    });
   }
 }
 
