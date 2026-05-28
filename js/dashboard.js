@@ -304,6 +304,7 @@ function setupUserUI() {
     }
     if (topbarAvatar) topbarAvatar.textContent = '?';
     if (logoutBtn) {
+      logoutBtn.classList.add('login-btn');
       logoutBtn.title = 'Iniciar sesión';
       logoutBtn.onclick = () => window.location.href = 'auth.html';
       logoutBtn.innerHTML = `<svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l3 3m0 0-3 3m3-3H3.75" /></svg>`;
@@ -354,6 +355,18 @@ function setupUserUI() {
       topbarAvatar.style.backgroundImage = '';
       topbarAvatar.textContent = initial;
     }
+  }
+
+  // Si el usuario es anónimo, el botón de logout se convierte en botón de login
+  if (currentUser.role === 'anonimo') {
+    if (logoutBtn) {
+      logoutBtn.classList.add('login-btn');
+      logoutBtn.title = 'Iniciar sesión';
+      logoutBtn.onclick = () => window.location.href = 'auth.html';
+      logoutBtn.innerHTML = `<svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l3 3m0 0-3 3m3-3H3.75" /></svg>`;
+    }
+  } else {
+    if (logoutBtn) logoutBtn.classList.remove('login-btn');
   }
 }
 // =====================================================================
@@ -1439,7 +1452,7 @@ async function saveProfile() {
     currentUser.name = nombre;
     if (avatarUrl) currentUser.avatar = avatarUrl;
     localStorage.setItem('cbdj-user', JSON.stringify(currentUser));
-    setupUserUI();  // refrescar avatar en sidebar/topbar
+    setupUserUI();
     showToast('Perfil actualizado correctamente');
     closeModal('modal-perfil');
   } else {
