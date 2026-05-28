@@ -119,8 +119,9 @@ body {
   display: none;
 }
 .nav-badge.visible { display: block; }
-.nav-item--admin { color: var(--gold) !important; }
-.nav-item--admin:hover { background: rgba(245,158,11,0.1) !important; }
+.nav-item--admin { color: var(--text-muted) !important; }
+.nav-item--admin:hover { background: var(--card-bg) !important; color: var(--text) !important; }
+.nav-item--admin .icon-svg { stroke: currentColor; }
 .nav-item--exit { color: var(--text-subtle) !important; }
 
 .sidebar-divider {
