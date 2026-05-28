@@ -580,6 +580,21 @@
           <label for="new-desc">Descripción</label>
           <textarea id="new-desc" placeholder="Descripción del grupo o evento..."></textarea>
         </div>
+        <!-- PARTICIPANTES / AGRUPACIONES -->
+        <div class="form-group" style="margin-top:.5rem">
+          <label for="new-agrupacion">Participantes (agrupaciones)</label>
+          <div style="display:flex;gap:.5rem;align-items:center">
+            <select id="new-agrupacion" style="flex:1">
+              <option value="">— Selecciona una agrupación —</option>
+            </select>
+            <button type="button" class="btn-primary" style="padding:.45rem .9rem;white-space:nowrap;flex-shrink:0" onclick="addAgrupacionChip()">
+              + Añadir
+            </button>
+          </div>
+          <div id="new-agrupacion-chips" style="display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.5rem;min-height:1.4rem">
+            <span id="new-agrupacion-placeholder" style="font-size:.78rem;color:var(--text-subtle)">Sin agrupaciones añadidas</span>
+          </div>
+        </div>
         <button class="btn-primary" style="width:100%;margin-top:1rem" onclick="addEventFromAdmin()">
           <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
             stroke="currentColor">

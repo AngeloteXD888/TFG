@@ -24,22 +24,24 @@ const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
  */
 async function supabaseSignUp(nombre, apellidos, email, password, telefono, fechaNacimiento, username) {
   try {
-    // Verificar que el username no esté ya en uso
-    const { data: existingUser } = await supabaseClient
-      .from('persona')
-      .select('username')
-      .eq('username', username)
-      .single();
+    // Verificar que el username no esté ya en uso (solo si se proporcionó)
+    if (username) {
+      const { data: existingUser } = await supabaseClient
+        .from('persona')
+        .select('username')
+        .eq('username', username)
+        .single();
 
-    if (existingUser) {
-      return { user: null, error: 'Ese nombre de usuario ya está en uso.' };
+      if (existingUser) {
+        return { user: null, error: 'Ese nombre de usuario ya está en uso.' };
+      }
     }
 
     const { data, error } = await supabaseClient.auth.signUp({
       email: email,
       password: password,
       options: {
-        data: { nombre: nombre, apellidos: apellidos, username: username }
+        data: { nombre: nombre, apellidos: apellidos, username: username || null }
       }
     });
 
@@ -47,28 +49,42 @@ async function supabaseSignUp(nombre, apellidos, email, password, telefono, fech
       return { user: null, error: traducirError(error.message) };
     }
 
-    if (data.user) {
+    // Cuando la confirmación de email está DESACTIVADA, el usuario viene en data.user
+    // Cuando está ACTIVADA, puede venir en data.user con identities vacío (usuario existente)
+    // o con identities con datos (nuevo usuario pendiente de confirmar)
+    const user = data.user;
+
+    if (user) {
+      // Verificar si el usuario ya existía (identities vacío = email ya registrado)
+      if (user.identities && user.identities.length === 0) {
+        return { user: null, error: 'Este correo ya está registrado.' };
+      }
+
+      const perfilData = {
+        id_persona: user.id,
+        nombre: nombre,
+        apellidos: apellidos || null,
+        email: email,
+        username: username || null,
+        telefono: telefono || '',
+        fecha_nacimiento: fechaNacimiento || '2000-01-01',
+        contrasena: '***',
+        fecha_registro: new Date().toISOString(),
+        rol: 'usuario'
+      };
+
       const { error: profileError } = await supabaseClient
         .from('persona')
-        .insert({
-          id_persona: data.user.id,
-          nombre: nombre,
-          apellidos: apellidos || null,
-          email: email,
-          username: username,
-          telefono: telefono,
-          fecha_nacimiento: fechaNacimiento,
-          contrasena: '***',
-          fecha_registro: new Date().toISOString(),
-          rol: 'usuario'
-        });
+        .insert(perfilData);
 
       if (profileError) {
         console.warn('Error al crear perfil en persona:', profileError.message);
+        // Si falla por duplicado de id_persona, el perfil ya existe (race condition)
+        // No bloqueamos el registro por esto
       }
     }
 
-    return { user: data.user, error: null };
+    return { user: user, error: null };
   } catch (err) {
     console.error('supabaseSignUp error:', err);
     return { user: null, error: 'Error inesperado al registrar. Inténtalo de nuevo.' };
@@ -454,20 +470,18 @@ async function supabaseGetTotalEscenarios() {
 // =====================================================================
 
 function traducirError(msg) {
-  const traducciones = {
-    'Invalid login credentials': 'Correo o contraseña incorrectos.',
-    'Email not confirmed': 'Debes confirmar tu correo electrónico.',
-    'User already registered': 'Este correo ya está registrado.',
-    'Password should be at least 6 characters': 'La contraseña debe tener al menos 6 caracteres.',
-    'Signup requires a valid password': 'Introduce una contraseña válida.',
-    'To signup, please provide your email': 'Introduce un correo electrónico válido.',
-    'Email rate limit exceeded': 'Demasiados intentos. Espera un momento e inténtalo de nuevo.',
-    'Anonymous sign-ins are disabled': 'El registro anónimo está deshabilitado.',
-  };
+  if (!msg) return 'Error desconocido.';
+  const lower = msg.toLowerCase();
 
-  for (const [eng, esp] of Object.entries(traducciones)) {
-    if (msg.includes(eng)) return esp;
+  if (lower.includes('email rate limit') || lower.includes('over_email_send_rate_limit') || lower.includes('rate limit')) {
+    return 'Demasiados intentos de registro. Espera unos minutos e inténtalo de nuevo.';
   }
+  if (lower.includes('invalid login credentials')) return 'Correo o contraseña incorrectos.';
+  if (lower.includes('email not confirmed')) return 'Debes confirmar tu correo electrónico.';
+  if (lower.includes('user already registered')) return 'Este correo ya está registrado.';
+  if (lower.includes('password should be at least')) return 'La contraseña debe tener al menos 6 caracteres.';
+  if (lower.includes('to signup, please provide your email')) return 'Introduce un correo electrónico válido.';
+  if (lower.includes('anonymous sign-ins are disabled')) return 'El registro anónimo está deshabilitado.';
 
   return msg;
 }

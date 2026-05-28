@@ -1133,6 +1133,15 @@ async function deleteEventAdmin(id, btn) {
 }
 
 function openAddEventModal() {
+  // Limpiar campos del formulario
+  document.getElementById('new-grupo').value = '';
+  document.getElementById('new-categoria').value = 'Murga';
+  document.getElementById('new-dia').value = '';
+  document.getElementById('new-hora').value = '';
+  document.getElementById('new-desc').value = '';
+  // Resetear agrupaciones seleccionadas
+  selectedAgrupaciones = [];
+  renderAgrupacionChips();
   document.getElementById('modal-add-evento').classList.add('open');
 }
 

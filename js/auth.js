@@ -261,20 +261,27 @@ async function handleRegister(e) {
   setLoading('btn-register', 'spinner-register', true);
 
   const { user, error } = await supabaseSignUp(name, apellidos, email, password, telefono, birthdate, username);
-  if (error) { setLoading('btn-register', 'spinner-register', false); setError('reg-email', 'reg-email-err', error); return; }
+  setLoading('btn-register', 'spinner-register', false);
+  if (error) { setError('reg-email', 'reg-email-err', error); return; }
+
+  // Si no hay user, puede ser que Supabase requiera confirmación de email
+  if (!user) {
+    showToast('¡Cuenta creada! Revisa tu correo para confirmar tu registro 📧');
+    return;
+  }
 
   let avatarUrl = null;
   const avatarFile = document.getElementById('reg-avatar-input').files[0];
-  if (avatarFile && user) {
+  if (avatarFile) {
     avatarUrl = await supabaseUploadAvatar(avatarFile, user.id);
     if (avatarUrl) await supabaseUpdatePerfil(user.id, { avatar_url: avatarUrl });
   }
 
-  const userData = { id: user.id, name: name, email: email, role: 'user', avatar: avatarUrl };
+  const userData = { id: user.id, name: name, email: email, role: 'usuario', avatar: avatarUrl };
   localStorage.setItem('cbdj-user', JSON.stringify(userData));
 
-  showToast('¡Cuenta creada! Bienvenido al Carnaval');
-  setTimeout(() => { window.location.href = 'app.html'; }, 1000);
+  showToast('¡Cuenta creada! Bienvenido al Carnaval 🎉');
+  setTimeout(() => { window.location.href = 'app.html'; }, 1200);
 }
 
 // ---- HELPERS ----
