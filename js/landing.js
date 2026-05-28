@@ -220,6 +220,53 @@ const modalContent = {
       </ul>
       <p>Para actualizar, solo haz <code>git push</code> y Netlify reconstruirá automáticamente.</p>
     `
+  },
+  'aviso-legal': {
+    title: 'Aviso Legal',
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:24px;height:24px;vertical-align:middle;margin-right:8px;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v17.25m0 0c-1.472 0-2.882.265-4.185.75M12 20.25c1.472 0 2.882.265 4.185.75M18.75 4.97A48.416 48.416 0 0 0 12 4.5c-2.291 0-4.545.16-6.75.47m13.5 0c1.01.143 2.01.317 3 .52m-3-.52 2.62 10.726c.122.499-.106 1.028-.589 1.202a5.988 5.988 0 0 1-2.031.352 5.988 5.988 0 0 1-2.031-.352c-.483-.174-.711-.703-.59-1.202L18.75 4.971Zm-16.5.52c.99-.203 1.99-.377 3-.52m0 0 2.62 10.726c.122.499-.106 1.028-.589 1.202a5.989 5.989 0 0 1-2.031.352 5.989 5.989 0 0 1-2.031-.352c-.483-.174-.711-.703-.59-1.202L5.25 4.971Z" /></svg>`,
+    body: `
+      <h4>Titular del sitio web</h4>
+      <p>Este sitio web es un proyecto académico desarrollado por <strong>Ángel Galea Anisa</strong> como Trabajo de Fin de Grado (TFG) para el ciclo de <strong>Desarrollo de Aplicaciones Web</strong> en el IES Albarregas (Badajoz), curso 2025/2026.</p>
+      <h4>Finalidad</h4>
+      <p>La plataforma tiene como objetivo centralizar la información del Carnaval de Badajoz (programa, escenarios, agrupaciones) con fines exclusivamente educativos y de demostración. No tiene carácter comercial.</p>
+      <h4>Propiedad intelectual</h4>
+      <p>El código fuente, diseño y contenidos propios de esta web son propiedad del autor. Los datos del Carnaval de Badajoz se referencian con fines informativos a partir de fuentes públicas como <a href="https://carnavaldebadajoz.org" target="_blank" rel="noopener">carnavaldebadajoz.org</a>.</p>
+      <h4>Limitación de responsabilidad</h4>
+      <p>El autor no se hace responsable de posibles errores u omisiones en los datos del programa oficial. Para información oficial, consulta siempre <a href="https://carnavaldebadajoz.org" target="_blank" rel="noopener">carnavaldebadajoz.org</a>.</p>
+    `
+  },
+  'politica-cookies': {
+    title: 'Política de Cookies',
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:24px;height:24px;vertical-align:middle;margin-right:8px;"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>`,
+    body: `
+      <h4>¿Qué son las cookies?</h4>
+      <p>Las cookies son pequeños archivos de texto que los sitios web almacenan en tu navegador para recordar preferencias y mejorar la experiencia de uso.</p>
+      <h4>Cookies que utilizamos</h4>
+      <ul>
+        <li><strong>Sesión de usuario (Supabase):</strong> necesarias para mantener tu sesión iniciada. Se eliminan al cerrar sesión.</li>
+        <li><strong>Preferencias locales:</strong> almacenadas en <code>localStorage</code> del navegador. No son cookies propiamente dichas y no se envían a ningún servidor.</li>
+      </ul>
+      <h4>Cookies de terceros</h4>
+      <p>Google Maps puede establecer cookies propias al cargar el mapa interactivo. Consulta la política de Google en <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">policies.google.com</a>.</p>
+      <h4>¿Cómo desactivarlas?</h4>
+      <p>Puedes configurar tu navegador para bloquear o eliminar cookies. Ten en cuenta que desactivar las cookies de sesión impedirá iniciar sesión en la aplicación.</p>
+      <h4>Más información</h4>
+      <p>Al tratarse de un proyecto académico sin finalidad comercial, no se utilizan cookies de seguimiento, publicidad ni analítica de terceros.</p>
+    `
+  },
+  'contacto': {
+    title: 'Contacto',
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:24px;height:24px;vertical-align:middle;margin-right:8px;"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" /></svg>`,
+    body: `
+      <h4>Autor del proyecto</h4>
+      <p><strong>Ángel Galea Anisa</strong><br/>Alumno de Desarrollo de Aplicaciones Web<br/>IES Albarregas · Badajoz · Curso 2025/2026</p>
+      <h4>Correo de contacto</h4>
+      <p>Para consultas relacionadas con el proyecto TFG:<br/><a href="mailto:angegalea@outlook.es">angegalea@outlook.es</a></p>
+      <h4>Sobre el proyecto</h4>
+      <p>Plataforma desarrollada con fines académicos para el TFG de Desarrollo de Aplicaciones Web. Cualquier sugerencia o consulta técnica es bienvenida.</p>
+      <h4>Fuente de datos oficiales</h4>
+      <p>Para datos y noticias oficiales del Carnaval: <a href="https://carnavaldebadajoz.org" target="_blank" rel="noopener">carnavaldebadajoz.org</a></p>
+    `
   }
 };
 
