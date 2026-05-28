@@ -528,6 +528,7 @@ function toggleRecorridoDesfile(tipo) {
   const bounds = new google.maps.LatLngBounds();
   recorrido.puntos.forEach(p => bounds.extend(p));
   map.fitBounds(bounds);
+  if (window.innerWidth <= 768) document.getElementById('google-map')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 // =====================================================================
@@ -1010,6 +1011,7 @@ function selectEscenario(el, key) {
   el.classList.add('escenario-item--active');
   updateEscenarioInfo(key);
   panToEscenario(key);
+  if (window.innerWidth <= 768) document.getElementById('google-map')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function selectEscenariByKey(key) {
@@ -1049,6 +1051,7 @@ function renderEscenariosList() {
       document.getElementById('esc-title').innerHTML = `${iconoSvg} ${ubi.nombre}`;
       document.getElementById('esc-desc').innerHTML = ubi.direccion || 'Escenario del Carnaval de Badajoz';
       document.getElementById('esc-tag').innerHTML = 'Ubicación';
+      if (window.innerWidth <= 768) document.getElementById('google-map')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
     container.appendChild(li);
   });
