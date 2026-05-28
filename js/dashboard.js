@@ -100,7 +100,7 @@ const PALABRAS_PROHIBIDAS = [
   'culear', 'culeado', 'culeada', 'chingar', 'chingado', 'chingada', 'follar', 'follado', 'follada',
   'coger', 'cogido', 'cogida', 'cojer', 'cojido', 'cojida', 'pito', 'pija', 'teta', 'tetas', 'culo',
   'nalgas', 'culo sucio', 'muerde almohada', 'come mierda', 'comepollas', 'chupamedias', 'lamebotas',
-  'lameculos', 'soplaculos', 'tragasables', 'tragaleches', 'saca leche', 'saca mierda', 'tonto', 'tonta', 'tontos', 'tontas'
+  'lameculos', 'soplaculos', 'tragasables', 'tragaleches', 'saca leche', 'saca mierda', 'tonto', 'tonta', 'tontos', 'tontas', 'gilipichis'
 ];
 
 function contienePalabrotas(texto) {
