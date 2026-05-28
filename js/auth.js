@@ -273,7 +273,7 @@ async function handleRegister(e) {
   const userData = { id: user.id, name: name, email: email, role: 'user', avatar: avatarUrl };
   localStorage.setItem('cbdj-user', JSON.stringify(userData));
 
-  showToast('¡Cuenta creada! Bienvenido al Carnaval 🎊');
+  showToast('¡Cuenta creada! Bienvenido al Carnaval');
   setTimeout(() => { window.location.href = 'app.html'; }, 1000);
 }
 
@@ -334,4 +334,56 @@ function acceptTermsModal() {
   if (checkbox) checkbox.checked = true;
   document.getElementById('terms-overlay').classList.remove('open');
   document.body.style.overflow = '';
+}
+
+// ---- SESIÓN ACTIVA AL CARGAR AUTH ----
+(async function checkExistingSession() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (session) {
+    showSessionActiveWarning(session.user.email);
+  }
+})();
+
+function showSessionActiveWarning(email) {
+  const banner = document.createElement('div');
+  banner.id = 'session-warning';
+  banner.style.cssText = `
+    position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+    background: #7c3aed; color: white; text-align: center;
+    padding: 14px 20px; font-size: 15px; font-weight: 600;
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  `;
+  banner.innerHTML = `
+    <span>⚠️ Ya hay una sesión activa como <strong>${email}</strong></span>
+    <button onclick="window.location.href='app.html'" style="
+      background: white; color: #7c3aed; border: none; border-radius: 6px;
+      padding: 6px 14px; cursor: pointer; font-weight: 700; font-size: 14px;
+    ">Ir a la app</button>
+    <button onclick="cerrarSesionActiva()" style="
+      background: transparent; color: white; border: 2px solid white;
+      border-radius: 6px; padding: 6px 14px; cursor: pointer;
+      font-weight: 600; font-size: 14px;
+    ">Cerrar sesión</button>
+  `;
+  document.body.prepend(banner);
+
+  ['btn-login', 'btn-register'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn) {
+      btn.disabled = true;
+      btn.title = 'Ya hay una sesión activa';
+    }
+  });
+}
+
+async function cerrarSesionActiva() {
+  await supabaseSignOut();
+  localStorage.removeItem('cbdj-user');
+  document.getElementById('session-warning')?.remove();
+  ['btn-login', 'btn-register'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn) btn.disabled = false;
+  });
+  showToast('Sesión cerrada. Ya puedes iniciar sesión con otra cuenta.');
 }
