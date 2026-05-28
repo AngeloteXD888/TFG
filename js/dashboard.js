@@ -1051,6 +1051,8 @@ function renderEscenariosList() {
       document.getElementById('esc-title').innerHTML = `${iconoSvg} ${ubi.nombre}`;
       document.getElementById('esc-desc').innerHTML = ubi.direccion || 'Escenario del Carnaval de Badajoz';
       document.getElementById('esc-tag').innerHTML = 'Ubicación';
+      document.getElementById('esc-directions').href = `https://www.google.com/maps/dir/?api=1&destination=${ubi.latitud},${ubi.longitud}`;
+      document.getElementById('esc-directions').style.display = 'inline-flex';
       if (window.innerWidth <= 768) document.getElementById('google-map')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
     container.appendChild(li);
